@@ -31,7 +31,11 @@
 	      <RadioButton android:id="@+id/radio_btcguild"
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
-	          android:text="Btcguild" />    	          
+	          android:text="Btcguild" />   
+	      <RadioButton android:id="@+id/radio_bitclockers"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:text="Bitclockers" />   	           	          
 	    </RadioGroup>
 		<TextView  
 	        android:layout_width="fill_parent" 

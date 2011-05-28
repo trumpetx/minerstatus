@@ -1,6 +1,10 @@
 package me.davidgreene.minerstatus;
 
 import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_DIRECTIONS;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,8 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class AddMinerActivity extends AbstractMinerStatusActivity {
-	
-	//private static final String tag = "TX";
 	
 	private String poolToAdd;
 	
@@ -30,26 +32,18 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
     	TextView minerDirections = (TextView) findViewById(R.id.minerDirections);
     	minerDirections.setTextColor(color);
         
-    	final RadioButton radio_bitcoinpool = (RadioButton) findViewById(R.id.radio_bitcoinpool);
-    	final RadioButton radio_slush = (RadioButton) findViewById(R.id.radio_slush);
-    	final RadioButton radio_deepbit = (RadioButton) findViewById(R.id.radio_deepbit);
-    	final RadioButton radio_btcmine = (RadioButton) findViewById(R.id.radio_btcmine);
-    	final RadioButton radio_btcguild = (RadioButton) findViewById(R.id.radio_btcguild);
+    	List<RadioButton> radioList = new LinkedList<RadioButton>();
+    	radioList.add((RadioButton)findViewById(R.id.radio_bitcoinpool));
+    	radioList.add((RadioButton) findViewById(R.id.radio_slush));
+    	radioList.add((RadioButton) findViewById(R.id.radio_deepbit));
+    	radioList.add((RadioButton) findViewById(R.id.radio_btcmine));
+    	radioList.add((RadioButton) findViewById(R.id.radio_btcguild));
+    	radioList.add((RadioButton) findViewById(R.id.radio_bitclockers));
 
-    	radio_btcmine.setOnClickListener(radio_listener);
-    	radio_btcmine.setTextColor(color);
-    	
-    	radio_deepbit.setOnClickListener(radio_listener);
-    	radio_deepbit.setTextColor(color);
-    	
-        radio_bitcoinpool.setOnClickListener(radio_listener);
-        radio_bitcoinpool.setTextColor(color);
-        
-        radio_slush.setOnClickListener(radio_listener);
-        radio_slush.setTextColor(color);
-
-        radio_btcguild.setOnClickListener(radio_listener);
-        radio_btcguild.setTextColor(color);
+    	for(RadioButton radio : radioList){
+    		radio.setOnClickListener(radio_listener);
+    		radio.setTextColor(color);    		
+    	}
     }
 	
 	private OnClickListener radio_listener = new OnClickListener() {
@@ -74,6 +68,9 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 	        	minerNameLabel.setText("API Key");
 	        } else if (rb.getText().equals("Btcguild")){
 	        	poolToAdd = "btcguild";
+	        	minerNameLabel.setText("API Key");
+	        } else if (rb.getText().equals("Bitclockers")){
+	        	poolToAdd = "bitclockers";
 	        	minerNameLabel.setText("API Key");
 	        }
 	        minerNameLabel.setVisibility(TextView.VISIBLE);
@@ -117,7 +114,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 				}
 			}
 			return Boolean.TRUE;
-		} else if(pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool")){
+		} else if(pool.equals("bitclockers") || pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c)){
 					return Boolean.FALSE;

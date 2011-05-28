@@ -1,5 +1,7 @@
 package me.davidgreene.minerstatus;
 
+import me.davidgreene.minerstatus.beans.BitclockersStatus;
+import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMine;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
@@ -75,6 +77,8 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((BtcMine)minerStatus, tl);
 		} else if (minerStatus instanceof BtcguildStatus){
 			render((BtcguildStatus)minerStatus, tl);
+		} else if (minerStatus instanceof BitclockersStatus){
+			render((BitclockersStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
@@ -120,7 +124,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Requested", status.getUser().getRequested().toString()));
 		tl.addView(renderRow("Submitted", status.getUser().getSubmitted().toString()));
 		tl.addView(renderRow("Efficiency", status.getUser().getEfficiency()));
-		
+		tl.addView(renderRow("",""));
 	}
 	private void render(DeepbitStatus status, TableLayout tl){
 		//tl.addView(renderRow("Api Key", status.getApiKey()));
@@ -167,7 +171,9 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Unconfirmed", status.getUnconfirmed_reward()));
 		tl.addView(renderRow("Confirmed", status.getConfirmed_reward()));
 		tl.addView(renderRow("Wallet", status.getWallet()));
+		tl.addView(renderRow("",""));
 	}
+	
   
 	private void render(BtcMine status, TableLayout tl){
 		tl.addView(renderRow("Hashrate", status.getHashrate()));
@@ -180,5 +186,21 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Round Shares", status.getRound_shares().toString()));
 		tl.addView(renderRow("Solved Shares", status.getSolved_shares().toString()));
 		tl.addView(renderRow("Solved Blocks", status.getSolved_blocks().toString()));
+		tl.addView(renderRow("",""));
 	}
+	
+	private void render(BitclockersStatus status, TableLayout tl){
+		tl.addView(renderRow("Balance", status.getBalance().toString()));
+		tl.addView(renderRow("Payout", status.getPayout()));
+		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
+	    for( String key : status.getWorkers().keySet() ){
+	    	BitclockersWorker worker = status.getWorkers().get(key);
+	    	tl.addView(renderRow("",key));
+	    	tl.addView(renderRow("Shares",worker.getShares().toString()));
+	    	tl.addView(renderRow("Stale",worker.getStale().toString()));
+	    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
+	    	tl.addView(renderRow("",""));
+	    }		
+	}
+	
 }

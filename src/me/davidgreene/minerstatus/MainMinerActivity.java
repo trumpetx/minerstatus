@@ -38,8 +38,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.joda.time.DateTime;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,22 +63,31 @@ import com.google.gson.Gson;
 public class MainMinerActivity extends AbstractMinerStatusActivity {
     
     private static final String tag = "TX";
-	
+    private ConnectivityManager conMgr;
+
+    private Boolean hasDataTurnedOff(){
+    	if (conMgr == null){
+    		conMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+    	}
+    	return ( conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
+        	    ||  conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED);
+    }
     
-    
-    
-    
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         int bgColor = themeService.getTheme().getBackgroundColor();
         ScrollView scrollView = (ScrollView) findViewById(R.id.mainMinerScrollView);
         scrollView.setBackgroundColor(bgColor);
-        setTitle("Miner Status - Updating...");
         getUserStatusUpdate();
-        AsynchMinerUpdateTask updateTask = new AsynchMinerUpdateTask();
-        updateTask.execute(new Object[]{configService, minerService});
+        if (hasDataTurnedOff()) {
+        	setTitle("Miner Status - No Data Connection");
+        } else{ 
+	        setTitle("Miner Status - Updating...");
+	        AsynchMinerUpdateTask updateTask = new AsynchMinerUpdateTask();
+	        updateTask.execute(new Object[]{configService, minerService});
+        }
     }	
     
 	@Override
@@ -89,12 +101,22 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	        case R.id.add_miner:
-                startActivityForResult(new Intent(MainMinerActivity.this, AddMinerActivity.class), 0);
+	        	if (hasDataTurnedOff()){
+	        		setTitle("Miner Status - No Data Connection");
+	        		Toast.makeText(this, "Please turn on 3/4G or Wifi", Toast.LENGTH_LONG).show();
+	        	} else {
+	        		startActivityForResult(new Intent(MainMinerActivity.this, AddMinerActivity.class), 0);
+	        	}
 	            break;
-	        case R.id.fetch_status:    
-	        	setTitle("Miner Status - Updating...");
-	        	AsynchMinerUpdateTask updateTask = new AsynchMinerUpdateTask();
-	            updateTask.execute(new Object[]{configService, minerService});
+	        case R.id.fetch_status:   
+	        	if (hasDataTurnedOff()){
+	        		setTitle("Miner Status - No Data Connection");
+	        		Toast.makeText(this, "Please turn on 3/4G or Wifi", Toast.LENGTH_LONG).show();
+	        	} else {
+		        	setTitle("Miner Status - Updating...");
+		        	AsynchMinerUpdateTask updateTask = new AsynchMinerUpdateTask();
+		            updateTask.execute(new Object[]{configService, minerService});
+	        	}
 	            break;
 	        case R.id.options:
                 startActivityForResult(new Intent(MainMinerActivity.this, OptionsActivity.class), 0);
@@ -157,13 +179,13 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
 		TableLayout mtGoxLayout = (TableLayout) findViewById(R.id.mtGoxLayout);
 		if (showMtGox){
+			mtGoxLayout.removeAllViews();
+			mtGoxLayout.addView(createNewRow(new String[] {"Mt. Gox:"}, Boolean.TRUE));
+			mtGoxLayout.addView(createNewRow(new String[] {"Vol","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
 			try{
-				mtGoxLayout.removeAllViews();
 				Gson gson = new Gson();
 				Result mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY);
 				MtGox mtGox = gson.fromJson(mtGoxResult.getData(), MtGox.class);
-				mtGoxLayout.addView(createNewRow(new String[] {"Mt. Gox:"}, Boolean.TRUE));
-				mtGoxLayout.addView(createNewRow(new String[] {"Vol","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
 				mtGoxLayout.addView(createNewRow(new String[] {mtGox.getTicker().getVol().toString(),
 						mtGox.getTicker().getLast().toString(), 
 						mtGox.getTicker().getHigh().toString(), 
@@ -172,7 +194,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 						mtGox.getTicker().getSell().toString()
 						}, Boolean.FALSE));				
 			} catch (Exception e){
-				mtGoxLayout.setVisibility(TableLayout.INVISIBLE);
+				mtGoxLayout.addView(createNewRow(new String[] {"Unable to connect..."}, Boolean.TRUE));
 			}			
 		} else {
 			mtGoxLayout.setVisibility(TableLayout.INVISIBLE);
