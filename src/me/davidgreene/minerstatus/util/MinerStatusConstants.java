@@ -17,6 +17,7 @@ public class MinerStatusConstants {
 		POOL_URLS.put("btcmine", "http://btcmine.com/api/getstats/%MINER%/");
 		POOL_URLS.put("btcguild", "http://www.btcguild.com/api.php?api_key=%MINER%");
 		POOL_URLS.put("bitclockers", "http://bitclockers.com/?action=api&cmd=%MINER%");
+		POOL_URLS.put("swepool", "http://swepool.net/json?key=%MINER%");
 	}
 	public static final Map<String,String> POOL_LABELS = new HashMap<String,String>(4);
 	static{
@@ -26,6 +27,7 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("btcmine", "BtcMine");
 		POOL_LABELS.put("btcguild", "BTC Guild");
 		POOL_LABELS.put("bitclockers", "Bitclockers");
+		POOL_LABELS.put("swepool", "Swepool");
 	}
 	public static final Map<String,String> POOL_DIRECTIONS = new HashMap<String,String>(4);
 	static{
@@ -35,6 +37,7 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("btcmine", "BtcMine provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key (and generate new ones) on your profile page at\nhttp://btcmine.com/user/profile/");
 		POOL_DIRECTIONS.put("btcguild", "BTC Guild provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your profile page at\nhttp://www.btcguild.com/my_api.php");
 		POOL_DIRECTIONS.put("bitclockers", "Bitclockers provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your dashboard page at\nhttp://bitclockers.com/?action=dashboard");
+		POOL_DIRECTIONS.put("swepool", "Swepool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your settings page at\nhttp://swepool.net/settings");
 	}	
 	public static final Map<String,String>THEME_LIST = new HashMap<String,String>(2);
 	static{

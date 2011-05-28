@@ -39,6 +39,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
     	radioList.add((RadioButton) findViewById(R.id.radio_btcmine));
     	radioList.add((RadioButton) findViewById(R.id.radio_btcguild));
     	radioList.add((RadioButton) findViewById(R.id.radio_bitclockers));
+    	radioList.add((RadioButton) findViewById(R.id.radio_swepool));
 
     	for(RadioButton radio : radioList){
     		radio.setOnClickListener(radio_listener);
@@ -72,6 +73,9 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 	        } else if (rb.getText().equals("Bitclockers")){
 	        	poolToAdd = "bitclockers";
 	        	minerNameLabel.setText("API Key");
+	        } else if (rb.getText().equals("Swepool")){
+	        	poolToAdd = "swepool";
+	        	minerNameLabel.setText("API Key");
 	        }
 	        minerNameLabel.setVisibility(TextView.VISIBLE);
 	        minerName.setVisibility(EditText.VISIBLE);	 
@@ -100,7 +104,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 		if (pool == null || pool.length() == 0){
 			return Boolean.FALSE;
 		}
-		if(pool.equals("slush")){
+		if(pool.equals("slush") || pool.equals("swepool")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c) && !c.equals('-')){
 					return Boolean.FALSE;

@@ -9,6 +9,8 @@ import me.davidgreene.minerstatus.beans.BtcguildWorker;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
+import me.davidgreene.minerstatus.beans.SwepoolStatus;
+import me.davidgreene.minerstatus.beans.SwepoolWorker;
 import me.davidgreene.minerstatus.beans.WorkerStatus;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -79,6 +81,8 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((BtcguildStatus)minerStatus, tl);
 		} else if (minerStatus instanceof BitclockersStatus){
 			render((BitclockersStatus)minerStatus, tl);
+		}  else if (minerStatus instanceof SwepoolStatus){
+			render((SwepoolStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
@@ -199,6 +203,21 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	    	tl.addView(renderRow("Shares",worker.getShares().toString()));
 	    	tl.addView(renderRow("Stale",worker.getStale().toString()));
 	    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
+	    	tl.addView(renderRow("",""));
+	    }		
+	}
+	
+	private void render(SwepoolStatus status, TableLayout tl){
+		tl.addView(renderRow("Balance", status.getBalance()));
+		tl.addView(renderRow("Address", status.getAddress()));
+		tl.addView(renderRow("PPS", status.getPaypershare().toString()));
+		tl.addView(renderRow("Pool Speed", status.getPool_speed()));
+		
+	    for( SwepoolWorker worker : status.getWorkers() ){
+	    	tl.addView(renderRow("",worker.getWorker()));
+	    	tl.addView(renderRow("Shares",worker.getShares()));
+	    	tl.addView(renderRow("Stales",worker.getStales()));
+	    	tl.addView(renderRow("Hash Speed",worker.getHashspeed()));
 	    	tl.addView(renderRow("",""));
 	    }		
 	}

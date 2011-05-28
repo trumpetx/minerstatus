@@ -1,6 +1,7 @@
 package me.davidgreene.minerstatus.util;
 
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
+import me.davidgreene.minerstatus.beans.SwepoolStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMine;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
@@ -29,6 +30,8 @@ public class StatusObjectFactory {
 			return gson.fromJson(result, BtcguildStatus.class);
 		} else if (identifier.equals("bitclockers")){
 			return gson.fromJson(result, BitclockersStatus.class);
+		} else if (identifier.equals("swepool")){
+			return gson.fromJson(result, SwepoolStatus.class);
 		}
 		return null;
 	}

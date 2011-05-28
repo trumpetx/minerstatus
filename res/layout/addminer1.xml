@@ -35,7 +35,11 @@
 	      <RadioButton android:id="@+id/radio_bitclockers"
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
-	          android:text="Bitclockers" />   	           	          
+	          android:text="Bitclockers" />   
+		<RadioButton android:id="@+id/radio_swepool"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:text="Swepool" />   
 	    </RadioGroup>
 		<TextView  
 	        android:layout_width="fill_parent" 

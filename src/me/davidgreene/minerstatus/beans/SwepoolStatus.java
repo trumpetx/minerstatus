@@ -1,55 +1,105 @@
 package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class SwepoolStatus implements Status, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -494004302693490738L;
+
+	private String balance;
+	private String address;
+	private BigDecimal paypershare;
+	private String pool_speed;
+	private SwepoolWorker[] workers;
+	private String apiKey;
+	
+	
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Worker(s)";
 	}
 
 	@Override
 	public String getDisplayCol1() {
-		// TODO Auto-generated method stub
-		return null;
+		return balance;
 	}
 
 	@Override
 	public String getDisplayCol2() {
-		// TODO Auto-generated method stub
-		return null;
+		Long totalHashRate = 0L;
+		for (SwepoolWorker worker : workers){
+			totalHashRate += Long.getLong(worker.getHashspeed(), 0L);
+		}
+		return totalHashRate.toString();
 	}
 
 	@Override
 	public String getUsernameLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	@Override
 	public String getDisplayCol1Label() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Balance";
 	}
 
 	@Override
 	public String getDisplayCol2Label() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Hashrate";
 	}
 
 	@Override
 	public void setApiKey(String apiKey) {
-		// TODO Auto-generated method stub
-
+		this.apiKey = apiKey;
 	}
 
 	@Override
 	public String getApiKey() {
-		// TODO Auto-generated method stub
-		return null;
+		return apiKey;
+	}
+
+	public String getBalance() {
+		return balance;
+	}
+
+	public void setBalance(String balance) {
+		this.balance = balance;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public BigDecimal getPaypershare() {
+		return paypershare;
+	}
+
+	public void setPaypershare(BigDecimal paypershare) {
+		this.paypershare = paypershare;
+	}
+
+	public String getPool_speed() {
+		return pool_speed;
+	}
+
+	public void setPool_speed(String pool_speed) {
+		this.pool_speed = pool_speed;
+	}
+
+	public SwepoolWorker[] getWorkers() {
+		return workers;
+	}
+
+	public void setWorkers(SwepoolWorker[] workers) {
+		this.workers = workers;
 	}
 
 }
