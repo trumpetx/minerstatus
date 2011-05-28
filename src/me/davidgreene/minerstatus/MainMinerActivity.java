@@ -63,15 +63,25 @@ import com.google.gson.Gson;
 public class MainMinerActivity extends AbstractMinerStatusActivity {
     
     private static final String tag = "TX";
-    private ConnectivityManager conMgr;
 
-    private Boolean hasDataTurnedOff(){
-    	if (conMgr == null){
-    		conMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-    	}
-    	return ( conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
-        	    ||  conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED);
+    private boolean hasNetworkConnection(){
+        boolean HaveConnectedWifi = false;
+        boolean HaveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo)
+        {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    HaveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    HaveConnectedMobile = true;
+        }
+        return HaveConnectedWifi || HaveConnectedMobile;
     }
+
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +91,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
         ScrollView scrollView = (ScrollView) findViewById(R.id.mainMinerScrollView);
         scrollView.setBackgroundColor(bgColor);
         getUserStatusUpdate();
-        if (hasDataTurnedOff()) {
+        if (!hasNetworkConnection()) {
         	setTitle("Miner Status - No Data Connection");
         } else{ 
 	        setTitle("Miner Status - Updating...");
@@ -101,7 +111,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	        case R.id.add_miner:
-	        	if (hasDataTurnedOff()){
+	        	if (!hasNetworkConnection()){
 	        		setTitle("Miner Status - No Data Connection");
 	        		Toast.makeText(this, "Please turn on 3/4G or Wifi", Toast.LENGTH_LONG).show();
 	        	} else {
@@ -109,7 +119,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	        	}
 	            break;
 	        case R.id.fetch_status:   
-	        	if (hasDataTurnedOff()){
+	        	if (!hasNetworkConnection()){
 	        		setTitle("Miner Status - No Data Connection");
 	        		Toast.makeText(this, "Please turn on 3/4G or Wifi", Toast.LENGTH_LONG).show();
 	        	} else {
