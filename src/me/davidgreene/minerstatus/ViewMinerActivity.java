@@ -1,5 +1,7 @@
 package me.davidgreene.minerstatus;
 
+import java.math.BigDecimal;
+
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
@@ -7,6 +9,8 @@ import me.davidgreene.minerstatus.beans.BtcMine;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.BtcguildWorker;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
+import me.davidgreene.minerstatus.beans.MtredStatus;
+import me.davidgreene.minerstatus.beans.MtredWorker;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
@@ -83,6 +87,8 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((BitclockersStatus)minerStatus, tl);
 		}  else if (minerStatus instanceof SwepoolStatus){
 			render((SwepoolStatus)minerStatus, tl);
+		}  else if (minerStatus instanceof MtredStatus){
+			render((MtredStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
@@ -206,6 +212,30 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	    	tl.addView(renderRow("",""));
 	    }		
 	}
+	
+	private void render(MtredStatus status, TableLayout tl){
+		tl.addView(renderRow("Balance", status.getBalance()));
+		tl.addView(renderRow("User Round Solved", status.getRsolved()));
+		
+		BigDecimal rsolved = new BigDecimal(status.getRsolved());
+		BigDecimal roundShares = new BigDecimal(status.getServer().getRoundshares());
+		BigDecimal blockValue = new BigDecimal(50);
+		BigDecimal estimatedReward = blockValue.multiply(rsolved).divide(roundShares, 4, BigDecimal.ROUND_HALF_UP).setScale(4, BigDecimal.ROUND_HALF_UP);		
+		
+		tl.addView(renderRow("Estimated Payout", estimatedReward.toString()));
+		tl.addView(renderRow("Server Hashrate", status.getServer().getHashrate().toString()));
+		tl.addView(renderRow("Server Round Shares", status.getServer().getRoundshares().toString()));
+		tl.addView(renderRow("Server Found Block", status.getServer().getFoundblock().toString()));
+		tl.addView(renderRow("Server Workers", status.getServer().getWorkers().toString()));
+		
+	    for( String key : status.getWorkers().keySet() ){
+	    	MtredWorker worker = status.getWorkers().get(key);
+	    	tl.addView(renderRow("",key));
+	    	tl.addView(renderRow("Round Solved",worker.getRsolved().toString()));
+	    	tl.addView(renderRow("Hashrate",worker.getMhash().toString()));
+	    	tl.addView(renderRow("",""));
+	    }		
+	}	
 	
 	private void render(SwepoolStatus status, TableLayout tl){
 		tl.addView(renderRow("Balance", status.getBalance()));

@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -27,7 +29,6 @@ import me.davidgreene.minerstatus.service.ConfigService;
 import me.davidgreene.minerstatus.service.MinerService;
 import me.davidgreene.minerstatus.util.StatusObjectFactory;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -36,7 +37,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.joda.time.DateTime;
 
 import android.content.Context;
 import android.content.Intent;
@@ -258,15 +258,18 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 				cursor.close();
 			}		
 			if (minerResult != null){
-		        DateTime lastUpdated = new DateTime(minerResult.getDate());
-		        mainTableLayout.addView(createNewRow(new String[] {lastUpdated.toString("HH:mm:ss")}, Boolean.TRUE));
+		        mainTableLayout.addView(createNewRow(new String[] {DateFormat.getTimeInstance(DateFormat.MEDIUM).format(minerResult.getDate())}, Boolean.TRUE));
 			}
 			mainTableLayout.addView(createNewRow(new String[] {""}, Boolean.FALSE));
 		}
 		if (poolCursor != null && !poolCursor.isClosed()) {
 			poolCursor.close();
 		}	
-		this.setTitle("Miner Status - "+new DateTime(Long.getLong(configService.getConfigValue("last.updated"))).toString("yyyy/MM/dd @ HH:mm:ss"));
+		try{
+			this.setTitle("Miner Status - "+DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(new Date(Long.valueOf(configService.getConfigValue("last.updated")))));
+		} catch (Exception e) {
+			this.setTitle("Miner Status");
+		}
 
 	}
 
@@ -331,13 +334,13 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 
 
 	    		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
+	    		trustAllHosts();
 	    		if (showMtGox){
 	    			
 	    			
 	    			
 	    			try{
 	    				URL url = new URL(MT_GOX_PUBLIC);
-	    	            trustAllHosts();
 	                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 	                    https.setHostnameVerifier(DO_NOT_VERIFY);
 	    				https.connect();
@@ -370,18 +373,38 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    			while(cursor.moveToNext()) {
 	    				
 	    				String apiKey = cursor.getString(0);
-	    				request = new HttpGet(POOL_URLS.get(pool).replace("%MINER%", apiKey));
-	    	
-	    				try{
-	    					result = httpClient.execute(request, handler);
-	    					if(result.contains("invalid") && result.contains("etcpasswd")){
-	    						result = "";
+	    				String poolUrl = POOL_URLS.get(pool).replace("%MINER%", apiKey);
+	    				if (poolUrl.substring(0, 5).equals("https")){
+	    					try {
+			    				URL url = new URL(poolUrl);
+			                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+			                    https.setHostnameVerifier(DO_NOT_VERIFY);
+			    				https.connect();
+			    				InputStream is = https.getInputStream();
+			    				
+			    				BufferedReader r = new BufferedReader(new InputStreamReader(is));
+			    				StringBuilder httpsResponse = new StringBuilder();
+			    				String line;
+			    				while ((line = r.readLine()) != null) {
+			    					httpsResponse.append(line);
+			    				}
+			    				result = httpsResponse.toString();
+	    					} catch (Exception e){
+	    						//do nothing
 	    					}
-	    				} catch(ClientProtocolException e){
-	    					//nothing
-	    				} catch (Exception e){
-	    					//nothing
+	    				} else{
+		    				request = new HttpGet(poolUrl);
+		    	
+		    				try{
+		    					result = httpClient.execute(request, handler);
+		    					if(result.contains("invalid") && result.contains("etcpasswd")){
+		    						result = "";
+		    					}
+		    				} catch (Exception e){
+		    					//nothing
+		    				}
 	    				}
+	    				
 	    				minerService.addJsonData(apiKey, result);
 	    			}
 	    			if (cursor != null && !cursor.isClosed()) {

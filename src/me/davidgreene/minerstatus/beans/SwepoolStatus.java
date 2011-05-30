@@ -25,7 +25,7 @@ public class SwepoolStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol1() {
-		return balance;
+		return getBalance();
 	}
 
 	@Override
@@ -63,7 +63,8 @@ public class SwepoolStatus implements Status, Serializable {
 	}
 
 	public String getBalance() {
-		return balance;
+		BigDecimal balanceDecimal = new BigDecimal(balance).setScale(6, BigDecimal.ROUND_HALF_UP);
+		return balanceDecimal.toString();
 	}
 
 	public void setBalance(String balance) {

@@ -40,6 +40,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
     	radioList.add((RadioButton) findViewById(R.id.radio_btcguild));
     	radioList.add((RadioButton) findViewById(R.id.radio_bitclockers));
     	radioList.add((RadioButton) findViewById(R.id.radio_swepool));
+    	radioList.add((RadioButton) findViewById(R.id.radio_mtred));
 
     	for(RadioButton radio : radioList){
     		radio.setOnClickListener(radio_listener);
@@ -75,6 +76,9 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 	        	minerNameLabel.setText("API Key");
 	        } else if (rb.getText().equals("Swepool")){
 	        	poolToAdd = "swepool";
+	        	minerNameLabel.setText("API Key");
+	        } else if (rb.getText().equals("Mt. Red")){
+	        	poolToAdd = "mtred";
 	        	minerNameLabel.setText("API Key");
 	        }
 	        minerNameLabel.setVisibility(TextView.VISIBLE);
@@ -118,7 +122,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 				}
 			}
 			return Boolean.TRUE;
-		} else if(pool.equals("bitclockers") || pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool")){
+		} else if(pool.equals("bitclockers") || pool.equals("mtred") || pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c)){
 					return Boolean.FALSE;

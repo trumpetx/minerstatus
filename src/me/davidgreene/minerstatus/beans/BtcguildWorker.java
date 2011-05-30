@@ -1,6 +1,7 @@
 package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class BtcguildWorker implements Serializable {
 
@@ -9,7 +10,7 @@ public class BtcguildWorker implements Serializable {
 	 */
 	private static final long serialVersionUID = -6917436321008955505L;
 	
-	private Double hash_rate;
+	private BigDecimal hash_rate;
 	private Integer round_shares;
 	private Integer round_stales;
 	private Integer reset_shares;
@@ -20,10 +21,10 @@ public class BtcguildWorker implements Serializable {
 	private String worker_name;
 	private Integer blocks_found;
 	
-	public Double getHash_rate() {
-		return hash_rate;
+	public BigDecimal getHash_rate() {
+		return hash_rate.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
-	public void setHash_rate(Double hash_rate) {
+	public void setHash_rate(BigDecimal hash_rate) {
 		this.hash_rate = hash_rate;
 	}
 	public Integer getRound_shares() {

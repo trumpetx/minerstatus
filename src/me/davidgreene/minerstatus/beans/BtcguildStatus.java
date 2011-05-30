@@ -1,6 +1,7 @@
 package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,13 +29,13 @@ public class BtcguildStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol2() {
-		Double hashRate = 0D;
+		BigDecimal hashRate = BigDecimal.ZERO;
 		Iterator it = workers.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			pairs.getKey();
 			BtcguildWorker worker = (BtcguildWorker) pairs.getValue();
-			hashRate += worker.getHash_rate();
+			hashRate = hashRate.add(worker.getHash_rate());
 		}
 		return hashRate.toString();
 	}
