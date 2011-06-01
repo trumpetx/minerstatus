@@ -103,13 +103,13 @@ public class BitpoolUser implements Serializable {
 		this.efficiency = efficiency;
 	}
 	public Long getRequested() {
-		return requested;
+		return (requested == null) ? 0 : requested;
 	}
 	public void setRequested(Long requested) {
 		this.requested = requested;
 	}
 	public Long getSubmitted() {
-		return submitted;
+		return (submitted == null) ? 0 : submitted;
 	}
 	public void setSubmitted(Long submitted) {
 		this.submitted = submitted;

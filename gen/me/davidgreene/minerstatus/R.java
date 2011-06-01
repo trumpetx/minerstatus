@@ -23,14 +23,17 @@ public final class R {
         public static final int addMinerLayout=0x7f050001;
         public static final int addMinerScrollView=0x7f050000;
         public static final int add_miner=0x7f050012;
-        public static final int deleteMinerButton=0x7f050020;
-        public static final int detailedView=0x7f05001f;
+        public static final int deleteMinerButton=0x7f050023;
+        public static final int deleteMinerButtonOptionsMenu=0x7f05001f;
+        public static final int deleteSpinnerLabel=0x7f05001d;
+        public static final int detailedView=0x7f050022;
         public static final int fetch_status=0x7f050013;
         public static final int mainMinerScrollView=0x7f05000e;
         public static final int mainScreen=0x7f05000f;
         public static final int minerDirections=0x7f05000d;
         public static final int minerName=0x7f05000b;
         public static final int minerNameLabel=0x7f05000a;
+        public static final int miner_delete_spinner=0x7f05001e;
         public static final int mtGoxButtonLabel=0x7f050018;
         public static final int mtGoxLayout=0x7f050010;
         public static final int mtGoxToggle=0x7f050019;
@@ -49,8 +52,8 @@ public final class R {
         public static final int radio_swepool=0x7f050009;
         public static final int statusLayout=0x7f050011;
         public static final int themeSpinnerLabel=0x7f05001a;
-        public static final int viewMinerLayout=0x7f05001e;
-        public static final int viewMinerScrollView=0x7f05001d;
+        public static final int viewMinerLayout=0x7f050021;
+        public static final int viewMinerScrollView=0x7f050020;
     }
     public static final class layout {
         public static final int addminer1=0x7f030000;
@@ -64,6 +67,7 @@ public final class R {
         public static final int about=0x7f040003;
         public static final int add_miner=0x7f040001;
         public static final int app_name=0x7f040000;
+        public static final int deleteMinerLabelOptionsMenu=0x7f04000b;
         public static final int delete_miner=0x7f040006;
         public static final int donationAddress=0x7f040005;
         public static final int donationText=0x7f040004;

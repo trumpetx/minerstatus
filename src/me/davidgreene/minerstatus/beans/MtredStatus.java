@@ -33,12 +33,14 @@ public class MtredStatus implements Status, Serializable {
 	@Override
 	public String getDisplayCol2() {
 		BigDecimal hashRate = new BigDecimal("0");
-		Iterator it = workers.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pairs = (Map.Entry)it.next();
-			pairs.getKey();
-			MtredWorker worker = (MtredWorker) pairs.getValue();
-			hashRate = hashRate.add(worker.getMhash().setScale(2, BigDecimal.ROUND_HALF_UP));
+		if (workers != null){
+			Iterator it = workers.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry)it.next();
+				pairs.getKey();
+				MtredWorker worker = (MtredWorker) pairs.getValue();
+				hashRate = hashRate.add(worker.getMhash().setScale(2, BigDecimal.ROUND_HALF_UP));
+			}
 		}
 		return hashRate.toString();
 	}

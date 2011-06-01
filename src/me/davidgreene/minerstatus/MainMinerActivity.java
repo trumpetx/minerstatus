@@ -46,6 +46,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -401,7 +402,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		    						result = "";
 		    					}
 		    				} catch (Exception e){
-		    					//nothing
+		    					e.printStackTrace();
 		    				}
 	    				}
 	    				
@@ -418,7 +419,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
 	    		return Boolean.TRUE;
 	    	}
-
+	    
 	    protected void onProgressUpdate(Integer... progress) {
 	    	setProgress(progress[0]);
 	    }

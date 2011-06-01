@@ -12,8 +12,8 @@ public class MinerStatusConstants {
 	public static final Map<String,String> POOL_URLS = new HashMap<String,String>(8);
 	static{
 		POOL_URLS.put("bitcoinpool", "http://www.bitcoinpool.com/user.php?json=1&u=%MINER%");
-		POOL_URLS.put("slush", "http://mining.bitcoin.cz/accounts/profile/json/%MINER%");
-		POOL_URLS.put("deepbit", "http://deepbit.net/api/%MINER%");
+		POOL_URLS.put("slush", "https://mining.bitcoin.cz/accounts/profile/json/%MINER%");
+		POOL_URLS.put("deepbit", "https://deepbit.net/api/%MINER%");
 		POOL_URLS.put("btcmine", "http://btcmine.com/api/getstats/%MINER%/");
 		POOL_URLS.put("btcguild", "http://www.btcguild.com/api.php?api_key=%MINER%");
 		POOL_URLS.put("bitclockers", "http://bitclockers.com/?action=api&cmd=%MINER%");

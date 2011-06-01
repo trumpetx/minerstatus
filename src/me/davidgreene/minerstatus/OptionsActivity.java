@@ -1,10 +1,16 @@
 package me.davidgreene.minerstatus;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -55,8 +61,50 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
     	
     	lightTheme.setOnClickListener(radioListener);
     	lightTheme.setTextColor(color);
+    	
+    	final Spinner spinner = (Spinner) findViewById(R.id.miner_delete_spinner);
+    	populateSpinner(spinner);
+        Button deleteMinerButton = (Button) findViewById(R.id.deleteMinerButtonOptionsMenu);
+        deleteMinerButton.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					if (spinner.getSelectedItem() == null){
+						Toast.makeText(getApplicationContext(), "You cannot delete nothing!?  Or can you?",
+								Toast.LENGTH_LONG).show();
+						return;
+					}
+					AlertDialog.Builder alert = new AlertDialog.Builder(OptionsActivity.this);
+					alert.setTitle("Remove " + (CharSequence)spinner.getSelectedItem() + "?");
+					alert.setPositiveButton("Remove", new DialogInterface.OnClickListener() {	
+						public void onClick(DialogInterface dialog, int whichButton) {
+							Toast.makeText(getApplicationContext(), (CharSequence)spinner.getSelectedItem() +" removed.",
+									Toast.LENGTH_LONG).show();
+							minerService.deleteMiner(((CharSequence)spinner.getSelectedItem()).toString());
+							populateSpinner(spinner);
+						}
+					});		
+					alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							dialog.cancel();
+						}
+					});				
+					alert.show();  
+				}
+			});
         
 	}	
+	
+	private void populateSpinner(Spinner spinner){
+    	Cursor cur = minerService.getMiners();
+    	ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item);
+    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		while(cur.moveToNext()){
+			String miner = cur.getString(0);     
+			CharSequence seq = miner;
+			adapter.add(miner);
+		}
+		spinner.setAdapter(adapter);
+		cur.close();
+	}
 	
 	private OnClickListener radioListener = new OnClickListener() {
 	    public void onClick(View v) {

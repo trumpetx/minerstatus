@@ -44,8 +44,24 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
         ScrollView scrollView = (ScrollView) findViewById(R.id.viewMinerScrollView);
         scrollView.setBackgroundColor(bgColor);
         
-        
-        populateDetailedView();
+        try{
+        	populateDetailedView();
+        } catch (final NullPointerException e){
+			AlertDialog.Builder alert = new AlertDialog.Builder(ViewMinerActivity.this);
+			alert.setTitle("MinerStatus broke something!");
+			alert.setPositiveButton("Ignore & Continue", new DialogInterface.OnClickListener() {	
+				public void onClick(DialogInterface dialog, int whichButton) {
+					Toast.makeText(getApplicationContext(), "I ate the error for you (YUM).  If you would like to help debug MinerStatus, throw the Exception once and make sure you report it.  Thanks!",
+							Toast.LENGTH_LONG).show();
+				}
+			});		
+			alert.setNegativeButton("Throw Exception", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					throw e;
+				}
+			});				
+			alert.show();  
+        }
         
         Button deleteMinerButton = (Button) findViewById(R.id.deleteMinerButton);
         deleteMinerButton.setOnClickListener(new OnClickListener() {
@@ -124,10 +140,12 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Historical", status.getUser().getHistorical()));
 		tl.addView(renderRow("Unpaid", status.getUser().getUnpaid()));
 		StringBuffer sb = new StringBuffer();
-		for(int i=0;i<status.getUser().getSolvedBlocks().length; i++){
-			sb.append(status.getUser().getSolvedBlocks()[i]);
-			if(i < status.getUser().getSolvedBlocks().length-1){
-				sb.append(',');
+		if (status.getUser().getSolvedBlocks() != null){
+			for(int i=0;i<status.getUser().getSolvedBlocks().length; i++){
+				sb.append(status.getUser().getSolvedBlocks()[i]);
+				if(i < status.getUser().getSolvedBlocks().length-1){
+					sb.append(',');
+				}
 			}
 		}
 		tl.addView(renderRow("Solved Blocks", sb.toString()));
@@ -137,19 +155,20 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("",""));
 	}
 	private void render(DeepbitStatus status, TableLayout tl){
-		//tl.addView(renderRow("Api Key", status.getApiKey()));
 		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
 		tl.addView(renderRow("Confirmed Reward", status.getConfirmed_reward().toString()));
 		tl.addView(renderRow("Ipa", status.getIpa().toString()));
 		tl.addView(renderRow("Worker(s):",""));
-	    for( String key : status.getWorkers().keySet() ){
-	    	WorkerStatus workerStatus = status.getWorkers().get(key);
-	    	tl.addView(renderRow("",key));
-	    	tl.addView(renderRow("Alive",workerStatus.getAlive().toString()));
-	    	tl.addView(renderRow("Shares",workerStatus.getShares().toString()));
-	    	tl.addView(renderRow("Stales",workerStatus.getStales().toString()));
-	    	tl.addView(renderRow("",""));
-	    }
+		if(status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	WorkerStatus workerStatus = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Alive",workerStatus.getAlive().toString()));
+		    	tl.addView(renderRow("Shares",workerStatus.getShares().toString()));
+		    	tl.addView(renderRow("Stales",workerStatus.getStales().toString()));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
 	}
 	
 	private void render(BtcguildStatus status, TableLayout tl){
@@ -159,18 +178,20 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Estimated Rewards", status.getUser().getEstimated_rewards().toString()));
 		tl.addView(renderRow("Payouts", status.getUser().getPayouts().toString()));
 		tl.addView(renderRow("Worker(s):",""));
-	    for( String key : status.getWorkers().keySet() ){
-	    	BtcguildWorker worker = status.getWorkers().get(key);
-	    	tl.addView(renderRow("",worker.getWorker_name()));
-	    	tl.addView(renderRow("Hashrate",worker.getHash_rate().toString()));
-	    	tl.addView(renderRow("Last Share",worker.getLast_share()));
-	    	tl.addView(renderRow("Round Shares",worker.getRound_shares().toString()));
-	    	tl.addView(renderRow("Round Stales",worker.getRound_stales().toString()));
-	    	tl.addView(renderRow("Total Shares",worker.getTotal_shares().toString()));
-	    	tl.addView(renderRow("Total Stales",worker.getTotal_stales().toString()));
-	    	tl.addView(renderRow("Blocks Found",worker.getBlocks_found().toString()));
-	    	tl.addView(renderRow("",""));
-	    }
+		if (status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	BtcguildWorker worker = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",worker.getWorker_name()));
+		    	tl.addView(renderRow("Hashrate",worker.getHash_rate().toString()));
+		    	tl.addView(renderRow("Last Share",worker.getLast_share()));
+		    	tl.addView(renderRow("Round Shares",worker.getRound_shares().toString()));
+		    	tl.addView(renderRow("Round Stales",worker.getRound_stales().toString()));
+		    	tl.addView(renderRow("Total Shares",worker.getTotal_shares().toString()));
+		    	tl.addView(renderRow("Total Stales",worker.getTotal_stales().toString()));
+		    	tl.addView(renderRow("Blocks Found",worker.getBlocks_found().toString()));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
 	}	
 	
 	private void render(SlushStatus status, TableLayout tl){
@@ -203,14 +224,16 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Balance", status.getBalance().toString()));
 		tl.addView(renderRow("Payout", status.getPayout()));
 		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
-	    for( String key : status.getWorkers().keySet() ){
-	    	BitclockersWorker worker = status.getWorkers().get(key);
-	    	tl.addView(renderRow("",key));
-	    	tl.addView(renderRow("Shares",worker.getShares().toString()));
-	    	tl.addView(renderRow("Stale",worker.getStale().toString()));
-	    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
-	    	tl.addView(renderRow("",""));
-	    }		
+		if (status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	BitclockersWorker worker = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Shares",worker.getShares().toString()));
+		    	tl.addView(renderRow("Stale",worker.getStale().toString()));
+		    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
 	}
 	
 	private void render(MtredStatus status, TableLayout tl){
@@ -227,14 +250,15 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Server Round Shares", status.getServer().getRoundshares().toString()));
 		tl.addView(renderRow("Server Found Block", status.getServer().getFoundblock().toString()));
 		tl.addView(renderRow("Server Workers", status.getServer().getWorkers().toString()));
-		
-	    for( String key : status.getWorkers().keySet() ){
-	    	MtredWorker worker = status.getWorkers().get(key);
-	    	tl.addView(renderRow("",key));
-	    	tl.addView(renderRow("Round Solved",worker.getRsolved().toString()));
-	    	tl.addView(renderRow("Hashrate",worker.getMhash().toString()));
-	    	tl.addView(renderRow("",""));
-	    }		
+		if (status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	MtredWorker worker = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Round Solved",worker.getRsolved().toString()));
+		    	tl.addView(renderRow("Hashrate",worker.getMhash().toString()));
+		    	tl.addView(renderRow("",""));
+		    }		
+		}
 	}	
 	
 	private void render(SwepoolStatus status, TableLayout tl){
@@ -242,14 +266,15 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Address", status.getAddress()));
 		tl.addView(renderRow("PPS", status.getPaypershare().toString()));
 		tl.addView(renderRow("Pool Speed", status.getPool_speed()));
-		
-	    for( SwepoolWorker worker : status.getWorkers() ){
-	    	tl.addView(renderRow("",worker.getWorker()));
-	    	tl.addView(renderRow("Shares",worker.getShares()));
-	    	tl.addView(renderRow("Stales",worker.getStales()));
-	    	tl.addView(renderRow("Hash Speed",worker.getHashspeed()));
-	    	tl.addView(renderRow("",""));
-	    }		
+		if (status.getWorkers() != null){
+		    for( SwepoolWorker worker : status.getWorkers() ){
+		    	tl.addView(renderRow("",worker.getWorker()));
+		    	tl.addView(renderRow("Shares",worker.getShares()));
+		    	tl.addView(renderRow("Stales",worker.getStales()));
+		    	tl.addView(renderRow("Hash Speed",worker.getHashspeed()));
+		    	tl.addView(renderRow("",""));
+		    }		
+		}
 	}
 	
 }

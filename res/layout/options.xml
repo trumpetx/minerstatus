@@ -42,6 +42,24 @@
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
 	          android:text="Light Theme" />
-	    </RadioGroup>           
+	    </RadioGroup>  
+		<TextView  android:id="@+id/deleteSpinnerLabel"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content" 
+	        android:text="@+string/deleteMinerLabelOptionsMenu"  
+	        android:layout_marginLeft="20px"
+	        android:layout_marginTop="30px"
+	        />  	    
+		<Spinner
+		 android:id="@+id/miner_delete_spinner"
+		 android:layout_width="fill_parent"
+		 android:layout_height="wrap_content"
+		 android:drawSelectorOnTop="false"/>	     
+		<Button 
+		 android:id ="@+id/deleteMinerButtonOptionsMenu"
+		 android:text="Delete"
+		 android:layout_width="fill_parent"
+		 android:layout_height="fill_parent"
+		/>         
 	</LinearLayout>
 </ScrollView>

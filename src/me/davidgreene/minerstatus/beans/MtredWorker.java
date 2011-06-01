@@ -13,13 +13,13 @@ public class MtredWorker implements Serializable {
 	private String rsolved;
 	private BigDecimal mhash;
 	public String getRsolved() {
-		return rsolved;
+		return (rsolved == null) ? "0" : rsolved;
 	}
 	public void setRsolved(String rsolved) {
 		this.rsolved = rsolved;
 	}
 	public BigDecimal getMhash() {
-		return mhash.setScale(2, BigDecimal.ROUND_HALF_UP);
+		return (mhash == null) ? BigDecimal.ZERO : mhash.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 	public void setMhash(BigDecimal mhash) {
 		this.mhash = mhash;

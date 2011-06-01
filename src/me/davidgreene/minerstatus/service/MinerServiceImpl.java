@@ -105,10 +105,16 @@ public class MinerServiceImpl implements MinerService {
 	}
 
 
-	private final String SELECT_MINERS = "SELECT miner, errors FROM miners WHERE pool=?";
+	private final String SELECT_MINERS_BY_POOL = "SELECT miner, errors FROM miners WHERE pool=?";
 	
 	public Cursor getMiners(String pool) {
-		return getDBw().rawQuery(SELECT_MINERS, new String[]{pool});
+		return getDBw().rawQuery(SELECT_MINERS_BY_POOL, new String[]{pool});
+	}
+
+	private final String SELECT_MINERS = "SELECT miner FROM miners";
+	
+	public Cursor getMiners() {
+		return getDBw().rawQuery(SELECT_MINERS, new String[]{});
 	}
 
 }
