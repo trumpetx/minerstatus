@@ -62,6 +62,9 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
     	lightTheme.setOnClickListener(radioListener);
     	lightTheme.setTextColor(color);
     	
+    	TextView minerDeleteSpinnerLabel = (TextView) findViewById(R.id.deleteSpinnerLabel);
+    	minerDeleteSpinnerLabel.setTextColor(color);
+    	
     	final Spinner spinner = (Spinner) findViewById(R.id.miner_delete_spinner);
     	populateSpinner(spinner);
         Button deleteMinerButton = (Button) findViewById(R.id.deleteMinerButtonOptionsMenu);
