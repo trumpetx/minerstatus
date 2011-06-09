@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "minerstatus.db";
 
     public DbOpenHelper(Context context) {
@@ -21,7 +21,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     	db.execSQL("CREATE TABLE config (key TEXT PRIMARY KEY, value TEXT)");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('theme', 'dark')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.mtgox', 'true')");
-    	db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT)");
+    	db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT, url_index INTEGER)");
     }
 
 	@Override
@@ -54,5 +54,9 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 			db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT)");
 			oldVersion = 5;
 		}
+		if (oldVersion == 5){
+			db.execSQL("ALTER TABLE miner_data ADD COLUMN url_index INTEGER DEFAULT 0");
+			oldVersion = 6;
+		}		
 	}
 }

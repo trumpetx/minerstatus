@@ -61,25 +61,26 @@ public class MinerServiceImpl implements MinerService {
 	}
 
 	
-	public void addJsonData(String miner, String jsonData) {
+	public void addJsonData(String miner, String jsonData, Integer poolIndex) {
 		ContentValues values = new ContentValues();
 		values.put("miner", miner);
 		values.put("json", jsonData);
+		values.put("pool_index", poolIndex);
 		values.put("date_long", System.currentTimeMillis());		
 		getDBw().insert("miner_data", null, values);
 	}
 
 	//public final String GET_LATEST_MINER_DATA = "SELECT json, date_long FROM miner_data WHERE date_long=(SELECT MAX(date_long) FROM miner_data WHERE miner=?) AND miner=?";
 	//Select(max) columns need to be indexed, using an alternate method
-	public final String GET_LATEST_MINER_DATA = "SELECT json, date_long FROM miner_data WHERE miner=? ORDER BY date_long DESC";
+	public final String GET_LATEST_MINER_DATA = "SELECT json, date_long FROM miner_data WHERE miner=? and pool_index = ? ORDER BY date_long DESC";
 	public final String CLEAR_DAY_OLD_DATA = "DELETE FROM miner_data WHERE miner=? and date_long < ?";
-	public Result readJsonData(String miner) {
+	public Result readJsonData(String miner, Integer poolIndex) {
 		Cursor cursor=null;
 		try{
 			Long oneDayAgo = System.currentTimeMillis() - 86400000L;
 			cursor = getDBw().rawQuery(CLEAR_DAY_OLD_DATA, new String[]{miner, oneDayAgo.toString()});
 			
-			cursor = getDBw().rawQuery(GET_LATEST_MINER_DATA, new String[]{miner});
+			cursor = getDBw().rawQuery(GET_LATEST_MINER_DATA, new String[]{miner, poolIndex.toString()});
 			
 			//Only select the first row since we're going for the max(date_long)
 			if (cursor.moveToNext()){
@@ -105,7 +106,7 @@ public class MinerServiceImpl implements MinerService {
 	}
 
 
-	private final String SELECT_MINERS_BY_POOL = "SELECT miner, errors FROM miners WHERE pool=?";
+	private final String SELECT_MINERS_BY_POOL = "SELECT miner, errors, pool_index FROM miners WHERE pool=? GROUP BY pool ORDER BY pool_index ASC";
 	
 	public Cursor getMiners(String pool) {
 		return getDBw().rawQuery(SELECT_MINERS_BY_POOL, new String[]{pool});

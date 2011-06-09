@@ -17,6 +17,7 @@ public class BtcMine implements Serializable, Status {
 	private String unconfirmed_bounty;
 	private String hashrate;
 	private String total_payout;
+	private BtcMineWorker[] miners;
 	private String apiKey;
 	
 	@Override
@@ -129,6 +130,14 @@ public class BtcMine implements Serializable, Status {
 	@Override
 	public String getDisplayCol2Label() {
 		return "Total Payout";
+	}
+
+	public BtcMineWorker[] getMiners() {
+		return miners;
+	}
+
+	public void setMiners(BtcMineWorker[] miners) {
+		this.miners = miners;
 	}
 
 }

@@ -13,7 +13,10 @@ import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Stack;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -46,7 +49,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -184,7 +186,8 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	
 	private void getUserStatusUpdate(){
 		Log.d(tag, "Status Update Start");
-		
+		Stack<TableRow> tableRowsToAdd = new Stack<TableRow>();
+		Stack<Status> statusStack = new Stack<Status>();
 		TableLayout mainTableLayout = (TableLayout) findViewById(R.id.statusLayout);
 		mainTableLayout.removeAllViews();
 		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
@@ -195,7 +198,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 			mtGoxLayout.addView(createNewRow(new String[] {"Vol","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
 			try{
 				Gson gson = new Gson();
-				Result mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY);
+				Result mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY, 0);
 				MtGox mtGox = gson.fromJson(mtGoxResult.getData(), MtGox.class);
 				mtGoxLayout.addView(createNewRow(new String[] {mtGox.getTicker().getVol().toString(),
 						mtGox.getTicker().getLast().toString(), 
@@ -213,14 +216,24 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		Cursor poolCursor = minerService.getPools();
 		while(poolCursor.moveToNext()){
 			String pool = poolCursor.getString(0);
-			
 	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
 	        Boolean foundActiveRow = Boolean.FALSE;
 	        Result minerResult = null;
+	        int currentPoolIndex = 0;
+	        
+	        String lastApiKey = "";
 			while(cursor.moveToNext()) {
 				Integer errors = cursor.getInt(1);
 				String apiKey = cursor.getString(0);
-				minerResult = minerService.readJsonData(apiKey);
+				int poolIndex = cursor.getInt(2); //figure out how to make this pool thing work
+				Boolean multiUrlMiner = Boolean.FALSE;
+				
+				if (lastApiKey.equals(apiKey)){
+					multiUrlMiner = Boolean.TRUE;
+				}
+				lastApiKey = apiKey;
+				
+				minerResult = minerService.readJsonData(apiKey, poolIndex);
 				Status status = null;
 				try{
 					if (minerResult == null || minerResult.getData().equals("")){
@@ -252,9 +265,23 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 			        mainTableLayout.addView(createNewRow(new String[] {status.getUsernameLabel(), status.getDisplayCol1Label(), status.getDisplayCol2Label()}, Boolean.FALSE));
 				}
 				
-				mainTableLayout.addView(createNewRow(status));
-
+				if (multiUrlMiner){
+					tableRowsToAdd.pop();
+					Status oldStatus = statusStack.pop();
+					if (oldStatus.getClass().equals(status.getClass())){
+						//figure out how to merge the two objects.
+					}
+				}
+				
+				//Add to stack so we can pop off the last one if needed
+				tableRowsToAdd.add(createNewRow(status));
+				statusStack.add(status);
 			}
+			
+			for(TableRow tr : tableRowsToAdd){
+				mainTableLayout.addView(tr);
+			}
+			
 			if (cursor != null && !cursor.isClosed()) {
 				cursor.close();
 			}		
@@ -337,9 +364,6 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
 	    		trustAllHosts();
 	    		if (showMtGox){
-	    			
-	    			
-	    			
 	    			try{
 	    				URL url = new URL(MT_GOX_PUBLIC);
 	                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
@@ -355,58 +379,55 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    				}
 	    				
 	    				
-	    				minerService.addJsonData(SEKRET_MTGOX_KEY, httpsResponse.toString());
+	    				minerService.addJsonData(SEKRET_MTGOX_KEY, httpsResponse.toString(), 0);
 	    			} catch (Exception e){  
 	    				Log.d(tag, e.getMessage());
 	    			}			
 	    		}
 	    			
 	    		Cursor poolCursor = minerService.getPools();
-	    		int totalPoolRows = poolCursor.getCount()+1;
-	    		int i = 1;
 	    		while(poolCursor.moveToNext()){
 	    			String pool = poolCursor.getString(0);
-	    			
-	    			publishProgress((int) ((i / (float) totalPoolRows) * 100));
-	    			i++;
+
 	    			
 	    	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
 	    			while(cursor.moveToNext()) {
 	    				
 	    				String apiKey = cursor.getString(0);
-	    				String poolUrl = POOL_URLS.get(pool).replace("%MINER%", apiKey);
-	    				if (poolUrl.substring(0, 5).equals("https")){
-	    					try {
-			    				URL url = new URL(poolUrl);
-			                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-			                    https.setHostnameVerifier(DO_NOT_VERIFY);
-			    				https.connect();
-			    				InputStream is = https.getInputStream();
-			    				
-			    				BufferedReader r = new BufferedReader(new InputStreamReader(is));
-			    				StringBuilder httpsResponse = new StringBuilder();
-			    				String line;
-			    				while ((line = r.readLine()) != null) {
-			    					httpsResponse.append(line);
-			    				}
-			    				result = httpsResponse.toString();
-	    					} catch (Exception e){
-	    						//do nothing
-	    					}
-	    				} else{
-		    				request = new HttpGet(poolUrl);
-		    	
-		    				try{
-		    					result = httpClient.execute(request, handler);
-		    					if(result.contains("invalid") && result.contains("etcpasswd")){
-		    						result = "";
+	    				List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
+	    				for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
+		    				if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
+		    					try {
+				    				URL url = new URL(poolUrls.get(poolIndex));
+				                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+				                    https.setHostnameVerifier(DO_NOT_VERIFY);
+				    				https.connect();
+				    				InputStream is = https.getInputStream();
+				    				
+				    				BufferedReader r = new BufferedReader(new InputStreamReader(is));
+				    				StringBuilder httpsResponse = new StringBuilder();
+				    				String line;
+				    				while ((line = r.readLine()) != null) {
+				    					httpsResponse.append(line);
+				    				}
+				    				result = httpsResponse.toString();
+		    					} catch (Exception e){
+		    						e.printStackTrace();
 		    					}
-		    				} catch (Exception e){
-		    					e.printStackTrace();
+		    				} else{
+			    				request = new HttpGet(poolUrls.get(poolIndex));
+			    	
+			    				try{
+			    					result = httpClient.execute(request, handler);
+			    					if(result.contains("invalid") && result.contains("etcpasswd")){
+			    						result = "";
+			    					}
+			    				} catch (Exception e){
+			    					e.printStackTrace();
+			    				}
 		    				}
+		    				minerService.addJsonData(apiKey, result, poolIndex);
 	    				}
-	    				
-	    				minerService.addJsonData(apiKey, result);
 	    			}
 	    			if (cursor != null && !cursor.isClosed()) {
 	    				cursor.close();
@@ -419,15 +440,5 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
 	    		return Boolean.TRUE;
 	    	}
-	    
-	    protected void onProgressUpdate(Integer... progress) {
-	    	setProgress(progress[0]);
-	    }
-
-	    protected void onPostExecute(Boolean result) {
-	        getUserStatusUpdate();
-	    }
 	}
-
-
 }

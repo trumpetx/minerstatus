@@ -24,6 +24,9 @@ public class BtcguildStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol1() {
+		if (user == null || user.getConfirmed_rewards() == null){
+			return "";
+		}
 		return user.getConfirmed_rewards().toString();
 	}
 
