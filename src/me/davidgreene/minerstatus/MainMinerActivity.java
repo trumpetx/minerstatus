@@ -64,28 +64,22 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 public class MainMinerActivity extends AbstractMinerStatusActivity {
-    
+
     private static final String tag = "TX";
 
-    private boolean hasNetworkConnection(){
-        boolean HaveConnectedWifi = false;
-        boolean HaveConnectedMobile = false;
+	private boolean hasNetworkConnection() {
+		Log.d(tag, "Checking network state");
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo ni = (NetworkInfo) cm.getActiveNetworkInfo();
+		if (ni.getState() == NetworkInfo.State.CONNECTED) {
+			Log.d(tag, "Network is connected");
+			return true;
+		}
+		Log.d(tag, "Network is not connected");
+		return false;
+	}
 
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo)
-        {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
-                if (ni.isConnected())
-                    HaveConnectedWifi = true;
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (ni.isConnected())
-                    HaveConnectedMobile = true;
-        }
-        return HaveConnectedWifi || HaveConnectedMobile;
-    }
 
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
