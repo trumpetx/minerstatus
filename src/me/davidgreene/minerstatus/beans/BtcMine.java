@@ -2,7 +2,7 @@ package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
 
-public class BtcMine implements Serializable, Status {
+public class BtcMine implements Serializable, Status, Mergable {
 
 	/**
 	 * 
@@ -19,6 +19,8 @@ public class BtcMine implements Serializable, Status {
 	private String total_payout;
 	private BtcMineWorker[] miners;
 	private String apiKey;
+	private Boolean online_status;
+	private String total_24h;
 	
 	@Override
 	public String getUsername() {
@@ -27,12 +29,12 @@ public class BtcMine implements Serializable, Status {
 
 	@Override
 	public String getDisplayCol1() {
-		return hashrate;
+		return (hashrate == null) ? "" : hashrate;
 	}
 
 	@Override
 	public String getDisplayCol2() {
-		return total_payout;
+		return (total_payout == null) ? "" : total_payout;
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public String getTotal_bounty() {
-		return total_bounty;
+		return (total_bounty == null) ? "" : total_bounty;
 	}
 
 	public void setTotal_bounty(String total_bounty) {
@@ -54,7 +56,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public String getConfirmed_bounty() {
-		return confirmed_bounty;
+		return (confirmed_bounty == null) ? "" : confirmed_bounty;
 	}
 
 	public void setConfirmed_bounty(String confirmed_bounty) {
@@ -62,7 +64,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public Integer getSolved_blocks() {
-		return solved_blocks;
+		return (solved_blocks == null) ? 0 : solved_blocks;
 	}
 
 	public void setSolved_blocks(Integer solved_blocks) {
@@ -70,7 +72,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public Integer getRound_shares() {
-		return round_shares;
+		return (round_shares == null) ? 0 : round_shares;
 	}
 
 	public void setRound_shares(Integer round_shares) {
@@ -78,7 +80,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public String getEstimated_bounty() {
-		return estimated_bounty;
+		return (estimated_bounty == null) ? "" : estimated_bounty;
 	}
 
 	public void setEstimated_bounty(String estimated_bounty) {
@@ -86,7 +88,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public Integer getSolved_shares() {
-		return solved_shares;
+		return (solved_shares == null) ? 0 : solved_shares;
 	}
 
 	public void setSolved_shares(Integer solved_shares) {
@@ -94,7 +96,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public String getUnconfirmed_bounty() {
-		return unconfirmed_bounty;
+		return (unconfirmed_bounty == null) ? "" : unconfirmed_bounty;
 	}
 
 	public void setUnconfirmed_bounty(String unconfirmed_bounty) {
@@ -102,7 +104,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public String getHashrate() {
-		return hashrate;
+		return (hashrate == null) ? "" : hashrate;
 	}
 
 	public void setHashrate(String hashrate) {
@@ -110,7 +112,7 @@ public class BtcMine implements Serializable, Status {
 	}
 
 	public String getTotal_payout() {
-		return total_payout;
+		return (total_payout == null) ? "" : total_payout;
 	}
 
 	public void setTotal_payout(String total_payout) {
@@ -138,6 +140,56 @@ public class BtcMine implements Serializable, Status {
 
 	public void setMiners(BtcMineWorker[] miners) {
 		this.miners = miners;
+	}
+
+	@Override
+	public BtcMine mergeWith(Mergable object) {
+		if (object instanceof BtcMine){
+			BtcMine btcMine = (BtcMine) object;
+			if (btcMine.total_bounty != null)
+				this.total_bounty =  btcMine.total_bounty;
+			if (btcMine.confirmed_bounty != null)
+				this.confirmed_bounty =  btcMine.confirmed_bounty;
+			if (btcMine.solved_blocks != null)
+				this.solved_blocks =  btcMine.solved_blocks;
+			if (btcMine.round_shares != null)
+				this.round_shares =  btcMine.round_shares;
+			if (btcMine.estimated_bounty != null)
+				this.estimated_bounty =  btcMine.estimated_bounty;
+			if (btcMine.solved_shares != null)
+				this.solved_shares =  btcMine.solved_shares;
+			if (btcMine.unconfirmed_bounty != null)
+				this.unconfirmed_bounty =  btcMine.unconfirmed_bounty;
+			if (btcMine.hashrate != null)
+				this.hashrate =  btcMine.hashrate;
+			if (btcMine.total_payout != null)
+				this.total_payout =  btcMine.total_payout;
+			if (btcMine.miners != null)
+				this.miners =  btcMine.miners;
+			if (btcMine.online_status != null)
+				this.online_status =  btcMine.online_status;
+			if (btcMine.total_24h != null)
+				this.total_24h =  btcMine.total_24h;			
+			return this;
+		} else {
+			throw new RuntimeException("Cannot merge these two objects.");
+		}
+	}
+
+	public Boolean getOnline_status() {
+		return (online_status == null) ? Boolean.FALSE : online_status;
+	}
+
+	public void setOnline_status(Boolean online_status) {
+		this.online_status = online_status;
+	}
+
+	public String getTotal_24h() {
+		return (total_24h == null) ? "" : total_24h;
+	}
+
+	public void setTotal_24h(String total_24h) {
+		this.total_24h = total_24h;
 	}
 
 }

@@ -25,6 +25,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import me.davidgreene.minerstatus.beans.Mergable;
 import me.davidgreene.minerstatus.beans.MtGox;
 import me.davidgreene.minerstatus.beans.Result;
 import me.davidgreene.minerstatus.beans.Status;
@@ -41,7 +42,9 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -186,8 +189,6 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	
 	private void getUserStatusUpdate(){
 		Log.d(tag, "Status Update Start");
-		Stack<TableRow> tableRowsToAdd = new Stack<TableRow>();
-		Stack<Status> statusStack = new Stack<Status>();
 		TableLayout mainTableLayout = (TableLayout) findViewById(R.id.statusLayout);
 		mainTableLayout.removeAllViews();
 		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
@@ -198,8 +199,8 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 			mtGoxLayout.addView(createNewRow(new String[] {"Vol","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
 			try{
 				Gson gson = new Gson();
-				Result mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY, 0);
-				MtGox mtGox = gson.fromJson(mtGoxResult.getData(), MtGox.class);
+				List<Result> mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY);
+				MtGox mtGox = gson.fromJson(mtGoxResult.get(0).getData(), MtGox.class);
 				mtGoxLayout.addView(createNewRow(new String[] {mtGox.getTicker().getVol().toString(),
 						mtGox.getTicker().getLast().toString(), 
 						mtGox.getTicker().getHigh().toString(), 
@@ -218,29 +219,43 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 			String pool = poolCursor.getString(0);
 	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
 	        Boolean foundActiveRow = Boolean.FALSE;
-	        Result minerResult = null;
-	        int currentPoolIndex = 0;
+	        List<Result> minerResultList = null;
 	        
-	        String lastApiKey = "";
 			while(cursor.moveToNext()) {
 				Integer errors = cursor.getInt(1);
 				String apiKey = cursor.getString(0);
-				int poolIndex = cursor.getInt(2); //figure out how to make this pool thing work
-				Boolean multiUrlMiner = Boolean.FALSE;
 				
-				if (lastApiKey.equals(apiKey)){
-					multiUrlMiner = Boolean.TRUE;
-				}
-				lastApiKey = apiKey;
-				
-				minerResult = minerService.readJsonData(apiKey, poolIndex);
+				minerResultList = minerService.readJsonData(apiKey);
 				Status status = null;
 				try{
-					if (minerResult == null || minerResult.getData().equals("")){
+					if (minerResultList == null || minerResultList.isEmpty() || minerResultList.get(0).getData().equals("")){
 						throw new Exception("No JSON Data");
 					}
-					status = StatusObjectFactory.getStatusObject(minerResult.getData(), pool);
-					status.setApiKey(apiKey);
+					for(Result minerResult : minerResultList){
+						if (status == null){
+							status = StatusObjectFactory.getStatusObject(minerResult.getData(), pool);
+						} else {
+							try {
+								((Mergable) status).mergeWith((Mergable) StatusObjectFactory.getStatusObject(minerResult.getData(), pool));
+							} catch (final RuntimeException e){
+								AlertDialog.Builder alert = new AlertDialog.Builder(MainMinerActivity.this);
+								alert.setTitle("MinerStatus broke something!");
+								alert.setPositiveButton("Ignore & Continue", new DialogInterface.OnClickListener() {	
+									public void onClick(DialogInterface dialog, int whichButton) {
+										Toast.makeText(getApplicationContext(), "I ate the error for you (YUM).  If you would like to help debug MinerStatus, throw the Exception once and make sure you report it.  Thanks!",
+												Toast.LENGTH_LONG).show();
+									}
+								});		
+								alert.setNegativeButton("Throw Exception", new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int whichButton) {
+										throw e;
+									}
+								});				
+								alert.show();  
+							}
+						}
+						status.setApiKey(apiKey);
+					}
 				} catch (Exception e){
 					minerService.updateErrorCount(apiKey, (errors+1));
 					if (errors >= MAX_ERRORS){					
@@ -265,28 +280,15 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 			        mainTableLayout.addView(createNewRow(new String[] {status.getUsernameLabel(), status.getDisplayCol1Label(), status.getDisplayCol2Label()}, Boolean.FALSE));
 				}
 				
-				if (multiUrlMiner){
-					tableRowsToAdd.pop();
-					Status oldStatus = statusStack.pop();
-					if (oldStatus.getClass().equals(status.getClass())){
-						//figure out how to merge the two objects.
-					}
-				}
-				
 				//Add to stack so we can pop off the last one if needed
-				tableRowsToAdd.add(createNewRow(status));
-				statusStack.add(status);
-			}
-			
-			for(TableRow tr : tableRowsToAdd){
-				mainTableLayout.addView(tr);
+				mainTableLayout.addView(createNewRow(status));
 			}
 			
 			if (cursor != null && !cursor.isClosed()) {
 				cursor.close();
 			}		
-			if (minerResult != null){
-		        mainTableLayout.addView(createNewRow(new String[] {DateFormat.getTimeInstance(DateFormat.MEDIUM).format(minerResult.getDate())}, Boolean.TRUE));
+			if (minerResultList != null && !minerResultList.isEmpty()){
+		        mainTableLayout.addView(createNewRow(new String[] {DateFormat.getTimeInstance(DateFormat.MEDIUM).format(minerResultList.get(0).getDate())}, Boolean.TRUE));
 			}
 			mainTableLayout.addView(createNewRow(new String[] {""}, Boolean.FALSE));
 		}
@@ -398,7 +400,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    				for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
 		    				if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
 		    					try {
-				    				URL url = new URL(poolUrls.get(poolIndex));
+				    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
 				                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 				                    https.setHostnameVerifier(DO_NOT_VERIFY);
 				    				https.connect();
@@ -415,7 +417,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		    						e.printStackTrace();
 		    					}
 		    				} else{
-			    				request = new HttpGet(poolUrls.get(poolIndex));
+			    				request = new HttpGet(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
 			    	
 			    				try{
 			    					result = httpClient.execute(request, handler);
@@ -440,5 +442,10 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
 	    		return Boolean.TRUE;
 	    	}
+	    
+
+        protected void onPostExecute(Boolean result) {
+            getUserStatusUpdate();
+        }
 	}
 }

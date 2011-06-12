@@ -1,6 +1,10 @@
 package me.davidgreene.minerstatus.service;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import me.davidgreene.minerstatus.MinerStatusApp;
 import me.davidgreene.minerstatus.beans.Result;
@@ -72,23 +76,30 @@ public class MinerServiceImpl implements MinerService {
 
 	//public final String GET_LATEST_MINER_DATA = "SELECT json, date_long FROM miner_data WHERE date_long=(SELECT MAX(date_long) FROM miner_data WHERE miner=?) AND miner=?";
 	//Select(max) columns need to be indexed, using an alternate method
-	public final String GET_LATEST_MINER_DATA = "SELECT json, date_long FROM miner_data WHERE miner=? and pool_index = ? ORDER BY date_long DESC";
+	public final String GET_LATEST_MINER_DATA = "SELECT json, date_long, pool_index FROM miner_data WHERE miner=? ORDER BY date_long DESC";
 	public final String CLEAR_DAY_OLD_DATA = "DELETE FROM miner_data WHERE miner=? and date_long < ?";
-	public Result readJsonData(String miner, Integer poolIndex) {
+	public List<Result> readJsonData(String miner) {
 		Cursor cursor=null;
 		try{
 			Long oneDayAgo = System.currentTimeMillis() - 86400000L;
 			cursor = getDBw().rawQuery(CLEAR_DAY_OLD_DATA, new String[]{miner, oneDayAgo.toString()});
 			
-			cursor = getDBw().rawQuery(GET_LATEST_MINER_DATA, new String[]{miner, poolIndex.toString()});
+			cursor = getDBw().rawQuery(GET_LATEST_MINER_DATA, new String[]{miner});
 			
 			//Only select the first row since we're going for the max(date_long)
-			if (cursor.moveToNext()){
+			List<Result> jsonResultList = new LinkedList<Result>();
+			Set<Integer> poolIndexSet = new HashSet<Integer>();
+			while (cursor.moveToNext()){
+				if (poolIndexSet.contains(cursor.getInt(2))){
+					break;
+				}
+				poolIndexSet.add(cursor.getInt(2));
 				Result result = new Result();
 				result.setData(cursor.getString(0));
 				result.setDate(new Date(cursor.getLong(1)));
-				return result;
+				jsonResultList.add(result);
 			}
+			return jsonResultList;
 		} catch (Exception e){
 			Log.d(tag, e.getMessage()); 
 		} finally{
@@ -106,7 +117,7 @@ public class MinerServiceImpl implements MinerService {
 	}
 
 
-	private final String SELECT_MINERS_BY_POOL = "SELECT miner, errors, pool_index FROM miners WHERE pool=? GROUP BY pool ORDER BY pool_index ASC";
+	private final String SELECT_MINERS_BY_POOL = "SELECT miner, errors FROM miners WHERE pool=?";
 	
 	public Cursor getMiners(String pool) {
 		return getDBw().rawQuery(SELECT_MINERS_BY_POOL, new String[]{pool});

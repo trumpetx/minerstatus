@@ -6,6 +6,7 @@ import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMine;
+import me.davidgreene.minerstatus.beans.BtcMineWorker;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.BtcguildWorker;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
@@ -172,7 +173,6 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	}
 	
 	private void render(BtcguildStatus status, TableLayout tl){
-		//tl.addView(renderRow("Api Key", status.getApiKey()));
 		tl.addView(renderRow("Confirmed Rewards", status.getUser().getConfirmed_rewards().toString()));
 		tl.addView(renderRow("Unconfirmed Rewards", status.getUser().getUnconfirmed_rewards().toString()));
 		tl.addView(renderRow("Estimated Rewards", status.getUser().getEstimated_rewards().toString()));
@@ -196,7 +196,6 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	
 	private void render(SlushStatus status, TableLayout tl){
 		tl.addView(renderRow("Username", status.getUsername()));
-		//tl.addView(renderRow("Api Key", status.getApiKey()));
 		tl.addView(renderRow("Send Threshold", status.getSend_threshold()));
 		tl.addView(renderRow("Estimated", status.getEstimated_reward()));
 		tl.addView(renderRow("Unconfirmed", status.getUnconfirmed_reward()));
@@ -210,7 +209,6 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Hashrate", status.getHashrate()));
 		tl.addView(renderRow("Total Payout", status.getTotal_payout()));
 		tl.addView(renderRow("Total Bounty", status.getTotal_bounty()));
-		//tl.addView(renderRow("Api Key", status.getApiKey()));
 		tl.addView(renderRow("Confirmed Bounty", status.getConfirmed_bounty()));
 		tl.addView(renderRow("Estimated Bounty", status.getEstimated_bounty()));
 		tl.addView(renderRow("Unconfirmed Bounty", status.getUnconfirmed_bounty()));
@@ -218,6 +216,15 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Solved Shares", status.getSolved_shares().toString()));
 		tl.addView(renderRow("Solved Blocks", status.getSolved_blocks().toString()));
 		tl.addView(renderRow("",""));
+		if (status.getMiners() != null){
+		    for( BtcMineWorker worker :  status.getMiners()){
+		    	tl.addView(renderRow("",worker.getName()));
+		    	tl.addView(renderRow("Online Status",worker.getOnline_status().toString()));
+		    	tl.addView(renderRow("Date Connected",worker.getDate_connected()));
+		    	tl.addView(renderRow("Solved Shares",worker.getSolved_shares().toString()));
+		    	tl.addView(renderRow("Solved Blocks",worker.getSolved_blocks().toString()));
+		    }
+		}		
 	}
 	
 	private void render(BitclockersStatus status, TableLayout tl){
