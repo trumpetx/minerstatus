@@ -29,6 +29,8 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
         
         TextView mtGoxToggleLabel = (TextView) findViewById(R.id.mtGoxButtonLabel);
         mtGoxToggleLabel.setTextColor(color);
+        TextView tradehillLabel = (TextView) findViewById(R.id.tradehillButtonLabel);
+        tradehillLabel.setTextColor(color);
         TextView themeSpinnerLabel = (TextView) findViewById(R.id.themeSpinnerLabel);
         themeSpinnerLabel.setTextColor(color);
         final ToggleButton mtGoxToggle = (ToggleButton) findViewById(R.id.mtGoxToggle);
@@ -42,6 +44,20 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
 		        	configService.setConfigValue("show.mtgox", "false");
 		        }
 		        Toast.makeText(OptionsActivity.this, (mtGoxToggle.isChecked()) ? "Mt. Gox Visible" : "Mt. Gox Hidden", Toast.LENGTH_SHORT).show();
+			}
+		});
+        
+        final ToggleButton tradehillToggle = (ToggleButton) findViewById(R.id.tradehillToggle);
+        tradehillToggle.setChecked(Boolean.valueOf(configService.getConfigValue("show.tradehill")));
+        tradehillToggle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+		        if (tradehillToggle.isChecked()) {
+		        	configService.setConfigValue("show.tradehill", "true");
+		        } else {
+		        	configService.setConfigValue("show.tradehill", "false");
+		        }
+		        Toast.makeText(OptionsActivity.this, (tradehillToggle.isChecked()) ? "Tradehill Visible" : "Tradehill Hidden", Toast.LENGTH_SHORT).show();
 			}
 		});
         

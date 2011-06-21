@@ -8,13 +8,13 @@ public class MtGox implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 3039167272598591252L;
-	private Ticker ticker;
+	private MtGoxTicker ticker;
 
-	public Ticker getTicker() {
+	public MtGoxTicker getTicker() {
 		return ticker;
 	}
 
-	public void setTicker(Ticker ticker) {
+	public void setTicker(MtGoxTicker ticker) {
 		this.ticker = ticker;
 	}
 	

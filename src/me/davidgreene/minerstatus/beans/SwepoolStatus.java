@@ -31,10 +31,14 @@ public class SwepoolStatus implements Status, Serializable {
 	@Override
 	public String getDisplayCol2() {
 		Long totalHashRate = 0L;
-		for (SwepoolWorker worker : workers){
-			totalHashRate += Long.getLong(worker.getHashspeed(), 0L);
+		if (workers != null){
+			for (SwepoolWorker worker : workers){
+				totalHashRate += Long.getLong(worker.getHashspeed(), 0L);
+			}
+			return totalHashRate.toString();
+		} else {
+			return "No workers.";
 		}
-		return totalHashRate.toString();
 	}
 
 	@Override

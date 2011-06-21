@@ -69,7 +69,7 @@ public class MtredStatus implements Status, Serializable {
 	}
 
 	public String getRsolved() {
-		return rsolved;
+		return (rsolved == null) ? "" : rsolved;
 	}
 
 	public void setRsolved(String rsolved) {

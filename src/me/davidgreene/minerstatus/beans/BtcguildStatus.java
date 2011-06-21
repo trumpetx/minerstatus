@@ -33,14 +33,18 @@ public class BtcguildStatus implements Status, Serializable {
 	@Override
 	public String getDisplayCol2() {
 		BigDecimal hashRate = BigDecimal.ZERO;
-		Iterator it = workers.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pairs = (Map.Entry)it.next();
-			pairs.getKey();
-			BtcguildWorker worker = (BtcguildWorker) pairs.getValue();
-			hashRate = hashRate.add(worker.getHash_rate());
+		if (workers != null){
+			Iterator it = workers.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry)it.next();
+				pairs.getKey();
+				BtcguildWorker worker = (BtcguildWorker) pairs.getValue();
+				hashRate = hashRate.add(worker.getHash_rate());
+			}
+			return hashRate.toString();
+		} else {
+			return "No Workers";
 		}
-		return hashRate.toString();
 	}
 
 	@Override

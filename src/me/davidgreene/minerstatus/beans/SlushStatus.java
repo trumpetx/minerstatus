@@ -1,6 +1,9 @@
 package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.Map;
 
 public class SlushStatus implements Status, Serializable{
 
@@ -15,15 +18,28 @@ public class SlushStatus implements Status, Serializable{
 	private String confirmed_reward;
 	private String wallet;
 	private String estimated_reward;
+	private Map<String, SlushWorker> workers;
 	private String apiKey;
 	
 	@Override
 	public String getDisplayCol1() {
-		return getEstimated_reward();
+		return getConfirmed_reward();
 	}
 	@Override
 	public String getDisplayCol2() {
-		return getConfirmed_reward();
+		BigDecimal hashRate = BigDecimal.ZERO;
+		if (workers != null){
+			Iterator it = workers.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry)it.next();
+				pairs.getKey();
+				SlushWorker worker = (SlushWorker) pairs.getValue();
+				hashRate = hashRate.add(worker.getHashrate());
+			}
+			return hashRate.toString();
+		} else {
+			return "No Workers";
+		}
 	}
 	
 	public String getUsername() {
@@ -74,11 +90,17 @@ public class SlushStatus implements Status, Serializable{
 	}
 	@Override
 	public String getDisplayCol1Label() {
-		return "Est. Reward";
+		return "Confirmed Reward";
 	}
 	@Override
 	public String getDisplayCol2Label() {
-		return "Confirmed Reward";
+		return "Hashrate";
+	}
+	public Map<String, SlushWorker> getWorkers() {
+		return workers;
+	}
+	public void setWorkers(Map<String, SlushWorker> workers) {
+		this.workers = workers;
 	}
 
 }

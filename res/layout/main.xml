@@ -11,7 +11,7 @@
 	    >
 	    <TableLayout 
 	    	android:layout_width="fill_parent" 
-	    	android:id="@+id/mtGoxLayout" 
+	    	android:id="@+id/tickerLayout" 
 	    	android:layout_height="wrap_content" />
 	    <TableLayout 
 	    	android:layout_width="fill_parent" 

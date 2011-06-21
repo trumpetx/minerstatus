@@ -21,6 +21,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     	db.execSQL("CREATE TABLE config (key TEXT PRIMARY KEY, value TEXT)");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('theme', 'dark')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.mtgox', 'true')");
+    	db.execSQL("INSERT INTO config (key, value) VALUES ('show.tradehill', 'true')");
     	db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT, pool_index INTEGER DEFAULT 0)");
     }
 

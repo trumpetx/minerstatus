@@ -6,7 +6,9 @@ import java.util.Map;
 public class MinerStatusConstants {
 	
 	public static String SEKRET_MTGOX_KEY = "J5ACiar7uDiEsoEt";
+	public static String SEKRET_TRADEHILL_KEY = "4Fi9bSOQm34Aa2pw";
 	public static String MT_GOX_PUBLIC = "https://mtgox.com/code/data/ticker.php";
+	public static String TRADEHILL_PUBLIC = "https://api.tradehill.com/APIv1/USD/Ticker";
 	public static int MAX_ERRORS = 10;
 	
 	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(8);

@@ -13,6 +13,7 @@ import me.davidgreene.minerstatus.beans.DeepbitStatus;
 import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.MtredWorker;
 import me.davidgreene.minerstatus.beans.SlushStatus;
+import me.davidgreene.minerstatus.beans.SlushWorker;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
 import me.davidgreene.minerstatus.beans.SwepoolWorker;
@@ -201,6 +202,18 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Unconfirmed", status.getUnconfirmed_reward()));
 		tl.addView(renderRow("Confirmed", status.getConfirmed_reward()));
 		tl.addView(renderRow("Wallet", status.getWallet()));
+		if (status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	SlushWorker worker = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Hashrate",worker.getHashrate().toString()));
+		    	tl.addView(renderRow("Last Share",worker.getLast_share().toString()));
+		    	tl.addView(renderRow("Shares",worker.getShares().toString()));
+		    	tl.addView(renderRow("Score",worker.getScore()));
+		    	tl.addView(renderRow("Alive",worker.getAlive().toString()));
+		    	tl.addView(renderRow("",""));
+		    }		
+		}		
 		tl.addView(renderRow("",""));
 	}
 	

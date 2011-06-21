@@ -1,10 +1,6 @@
 package me.davidgreene.minerstatus;
 
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.MAX_ERRORS;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.MT_GOX_PUBLIC;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_LABELS;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_URLS;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.SEKRET_MTGOX_KEY;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -28,6 +24,7 @@ import me.davidgreene.minerstatus.beans.Mergable;
 import me.davidgreene.minerstatus.beans.MtGox;
 import me.davidgreene.minerstatus.beans.Result;
 import me.davidgreene.minerstatus.beans.Status;
+import me.davidgreene.minerstatus.beans.Tradehill;
 import me.davidgreene.minerstatus.service.ConfigService;
 import me.davidgreene.minerstatus.service.MinerService;
 import me.davidgreene.minerstatus.util.StatusObjectFactory;
@@ -190,28 +187,50 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		Log.d(tag, "Status Update Start");
 		TableLayout mainTableLayout = (TableLayout) findViewById(R.id.statusLayout);
 		mainTableLayout.removeAllViews();
+		TableLayout tickerLayout = (TableLayout) findViewById(R.id.tickerLayout);
 		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
-		TableLayout mtGoxLayout = (TableLayout) findViewById(R.id.mtGoxLayout);
-		if (showMtGox){
-			mtGoxLayout.removeAllViews();
-			mtGoxLayout.addView(createNewRow(new String[] {"Mt. Gox:"}, Boolean.TRUE));
-			mtGoxLayout.addView(createNewRow(new String[] {"Vol","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
-			try{
-				Gson gson = new Gson();
-				List<Result> mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY);
-				MtGox mtGox = gson.fromJson(mtGoxResult.get(0).getData(), MtGox.class);
-				mtGoxLayout.addView(createNewRow(new String[] {mtGox.getTicker().getVol().toString(),
-						mtGox.getTicker().getLast().toString(), 
-						mtGox.getTicker().getHigh().toString(), 
-						mtGox.getTicker().getLow().toString(),
-						mtGox.getTicker().getBuy().toString(),
-						mtGox.getTicker().getSell().toString()
-						}, Boolean.FALSE));				
-			} catch (Exception e){
-				mtGoxLayout.addView(createNewRow(new String[] {"Unable to connect..."}, Boolean.TRUE));
-			}			
+		Boolean showTradehill = Boolean.valueOf(configService.getConfigValue("show.tradehill"));
+		if (showMtGox || showTradehill){
+			tickerLayout.removeAllViews();
+			tickerLayout.addView(createNewRow(new String[] {"Tickers:"}, Boolean.TRUE));
+			tickerLayout.addView(createNewRow(new String[] {"","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
+			Gson gson = new Gson();
+			//TODO: combine these two in some sort of for loop
+			if (showMtGox){
+				try{
+					List<Result> mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY);
+					MtGox mtGox = gson.fromJson(mtGoxResult.get(0).getData(), MtGox.class);
+					tickerLayout.addView(createNewRow(new String[] {
+							"Mt.Gox:",
+							mtGox.getTicker().getLast().toString(), 
+							mtGox.getTicker().getHigh().toString(), 
+							mtGox.getTicker().getLow().toString(),
+							mtGox.getTicker().getBuy().toString(),
+							mtGox.getTicker().getSell().toString()
+							}, Boolean.FALSE));				
+				} catch (Exception e){
+					tickerLayout.addView(createNewRow(new String[] {"Mt.Gox:", "Unable", "to", "connect","..."}, Boolean.FALSE));
+				}	
+			}
+			if (showTradehill){
+				try{
+					List<Result> tradeHillResult = minerService.readJsonData(SEKRET_TRADEHILL_KEY);
+					Tradehill tradehill = gson.fromJson(tradeHillResult.get(0).getData(), Tradehill.class);
+					tickerLayout.addView(createNewRow(new String[] {
+							"Tradehill:",
+							tradehill.getTicker().getLast(), 
+							tradehill.getTicker().getHigh(), 
+							tradehill.getTicker().getLow(),
+							tradehill.getTicker().getBuy(),
+							tradehill.getTicker().getSell()
+							}, Boolean.FALSE));				
+				} catch (Exception e){
+					tickerLayout.addView(createNewRow(new String[] {"Tradehill:", "Unable", "to", "connect","..."}, Boolean.FALSE));
+				}	
+			}
 		} else {
-			mtGoxLayout.setVisibility(TableLayout.INVISIBLE);
+			tickerLayout.removeAllViews();
+			tickerLayout.setVisibility(TableLayout.INVISIBLE);
 		}
 		Cursor poolCursor = minerService.getPools();
 		while(poolCursor.moveToNext()){
@@ -362,29 +381,15 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    		ResponseHandler<String> handler = new BasicResponseHandler();
 
 
-	    		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
 	    		trustAllHosts();
-	    		if (showMtGox){
-	    			try{
-	    				URL url = new URL(MT_GOX_PUBLIC);
-	                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-	                    https.setHostnameVerifier(DO_NOT_VERIFY);
-	    				https.connect();
-	    				InputStream is = https.getInputStream();
-	    				
-	    				BufferedReader r = new BufferedReader(new InputStreamReader(is));
-	    				StringBuilder httpsResponse = new StringBuilder();
-	    				String line;
-	    				while ((line = r.readLine()) != null) {
-	    					httpsResponse.append(line);
-	    				}
-	    				
-	    				
-	    				minerService.addJsonData(SEKRET_MTGOX_KEY, httpsResponse.toString(), 0);
-	    			} catch (Exception e){  
-	    				Log.d(tag, e.getMessage());
-	    			}			
+	    		
+	    		if (Boolean.valueOf(configService.getConfigValue("show.mtgox"))){
+	    			fetchHttpsData(MT_GOX_PUBLIC, SEKRET_MTGOX_KEY, 0);
 	    		}
+	    		
+	    		if (Boolean.valueOf(configService.getConfigValue("show.tradehill"))){
+	    			fetchHttpsData(TRADEHILL_PUBLIC, SEKRET_TRADEHILL_KEY, 0);
+	    		}	    		
 	    			
 	    		Cursor poolCursor = minerService.getPools();
 	    		while(poolCursor.moveToNext()){
@@ -441,6 +446,29 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
 	    		return Boolean.TRUE;
 	    	}
+
+	    private String fetchHttpsData(String urlString, String key, Integer poolIndex){
+	    	try{
+				URL url = new URL(urlString);
+	            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+	            https.setHostnameVerifier(DO_NOT_VERIFY);
+				https.connect();
+				InputStream is = https.getInputStream();
+				
+				BufferedReader r = new BufferedReader(new InputStreamReader(is));
+				StringBuilder httpsResponse = new StringBuilder();
+				String line;
+				while ((line = r.readLine()) != null) {
+					httpsResponse.append(line);
+				}
+				minerService.addJsonData(key, httpsResponse.toString(), poolIndex);
+				
+				return httpsResponse.toString();
+			} catch (Exception e){  
+				Log.d(tag, e.getMessage());
+				return "";
+			}	
+	    }
 	    
 
         protected void onPostExecute(Boolean result) {

@@ -23,6 +23,22 @@
 	        android:layout_marginTop="15px"
 	        android:layout_marginLeft="20px"
 	        />
+	<TextView  
+			android:id="@+id/tradehillButtonLabel"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content" 
+	        android:text="@+string/tradehillButtonLabel"  
+	        android:layout_marginLeft="20px"
+	        android:layout_marginTop="15px"
+	        />  	        
+	<ToggleButton android:id="@+id/tradehillToggle"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textOn="Visible"
+	        android:textOff="Hidden"
+	        android:layout_marginTop="15px"
+	        android:layout_marginLeft="20px"
+	        />	        
 	<TextView  android:id="@+id/themeSpinnerLabel"
 	        android:layout_width="wrap_content" 
 	        android:layout_height="wrap_content" 
