@@ -242,7 +242,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	
 	private void render(BitclockersStatus status, TableLayout tl){
 		tl.addView(renderRow("Balance", status.getBalance().toString()));
-		tl.addView(renderRow("Payout", status.getPayout()));
+		tl.addView(renderRow("Total Withdrawn", status.getPayout()));
 		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
 		if (status.getWorkers() != null){
 		    for( String key : status.getWorkers().keySet() ){

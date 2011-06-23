@@ -1,6 +1,7 @@
 package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class BitclockersStatus implements Serializable, Status {
@@ -10,9 +11,9 @@ public class BitclockersStatus implements Serializable, Status {
 	 */
 	private static final long serialVersionUID = 521022577604612057L;
 	
-	private Double balance;
+	private BigDecimal balance;
 	private String payout;
-	private Double hashrate;
+	private BigDecimal hashrate;
 	private Map<String, BitclockersWorker> workers;
 	private String apiKey;
 	
@@ -24,12 +25,12 @@ public class BitclockersStatus implements Serializable, Status {
 
 	@Override
 	public String getDisplayCol1() {
-		return balance.toString();
+		return getBalance().toString();
 	}
 
 	@Override
 	public String getDisplayCol2() {
-		return hashrate.toString();
+		return getHashrate().toString();
 	}
 
 	@Override
@@ -47,27 +48,27 @@ public class BitclockersStatus implements Serializable, Status {
 		return "Hashrate";
 	}
 
-	public Double getBalance() {
-		return balance;
+	public BigDecimal getBalance() {
+		return balance == null ? BigDecimal.ZERO : balance;
 	}
 
-	public void setBalance(Double balance) {
+	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
 
 	public String getPayout() {
-		return payout;
+		return payout == null ? "" : payout;
 	}
 
 	public void setPayout(String payout) {
 		this.payout = payout;
 	}
 
-	public Double getHashrate() {
-		return hashrate;
+	public BigDecimal getHashrate() {
+		return hashrate == null ? BigDecimal.ZERO : hashrate;
 	}
 
-	public void setHashrate(Double hashrate) {
+	public void setHashrate(BigDecimal hashrate) {
 		this.hashrate = hashrate;
 	}
 
