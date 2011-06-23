@@ -61,7 +61,7 @@ public class MtredStatus implements Status, Serializable {
 	}
 
 	public String getBalance() {
-		return (balance != null) ? new BigDecimal(balance).setScale(6, BigDecimal.ROUND_HALF_UP).toString() : null;
+		return (balance != null) ? new BigDecimal(balance).setScale(6, BigDecimal.ROUND_HALF_UP).toString() : "";
 	}
 
 	public void setBalance(String balance) {

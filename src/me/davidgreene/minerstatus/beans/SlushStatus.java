@@ -23,7 +23,7 @@ public class SlushStatus implements Status, Serializable{
 	
 	@Override
 	public String getDisplayCol1() {
-		return getConfirmed_reward();
+		return (confirmed_reward == null) ? "" : confirmed_reward;
 	}
 	@Override
 	public String getDisplayCol2() {

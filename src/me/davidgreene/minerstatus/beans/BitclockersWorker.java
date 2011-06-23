@@ -12,19 +12,19 @@ public class BitclockersWorker implements Serializable {
 	private Integer shares;
 	private String hashrate;
 	public Integer getStale() {
-		return stale;
+		return stale == null ? 0 : stale;
 	}
 	public void setStales(Integer stale) {
 		this.stale = stale;
 	}
 	public Integer getShares() {
-		return shares;
+		return shares == null ? 0 : shares;
 	}
 	public void setShares(Integer shares) {
 		this.shares = shares;
 	}
 	public String getHashrate() {
-		return hashrate;
+		return hashrate == null ? "" : hashrate;
 	}
 	public void setHashrate(String hashrate) {
 		this.hashrate = hashrate;

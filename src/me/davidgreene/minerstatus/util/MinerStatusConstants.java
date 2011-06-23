@@ -10,6 +10,8 @@ public class MinerStatusConstants {
 	public static String MT_GOX_PUBLIC = "https://mtgox.com/code/data/ticker.php";
 	public static String TRADEHILL_PUBLIC = "https://api.tradehill.com/APIv1/USD/Ticker";
 	public static int MAX_ERRORS = 10;
+	public static int CONNECTION_TIMEOUT = 4000;
+	public static int SOCKET_TIMEOUT = 0;
 	
 	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(8);
 	static{
@@ -17,7 +19,7 @@ public class MinerStatusConstants {
 		POOL_URLS.put("slush", new String[]{"https://mining.bitcoin.cz/accounts/profile/json/%MINER%"});
 		POOL_URLS.put("deepbit", new String[]{"https://deepbit.net/api/%MINER%"});
 		POOL_URLS.put("btcmine", new String[]{"http://btcmine.com/api/getstats/%MINER%/", "http://btcmine.com/api/getminerstats/%MINER%/"});
-		POOL_URLS.put("btcguild", new String[]{"http://www.btcguild.com/api.php?api_key=%MINER%"});
+		POOL_URLS.put("btcguild", new String[]{"https://www.btcguild.com/api.php?api_key=%MINER%"});
 		POOL_URLS.put("bitclockers", new String[]{"http://bitclockers.com/?action=api&cmd=%MINER%"});
 		POOL_URLS.put("swepool", new String[]{"https://swepool.net/json?key=%MINER%"});
 		POOL_URLS.put("mtred", new String[]{"https://mtred.com/api/user/key/%MINER%"});

@@ -1,6 +1,14 @@
 package me.davidgreene.minerstatus;
 
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.*;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.CONNECTION_TIMEOUT;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.MAX_ERRORS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.MT_GOX_PUBLIC;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_LABELS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_URLS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.SEKRET_MTGOX_KEY;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.SEKRET_TRADEHILL_KEY;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.SOCKET_TIMEOUT;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.TRADEHILL_PUBLIC;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -240,7 +248,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	        List<Result> minerResultList = null;
 	        
 			while(cursor.moveToNext()) {
-				Integer errors = cursor.getInt(1);
+				int errors = cursor.getInt(1);
 				String apiKey = cursor.getString(0);
 				
 				minerResultList = minerService.readJsonData(apiKey);
@@ -276,18 +284,21 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 					}
 				} catch (Exception e){
 					minerService.updateErrorCount(apiKey, (errors+1));
-					if (errors >= MAX_ERRORS){					
+		            int maxErrors;
+		            try{
+		            	maxErrors = Integer.valueOf(configService.getConfigValue("max.errors"));
+		            } catch (NumberFormatException nfe){
+		            	maxErrors = MAX_ERRORS;
+		            }	
+					Toast.makeText(getApplicationContext(), "Miner ("+apiKey+") does not exist for pool("+pool+") or there was no response from the server.",
+							Toast.LENGTH_LONG).show();	
+					if (errors >= maxErrors && maxErrors != 0){					
 						minerService.deleteMiner(apiKey);
-						Toast.makeText(getApplicationContext(), "Miner ("+apiKey+") does not exist for pool("+pool+") or there was no response from the server.",
+
+						Toast.makeText(getApplicationContext(), "Max error count hit("+maxErrors+").  Miner removed: "+apiKey,
 								Toast.LENGTH_LONG).show();	
-						Toast.makeText(getApplicationContext(), "Max error count hit.  Miner removed: "+apiKey,
-								Toast.LENGTH_LONG).show();					
-						continue;
-					} else {
-						Toast.makeText(getApplicationContext(), "Miner ("+apiKey+") does not exist for pool("+pool+") or there was no response from the server.",
-								Toast.LENGTH_LONG).show();	
-						continue;
 					}
+					continue;
 				}
 				//reset errors after a successful fetch
 				minerService.updateErrorCount(apiKey, 0);
@@ -369,101 +380,122 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	    protected Boolean doInBackground(Object... params) {
 	    	ConfigService configService = (ConfigService) params[0];
 	    	MinerService minerService = (MinerService) params[1];
-	    	
-	    		String result="";
-	    		Log.d(tag, "Status Update Start");
-	    		HttpParams httpParameters = new BasicHttpParams();
-	    		HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
-	    		HttpConnectionParams.setSoTimeout(httpParameters, 5000);
-	    		
-	    		HttpClient httpClient = new DefaultHttpClient(httpParameters);
-	    		HttpGet request;
-	    		ResponseHandler<String> handler = new BasicResponseHandler();
+            Integer connectionTimeout;
+            try{
+            	connectionTimeout = Integer.valueOf(configService.getConfigValue("connection.timeout"));
+            } catch (NumberFormatException e){
+            	connectionTimeout = 3000;
+            }
+    		String result="";
+    		HttpParams httpParameters = new BasicHttpParams();
+    		HttpConnectionParams.setConnectionTimeout(httpParameters, connectionTimeout);
+    		HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT);
+    		
+    		HttpClient httpClient = new DefaultHttpClient(httpParameters);
+    		HttpGet request;
+    		ResponseHandler<String> handler = new BasicResponseHandler();
 
 
-	    		trustAllHosts();
-	    		
-	    		if (Boolean.valueOf(configService.getConfigValue("show.mtgox"))){
-	    			fetchHttpsData(MT_GOX_PUBLIC, SEKRET_MTGOX_KEY, 0);
-	    		}
-	    		
-	    		if (Boolean.valueOf(configService.getConfigValue("show.tradehill"))){
-	    			fetchHttpsData(TRADEHILL_PUBLIC, SEKRET_TRADEHILL_KEY, 0);
-	    		}	    		
-	    			
-	    		Cursor poolCursor = minerService.getPools();
-	    		while(poolCursor.moveToNext()){
-	    			String pool = poolCursor.getString(0);
+    		trustAllHosts();
+    		
+    		if (Boolean.valueOf(configService.getConfigValue("show.mtgox"))){
+    			fetchHttpsData(MT_GOX_PUBLIC, SEKRET_MTGOX_KEY, 0);
+    		}
+    		
+    		if (Boolean.valueOf(configService.getConfigValue("show.tradehill"))){
+    			fetchHttpsData(TRADEHILL_PUBLIC, SEKRET_TRADEHILL_KEY, 0);
+    		}	    		
+    			
+    		Cursor poolCursor = minerService.getPools();
+    		while(poolCursor.moveToNext()){
+    			String pool = poolCursor.getString(0);
 
-	    			
-	    	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
-	    			while(cursor.moveToNext()) {
-	    				
-	    				String apiKey = cursor.getString(0);
-	    				List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
-	    				for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
-		    				if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
-		    					try {
-				    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-				                    HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-				                    https.setHostnameVerifier(DO_NOT_VERIFY);
-				    				https.connect();
-				    				InputStream is = https.getInputStream();
-				    				
-				    				BufferedReader r = new BufferedReader(new InputStreamReader(is));
-				    				StringBuilder httpsResponse = new StringBuilder();
-				    				String line;
-				    				while ((line = r.readLine()) != null) {
-				    					httpsResponse.append(line);
-				    				}
-				    				result = httpsResponse.toString();
-		    					} catch (Exception e){
-		    						e.printStackTrace();
-		    					}
-		    				} else{
-			    				request = new HttpGet(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-			    	
-			    				try{
-			    					result = httpClient.execute(request, handler);
-			    					if(result.contains("invalid") && result.contains("etcpasswd")){
-			    						result = "";
-			    					}
-			    				} catch (Exception e){
-			    					e.printStackTrace();
+    			
+    	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
+    			while(cursor.moveToNext()) {
+    				
+    				String apiKey = cursor.getString(0);
+    				List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
+    				for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
+	    				if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
+	    					try {
+			    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
+			    				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+			                    https.setHostnameVerifier(DO_NOT_VERIFY);
+			                    https.setConnectTimeout(connectionTimeout);
+			                    int tries = 0;
+			    	            while (https.getResponseCode() < 0 && tries < 15){
+			    	            	https.connect();
+			    	            	tries++;
+			    	            }
+			    				InputStream is = https.getInputStream();
+			    				
+			    				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
+			    				StringBuilder httpsResponse = new StringBuilder();
+			    				String line;
+			    				while ((line = r.readLine()) != null) {
+			    					httpsResponse.append(line);
 			    				}
+			    				result = httpsResponse.toString();
+			    				is.close();
+			    				https.disconnect();
+	    					} catch (Exception e){
+	    						Log.d(tag, e.toString());
+	    					}
+	    				} else{
+		    				request = new HttpGet(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
+		    	
+		    				try{
+		    					result = httpClient.execute(request, handler);
+		    					if(result.contains("invalid") && result.contains("etcpasswd")){
+		    						result = "";
+		    					}
+		    				} catch (Exception e){
+		    					e.printStackTrace();
 		    				}
-		    				minerService.addJsonData(apiKey, result, poolIndex);
 	    				}
-	    			}
-	    			if (cursor != null && !cursor.isClosed()) {
-	    				cursor.close();
-	    			}		
-	    		}
-	    		if (poolCursor != null && !poolCursor.isClosed()) {
-	    			poolCursor.close();
-	    		}	
-	    		httpClient.getConnectionManager().shutdown();	
-	    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
-	    		return Boolean.TRUE;
-	    	}
+	    				minerService.addJsonData(apiKey, result, poolIndex);
+    				}
+    			}
+    			if (cursor != null && !cursor.isClosed()) {
+    				cursor.close();
+    			}		
+    		}
+    		if (poolCursor != null && !poolCursor.isClosed()) {
+    			poolCursor.close();
+    		}	
+    		httpClient.getConnectionManager().shutdown();	
+    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
+    		return Boolean.TRUE;
+    	}
 
 	    private String fetchHttpsData(String urlString, String key, Integer poolIndex){
 	    	try{
 				URL url = new URL(urlString);
 	            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 	            https.setHostnameVerifier(DO_NOT_VERIFY);
-				https.connect();
+	            Integer connectionTimeout;
+	            try{
+	            	connectionTimeout = Integer.valueOf(configService.getConfigValue("connection.timeout"));
+	            } catch (NumberFormatException e){
+	            	connectionTimeout = CONNECTION_TIMEOUT;
+	            }
+	            https.setConnectTimeout(connectionTimeout);
+	            https.connect();
+	            
 				InputStream is = https.getInputStream();
 				
-				BufferedReader r = new BufferedReader(new InputStreamReader(is));
+				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
 				StringBuilder httpsResponse = new StringBuilder();
 				String line;
 				while ((line = r.readLine()) != null) {
 					httpsResponse.append(line);
 				}
 				minerService.addJsonData(key, httpsResponse.toString(), poolIndex);
-				
+				is.close();
+				https.disconnect();
 				return httpsResponse.toString();
+				
 			} catch (Exception e){  
 				Log.d(tag, e.getMessage());
 				return "";
@@ -475,4 +507,5 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
             getUserStatusUpdate();
         }
 	}
+
 }

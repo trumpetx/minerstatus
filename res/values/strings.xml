@@ -13,4 +13,6 @@
     <string name="selectTheme">Select Theme:</string>
     <string name="deleteMinerLabelOptionsMenu">Delete Individual Miner:</string>
     <string name="tradehillButtonLabel">Toggle Tradehill Visibility:</string>
+    <string name="maxErrorsLabel">Number of errors before a Miner is removed:</string>
+    <string name="connectionTimeout">Connection Timeout (seconds):</string>
 </resources>

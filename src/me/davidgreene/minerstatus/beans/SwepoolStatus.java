@@ -68,7 +68,7 @@ public class SwepoolStatus implements Status, Serializable {
 
 	public String getBalance() {
 		BigDecimal balanceDecimal = new BigDecimal(balance).setScale(6, BigDecimal.ROUND_HALF_UP);
-		return balanceDecimal.toString();
+		return (balanceDecimal == null) ? "0" : balanceDecimal.toString();
 	}
 
 	public void setBalance(String balance) {

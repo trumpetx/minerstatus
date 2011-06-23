@@ -59,6 +59,31 @@
 	          android:layout_height="wrap_content"
 	          android:text="Light Theme" />
 	    </RadioGroup>  
+		<TextView  android:id="@+id/connectionTimeoutLabel"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content" 
+	        android:text="@+string/connectionTimeout"  
+	        android:layout_marginLeft="20px"
+	        android:layout_marginTop="30px"
+	        />  	
+	    <me.davidgreene.minerstatus.util.NumberPicker
+	     	android:id="@+id/connectionTimeoutPicker"
+			android:layout_width="150px"
+			android:layout_height="wrap_content"
+		 />
+		<TextView  android:id="@+id/maxErrorsLabel"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content" 
+	        android:text="@+string/maxErrorsLabel"  
+	        android:layout_marginLeft="20px"
+	        android:layout_marginTop="30px"
+	        />  	
+		 <me.davidgreene.minerstatus.util.NumberPicker
+	     	android:id="@+id/maxErrorsPicker"
+			android:layout_width="150px"
+			android:layout_height="wrap_content"
+		 />
+	    
 		<TextView  android:id="@+id/deleteSpinnerLabel"
 	        android:layout_width="wrap_content" 
 	        android:layout_height="wrap_content" 

@@ -1,5 +1,9 @@
 package me.davidgreene.minerstatus;
 
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.CONNECTION_TIMEOUT;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.MAX_ERRORS;
+import me.davidgreene.minerstatus.util.NumberPicker;
+import me.davidgreene.minerstatus.util.NumberPicker.OnChangedListener;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -27,12 +31,53 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
         ScrollView scrollView = (ScrollView) findViewById(R.id.optionsScrollView);
         scrollView.setBackgroundColor(bgColor);
         
-        TextView mtGoxToggleLabel = (TextView) findViewById(R.id.mtGoxButtonLabel);
-        mtGoxToggleLabel.setTextColor(color);
-        TextView tradehillLabel = (TextView) findViewById(R.id.tradehillButtonLabel);
-        tradehillLabel.setTextColor(color);
-        TextView themeSpinnerLabel = (TextView) findViewById(R.id.themeSpinnerLabel);
-        themeSpinnerLabel.setTextColor(color);
+        TextView[] textViews = {(TextView) findViewById(R.id.mtGoxButtonLabel),
+        						(TextView) findViewById(R.id.tradehillButtonLabel),
+        						(TextView) findViewById(R.id.themeSpinnerLabel),
+        						(TextView) findViewById(R.id.connectionTimeoutLabel),
+        						(TextView) findViewById(R.id.maxErrorsLabel)};
+        for (TextView tv : textViews){
+        	tv.setTextColor(color);
+        }
+        
+        final NumberPicker connectionTimeoutPicker = (NumberPicker) findViewById(R.id.connectionTimeoutPicker);
+        Integer currentVal;
+        try {
+        	currentVal = Integer.valueOf(configService.getConfigValue("connection.timeout")) / 1000;
+        } catch (NumberFormatException e) {
+        	currentVal = CONNECTION_TIMEOUT / 1000;
+		}
+        connectionTimeoutPicker.setCurrent(currentVal);
+        connectionTimeoutPicker.setOnChangeListener(new OnChangedListener() {
+			@Override
+			public void onChanged(NumberPicker picker, int oldVal, int newVal) {
+				if (newVal > 0){
+					configService.setConfigValue("connection.timeout", String.valueOf(newVal * 1000));
+				} else {
+					configService.setConfigValue("connection.timeout", String.valueOf(0));
+				}
+			}
+		});
+        
+        final NumberPicker maxErrorsPicker = (NumberPicker) findViewById(R.id.maxErrorsPicker);
+        Integer currentErrorVal;
+        try {
+        	currentErrorVal = Integer.valueOf(configService.getConfigValue("max.errors"));
+        } catch (NumberFormatException e) {
+        	currentErrorVal = MAX_ERRORS;
+		}
+        maxErrorsPicker.setCurrent(currentErrorVal);
+        maxErrorsPicker.setOnChangeListener(new OnChangedListener() {
+			@Override
+			public void onChanged(NumberPicker picker, int oldVal, int newVal) {
+				if (newVal > 0){
+					configService.setConfigValue("max.errors", String.valueOf(newVal ));
+				} else {
+					configService.setConfigValue("max.errors", String.valueOf(MAX_ERRORS));
+				}
+			}
+		});    
+        
         final ToggleButton mtGoxToggle = (ToggleButton) findViewById(R.id.mtGoxToggle);
         mtGoxToggle.setChecked(Boolean.valueOf(configService.getConfigValue("show.mtgox")));
         mtGoxToggle.setOnClickListener(new OnClickListener() {
