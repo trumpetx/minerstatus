@@ -3,7 +3,7 @@ package me.davidgreene.minerstatus.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class TradehillTicker implements Serializable {
+public class TradehillTicker implements Serializable, Ticker {
 	/**
 	 * 
 	 */
@@ -58,5 +58,29 @@ public class TradehillTicker implements Serializable {
 		} catch (NumberFormatException e){
 			return "";
 		}
+	}
+	@Override
+	public String getLastString() {
+		return getLast();
+	}
+	@Override
+	public String getHighString() {
+		return getHigh();
+	}
+	@Override
+	public String getLowString() {
+		return getLow();
+	}
+	@Override
+	public String getBuyString() {
+		return getBuy();
+	}
+	@Override
+	public String getSellString() {
+		return getSell();
+	}
+	@Override
+	public String getVolString() {
+		return getVol();
 	}
 }

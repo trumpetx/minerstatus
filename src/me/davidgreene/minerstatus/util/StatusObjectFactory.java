@@ -1,14 +1,14 @@
 package me.davidgreene.minerstatus.util;
 
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
-import me.davidgreene.minerstatus.beans.MtredStatus;
-import me.davidgreene.minerstatus.beans.SwepoolStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMine;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
+import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
+import me.davidgreene.minerstatus.beans.SwepoolStatus;
 
 import com.google.gson.Gson;
 

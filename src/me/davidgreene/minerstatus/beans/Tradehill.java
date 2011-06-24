@@ -2,7 +2,7 @@ package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
 
-public class Tradehill implements Serializable {
+public class Tradehill implements Serializable, Exchange {
 
 	/**
 	 * 

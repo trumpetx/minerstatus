@@ -1,6 +1,8 @@
 package me.davidgreene.minerstatus;
 
 import static me.davidgreene.minerstatus.util.MinerStatusConstants.CONNECTION_TIMEOUT;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.EXCHANGE_LABELS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.EXCHANGE_URLS;
 import static me.davidgreene.minerstatus.util.MinerStatusConstants.MAX_ERRORS;
 import me.davidgreene.minerstatus.util.NumberPicker;
 import me.davidgreene.minerstatus.util.NumberPicker.OnChangedListener;
@@ -12,6 +14,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -27,18 +31,44 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
         setContentView(R.layout.options);
         int bgColor = themeService.getTheme().getBackgroundColor();
         int color = themeService.getTheme().getTextColor();
-        
+        LinearLayout layout = (LinearLayout) findViewById(R.id.optionsLayout);
         ScrollView scrollView = (ScrollView) findViewById(R.id.optionsScrollView);
         scrollView.setBackgroundColor(bgColor);
         
-        TextView[] textViews = {(TextView) findViewById(R.id.mtGoxButtonLabel),
-        						(TextView) findViewById(R.id.tradehillButtonLabel),
-        						(TextView) findViewById(R.id.themeSpinnerLabel),
+        TextView[] textViews = {(TextView) findViewById(R.id.themeSpinnerLabel),
         						(TextView) findViewById(R.id.connectionTimeoutLabel),
         						(TextView) findViewById(R.id.maxErrorsLabel)};
         for (TextView tv : textViews){
         	tv.setTextColor(color);
         }
+        
+	    for( final String key : EXCHANGE_URLS.keySet() ){
+	    	final ToggleButton toggle = new ToggleButton(OptionsActivity.this);
+	    	LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	    	params.setMargins(20, 0, 0, 15);
+	    	toggle.setLayoutParams(params);
+	    	toggle.setTextOn("Visible");
+	    	toggle.setTextOff("Hidden");
+	    	toggle.setChecked(Boolean.valueOf(configService.getConfigValue("show."+key)));
+	    	toggle.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+			        if (toggle.isChecked()) {
+			        	configService.setConfigValue("show."+key, "true");
+			        } else {
+			        	configService.setConfigValue("show."+key, "false");
+			        }
+			        Toast.makeText(OptionsActivity.this, (toggle.isChecked()) ? EXCHANGE_LABELS.get(key)+" Visible" : EXCHANGE_LABELS.get(key)+" Hidden", Toast.LENGTH_SHORT).show();
+				}
+			});
+	    	TextView tv = new TextView(OptionsActivity.this);
+	    	tv.setText("Toggle "+ EXCHANGE_LABELS.get(key)+" Visibility:");
+	    	tv.setLayoutParams(params);
+	    	tv.setTextColor(color);
+	    	layout.addView(toggle, 0);
+	    	layout.addView(tv, 0);
+	    	
+	    }   
         
         final NumberPicker connectionTimeoutPicker = (NumberPicker) findViewById(R.id.connectionTimeoutPicker);
         Integer currentVal;
@@ -70,41 +100,13 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
         maxErrorsPicker.setOnChangeListener(new OnChangedListener() {
 			@Override
 			public void onChanged(NumberPicker picker, int oldVal, int newVal) {
-				if (newVal > 0){
-					configService.setConfigValue("max.errors", String.valueOf(newVal ));
+				if (newVal >= 0){
+					configService.setConfigValue("max.errors", String.valueOf(newVal));
 				} else {
 					configService.setConfigValue("max.errors", String.valueOf(MAX_ERRORS));
 				}
 			}
-		});    
-        
-        final ToggleButton mtGoxToggle = (ToggleButton) findViewById(R.id.mtGoxToggle);
-        mtGoxToggle.setChecked(Boolean.valueOf(configService.getConfigValue("show.mtgox")));
-        mtGoxToggle.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-		        if (mtGoxToggle.isChecked()) {
-		        	configService.setConfigValue("show.mtgox", "true");
-		        } else {
-		        	configService.setConfigValue("show.mtgox", "false");
-		        }
-		        Toast.makeText(OptionsActivity.this, (mtGoxToggle.isChecked()) ? "Mt. Gox Visible" : "Mt. Gox Hidden", Toast.LENGTH_SHORT).show();
-			}
-		});
-        
-        final ToggleButton tradehillToggle = (ToggleButton) findViewById(R.id.tradehillToggle);
-        tradehillToggle.setChecked(Boolean.valueOf(configService.getConfigValue("show.tradehill")));
-        tradehillToggle.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-		        if (tradehillToggle.isChecked()) {
-		        	configService.setConfigValue("show.tradehill", "true");
-		        } else {
-		        	configService.setConfigValue("show.tradehill", "false");
-		        }
-		        Toast.makeText(OptionsActivity.this, (tradehillToggle.isChecked()) ? "Tradehill Visible" : "Tradehill Hidden", Toast.LENGTH_SHORT).show();
-			}
-		});
+		});  
         
     	final RadioButton darkTheme = (RadioButton) findViewById(R.id.radio_dark);
     	final RadioButton lightTheme = (RadioButton) findViewById(R.id.radio_light);

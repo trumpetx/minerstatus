@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     private static final String DATABASE_NAME = "minerstatus.db";
 
     public DbOpenHelper(Context context) {
@@ -22,6 +22,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     	db.execSQL("INSERT INTO config (key, value) VALUES ('theme', 'dark')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.mtgox', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.tradehill', 'true')");
+    	db.execSQL("INSERT INTO config (key, value) VALUES ('show.exchange_bitcoins', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('connection.timeout', '4000')");
 		db.execSQL("INSERT INTO config (key, value) VALUES ('max.errors', '10')");
     	db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT, pool_index INTEGER DEFAULT 0)");
@@ -65,7 +66,11 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 			db.execSQL("INSERT INTO config (key, value) VALUES ('connection.timeout', '4000')");
 			db.execSQL("INSERT INTO config (key, value) VALUES ('max.errors', '10')");
 			oldVersion = 7;
-		}		
+		}	
+		if (oldVersion == 7){
+			db.execSQL("INSERT INTO config (key, value) VALUES ('show.exchange_bitcoins', 'true')");
+			oldVersion = 8;
+		}			
 		
 		
 	}

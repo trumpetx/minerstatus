@@ -2,19 +2,19 @@ package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
 
-public class MtGox implements Serializable {
+public class MtGox implements Serializable, Exchange {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3039167272598591252L;
-	private MtGoxTicker ticker;
+	private GenericTicker ticker;
 
-	public MtGoxTicker getTicker() {
+	public GenericTicker getTicker() {
 		return ticker;
 	}
 
-	public void setTicker(MtGoxTicker ticker) {
+	public void setTicker(GenericTicker ticker) {
 		this.ticker = ticker;
 	}
 	

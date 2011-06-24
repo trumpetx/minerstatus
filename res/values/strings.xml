@@ -9,10 +9,9 @@
     <string name="delete_miner">Delete Miner</string>
     <string name="view_miner">View Miner</string>
     <string name="options">Options</string>
-    <string name="mtGoxButtonLabel">Toggle Mt. Gox Visibility: </string>
     <string name="selectTheme">Select Theme:</string>
     <string name="deleteMinerLabelOptionsMenu">Delete Individual Miner:</string>
-    <string name="tradehillButtonLabel">Toggle Tradehill Visibility:</string>
     <string name="maxErrorsLabel">Number of errors before a Miner is removed:</string>
     <string name="connectionTimeout">Connection Timeout (seconds):</string>
+    <string name="statusWidget">Status</string>
 </resources>

@@ -5,13 +5,23 @@ import java.util.Map;
 
 public class MinerStatusConstants {
 	
-	public static String SEKRET_MTGOX_KEY = "J5ACiar7uDiEsoEt";
-	public static String SEKRET_TRADEHILL_KEY = "4Fi9bSOQm34Aa2pw";
-	public static String MT_GOX_PUBLIC = "https://mtgox.com/code/data/ticker.php";
-	public static String TRADEHILL_PUBLIC = "https://api.tradehill.com/APIv1/USD/Ticker";
 	public static int MAX_ERRORS = 10;
 	public static int CONNECTION_TIMEOUT = 4000;
 	public static int SOCKET_TIMEOUT = 0;
+	
+	public static final Map<String, String> EXCHANGE_LABELS = new HashMap<String,String>(4);
+	static{
+		EXCHANGE_LABELS.put("mtgox", "Mt. Gox");
+		EXCHANGE_LABELS.put("tradehill", "Tradehill");
+		EXCHANGE_LABELS.put("exchange_bitcoins", "Exg. Bitcoins");
+	}
+	
+	public static final Map<String, String> EXCHANGE_URLS = new HashMap<String,String>(4);
+	static{
+		EXCHANGE_URLS.put("mtgox", "https://mtgox.com/code/data/ticker.php");
+		EXCHANGE_URLS.put("tradehill", "https://api.tradehill.com/APIv1/USD/Ticker");
+		EXCHANGE_URLS.put("exchange_bitcoins", "https://www.exchangebitcoins.com/data/ticker");
+	}
 	
 	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(8);
 	static{

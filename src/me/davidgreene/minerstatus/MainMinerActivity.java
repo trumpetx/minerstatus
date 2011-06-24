@@ -1,51 +1,21 @@
 package me.davidgreene.minerstatus;
 
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.CONNECTION_TIMEOUT;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.EXCHANGE_LABELS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.EXCHANGE_URLS;
 import static me.davidgreene.minerstatus.util.MinerStatusConstants.MAX_ERRORS;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.MT_GOX_PUBLIC;
 import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_LABELS;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_URLS;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.SEKRET_MTGOX_KEY;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.SEKRET_TRADEHILL_KEY;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.SOCKET_TIMEOUT;
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.TRADEHILL_PUBLIC;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
+import me.davidgreene.minerstatus.beans.Exchange;
 import me.davidgreene.minerstatus.beans.Mergable;
-import me.davidgreene.minerstatus.beans.MtGox;
 import me.davidgreene.minerstatus.beans.Result;
 import me.davidgreene.minerstatus.beans.Status;
-import me.davidgreene.minerstatus.beans.Tradehill;
-import me.davidgreene.minerstatus.service.ConfigService;
-import me.davidgreene.minerstatus.service.MinerService;
+import me.davidgreene.minerstatus.tasks.AsynchMinerUpdateTask;
+import me.davidgreene.minerstatus.util.ExchangeObjectFactory;
 import me.davidgreene.minerstatus.util.StatusObjectFactory;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -53,7 +23,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -67,8 +36,6 @@ import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 public class MainMinerActivity extends AbstractMinerStatusActivity {
 
@@ -105,7 +72,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
         	setTitle("Miner Status - No Data Connection");
         } else{ 
 	        setTitle("Miner Status - Updating...");
-	        AsynchMinerUpdateTask updateTask = new AsynchMinerUpdateTask();
+	        AsynchMinerUpdateTask updateTask = new MyAsynchMinerUpdateTask();
 	        updateTask.execute(new Object[]{configService, minerService});
         }
     }	
@@ -134,7 +101,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	        		Toast.makeText(this, "Please turn on 3/4G or Wifi", Toast.LENGTH_LONG).show();
 	        	} else {
 		        	setTitle("Miner Status - Updating...");
-		        	AsynchMinerUpdateTask updateTask = new AsynchMinerUpdateTask();
+		        	AsynchMinerUpdateTask updateTask = new MyAsynchMinerUpdateTask();
 		            updateTask.execute(new Object[]{configService, minerService});
 	        	}
 	            break;
@@ -193,319 +160,134 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	
 	private void getUserStatusUpdate(){
 		Log.d(tag, "Status Update Start");
-		TableLayout mainTableLayout = (TableLayout) findViewById(R.id.statusLayout);
-		mainTableLayout.removeAllViews();
-		TableLayout tickerLayout = (TableLayout) findViewById(R.id.tickerLayout);
-		Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
-		Boolean showTradehill = Boolean.valueOf(configService.getConfigValue("show.tradehill"));
-		if (showMtGox || showTradehill){
-			tickerLayout.removeAllViews();
-			tickerLayout.addView(createNewRow(new String[] {"Tickers:"}, Boolean.TRUE));
-			tickerLayout.addView(createNewRow(new String[] {"","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
-			Gson gson = new Gson();
-			//TODO: combine these two in some sort of for loop
-			if (showMtGox){
-				try{
-					List<Result> mtGoxResult = minerService.readJsonData(SEKRET_MTGOX_KEY);
-					MtGox mtGox = gson.fromJson(mtGoxResult.get(0).getData(), MtGox.class);
-					tickerLayout.addView(createNewRow(new String[] {
-							"Mt.Gox:",
-							mtGox.getTicker().getLast().toString(), 
-							mtGox.getTicker().getHigh().toString(), 
-							mtGox.getTicker().getLow().toString(),
-							mtGox.getTicker().getBuy().toString(),
-							mtGox.getTicker().getSell().toString()
-							}, Boolean.FALSE));				
-				} catch (Exception e){
-					tickerLayout.addView(createNewRow(new String[] {"Mt.Gox:", "Unable", "to", "connect","..."}, Boolean.FALSE));
-				}	
-			}
-			if (showTradehill){
-				try{
-					List<Result> tradeHillResult = minerService.readJsonData(SEKRET_TRADEHILL_KEY);
-					Tradehill tradehill = gson.fromJson(tradeHillResult.get(0).getData(), Tradehill.class);
-					tickerLayout.addView(createNewRow(new String[] {
-							"Tradehill:",
-							tradehill.getTicker().getLast(), 
-							tradehill.getTicker().getHigh(), 
-							tradehill.getTicker().getLow(),
-							tradehill.getTicker().getBuy(),
-							tradehill.getTicker().getSell()
-							}, Boolean.FALSE));				
-				} catch (Exception e){
-					tickerLayout.addView(createNewRow(new String[] {"Tradehill:", "Unable", "to", "connect","..."}, Boolean.FALSE));
-				}	
-			}
-		} else {
-			tickerLayout.removeAllViews();
-			tickerLayout.setVisibility(TableLayout.INVISIBLE);
-		}
-		Cursor poolCursor = minerService.getPools();
-		while(poolCursor.moveToNext()){
-			String pool = poolCursor.getString(0);
-	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
-	        Boolean foundActiveRow = Boolean.FALSE;
-	        List<Result> minerResultList = null;
-	        
-			while(cursor.moveToNext()) {
-				int errors = cursor.getInt(1);
-				String apiKey = cursor.getString(0);
+		try {
+			TableLayout mainTableLayout = (TableLayout) findViewById(R.id.statusLayout);
+			mainTableLayout.removeAllViews();
+			TableLayout tickerLayout = (TableLayout) findViewById(R.id.tickerLayout);
+			Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
+			Boolean showTradehill = Boolean.valueOf(configService.getConfigValue("show.tradehill"));
+			if (showMtGox || showTradehill){
+				tickerLayout.removeAllViews();
+				tickerLayout.addView(createNewRow(new String[] {"Tickers:"}, Boolean.TRUE));
+				tickerLayout.addView(createNewRow(new String[] {"","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
 				
-				minerResultList = minerService.readJsonData(apiKey);
-				Status status = null;
-				try{
-					if (minerResultList == null || minerResultList.isEmpty() || minerResultList.get(0).getData().equals("")){
-						throw new Exception("No JSON Data");
-					}
-					for(Result minerResult : minerResultList){
-						if (status == null){
-							status = StatusObjectFactory.getStatusObject(minerResult.getData(), pool);
-						} else {
-							try {
-								((Mergable) status).mergeWith((Mergable) StatusObjectFactory.getStatusObject(minerResult.getData(), pool));
-							} catch (final RuntimeException e){
-								AlertDialog.Builder alert = new AlertDialog.Builder(MainMinerActivity.this);
-								alert.setTitle("MinerStatus broke something!");
-								alert.setPositiveButton("Ignore & Continue", new DialogInterface.OnClickListener() {	
-									public void onClick(DialogInterface dialog, int whichButton) {
-										Toast.makeText(getApplicationContext(), "I ate the error for you (YUM).  If you would like to help debug MinerStatus, throw the Exception once and make sure you report it.  Thanks!",
-												Toast.LENGTH_LONG).show();
-									}
-								});		
-								alert.setNegativeButton("Throw Exception", new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int whichButton) {
-										throw e;
-									}
-								});				
-								alert.show();  
-							}
+			    for( String key : EXCHANGE_URLS.keySet() ){
+			    	if (Boolean.valueOf(configService.getConfigValue("show."+key))){
+			    		try{
+			    			List<Result> result = minerService.readJsonData(key);
+			    			Exchange exchange = ExchangeObjectFactory.getStatusObject(result.get(0).getData(), key);
+							tickerLayout.addView(createNewRow(new String[] {
+									EXCHANGE_LABELS.get(key),
+									exchange.getTicker().getLastString(), 
+									exchange.getTicker().getHighString(), 
+									exchange.getTicker().getLowString(),
+									exchange.getTicker().getBuyString(),
+									exchange.getTicker().getSellString()
+									}, Boolean.FALSE));	
+			    			
+			    		} catch (Exception e){
+			    			tickerLayout.addView(createNewRow(new String[] {EXCHANGE_LABELS.get(key)+":", "Unable", "to", "connect","..."}, Boolean.FALSE));
+			    		}
+			    	}
+			    }    	
+			} else {
+				tickerLayout.removeAllViews();
+				tickerLayout.setVisibility(TableLayout.INVISIBLE);
+			}
+			Cursor poolCursor = minerService.getPools();
+			while(poolCursor.moveToNext()){
+				String pool = poolCursor.getString(0);
+		        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
+		        Boolean foundActiveRow = Boolean.FALSE;
+		        List<Result> minerResultList = null;
+		        
+				while(cursor.moveToNext()) {
+					int errors = cursor.getInt(1);
+					String apiKey = cursor.getString(0);
+					
+					minerResultList = minerService.readJsonData(apiKey);
+					Status status = null;
+					try{
+						if (minerResultList == null || minerResultList.isEmpty() || minerResultList.get(0).getData().equals("")){
+							throw new Exception("No JSON Data");
 						}
-						status.setApiKey(apiKey);
-					}
-				} catch (Exception e){
-					minerService.updateErrorCount(apiKey, (errors+1));
-		            int maxErrors;
-		            try{
-		            	maxErrors = Integer.valueOf(configService.getConfigValue("max.errors"));
-		            } catch (NumberFormatException nfe){
-		            	maxErrors = MAX_ERRORS;
-		            }	
-					Toast.makeText(getApplicationContext(), "Miner ("+apiKey+") does not exist for pool("+pool+") or there was no response from the server.",
-							Toast.LENGTH_LONG).show();	
-					if (errors >= maxErrors && maxErrors != 0){					
-						minerService.deleteMiner(apiKey);
-
-						Toast.makeText(getApplicationContext(), "Max error count hit("+maxErrors+").  Miner removed: "+apiKey,
+						for(Result minerResult : minerResultList){
+							if (status == null){
+								status = StatusObjectFactory.getStatusObject(minerResult.getData(), pool);
+							} else {
+								((Mergable) status).mergeWith((Mergable) StatusObjectFactory.getStatusObject(minerResult.getData(), pool));
+							}
+							status.setApiKey(apiKey);
+						}
+					} catch (Exception e){
+						minerService.updateErrorCount(apiKey, (errors+1));
+			            int maxErrors;
+			            try{
+			            	maxErrors = Integer.valueOf(configService.getConfigValue("max.errors"));
+			            } catch (NumberFormatException nfe){
+			            	maxErrors = MAX_ERRORS;
+			            }	
+						Toast.makeText(getApplicationContext(), "Miner ("+apiKey+") does not exist for pool("+pool+") or there was no response from the server.",
 								Toast.LENGTH_LONG).show();	
+						if (errors >= maxErrors && maxErrors != 0){					
+							minerService.deleteMiner(apiKey);
+	
+							Toast.makeText(getApplicationContext(), "Max error count hit("+maxErrors+").  Miner removed: "+apiKey,
+									Toast.LENGTH_LONG).show();	
+						}
+						continue;
 					}
-					continue;
+					//reset errors after a successful fetch
+					minerService.updateErrorCount(apiKey, 0);
+					
+					if (!foundActiveRow){
+						foundActiveRow = Boolean.TRUE;
+				        mainTableLayout.addView(createNewRow(new String[] {POOL_LABELS.get(pool)+":"}, Boolean.TRUE));
+				        mainTableLayout.addView(createNewRow(new String[] {status.getUsernameLabel(), status.getDisplayCol1Label(), status.getDisplayCol2Label()}, Boolean.FALSE));
+					}
+					
+					//Add to stack so we can pop off the last one if needed
+					mainTableLayout.addView(createNewRow(status));
 				}
-				//reset errors after a successful fetch
-				minerService.updateErrorCount(apiKey, 0);
 				
-				if (!foundActiveRow){
-					foundActiveRow = Boolean.TRUE;
-			        mainTableLayout.addView(createNewRow(new String[] {POOL_LABELS.get(pool)+":"}, Boolean.TRUE));
-			        mainTableLayout.addView(createNewRow(new String[] {status.getUsernameLabel(), status.getDisplayCol1Label(), status.getDisplayCol2Label()}, Boolean.FALSE));
+				if (cursor != null && !cursor.isClosed()) {
+					cursor.close();
+				}		
+				if (minerResultList != null && !minerResultList.isEmpty() && foundActiveRow){
+			        mainTableLayout.addView(createNewRow(new String[] {DateFormat.getTimeInstance(DateFormat.MEDIUM).format(minerResultList.get(0).getDate())}, Boolean.TRUE));
+			        mainTableLayout.addView(createNewRow(new String[] {""}, Boolean.FALSE));
 				}
-				
-				//Add to stack so we can pop off the last one if needed
-				mainTableLayout.addView(createNewRow(status));
 			}
-			
-			if (cursor != null && !cursor.isClosed()) {
-				cursor.close();
-			}		
-			if (minerResultList != null && !minerResultList.isEmpty()){
-		        mainTableLayout.addView(createNewRow(new String[] {DateFormat.getTimeInstance(DateFormat.MEDIUM).format(minerResultList.get(0).getDate())}, Boolean.TRUE));
-			}
-			mainTableLayout.addView(createNewRow(new String[] {""}, Boolean.FALSE));
-		}
-		if (poolCursor != null && !poolCursor.isClosed()) {
-			poolCursor.close();
-		}	
+			if (poolCursor != null && !poolCursor.isClosed()) {
+				poolCursor.close();
+			}	
 		try{
 			this.setTitle("Miner Status - "+DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(new Date(Long.valueOf(configService.getConfigValue("last.updated")))));
 		} catch (Exception e) {
 			this.setTitle("Miner Status");
 		}
-
-	}
-
-	
-	
-	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-
-		@Override
-		public boolean verify(String hostname, SSLSession session) {
-			// TODO Auto-generated method stub
-			return true;
-		}
-	};
-	
-	/**
-	 * Trust every server - dont check for any certificate
-	 */
-	private static void trustAllHosts() {
-	        // Create a trust manager that does not validate certificate chains
-	        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-	                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-	                        return new java.security.cert.X509Certificate[] {};
-	                }
-
-	                public void checkClientTrusted(X509Certificate[] chain,
-	                                String authType) throws CertificateException {
-	                }
-
-	                public void checkServerTrusted(X509Certificate[] chain,
-	                                String authType) throws CertificateException {
-	                }
-	        } };
-
-	        // Install the all-trusting trust manager
-	        try {
-	                SSLContext sc = SSLContext.getInstance("TLS");
-	                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-	                HttpsURLConnection
-	                                .setDefaultSSLSocketFactory(sc.getSocketFactory());
-	        } catch (Exception e) {
-	                e.printStackTrace();
-	        }
-	}
-	
-	private class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, Boolean> {
-		
-		private final String tag = "TX_";
-		
-	    protected Boolean doInBackground(Object... params) {
-	    	ConfigService configService = (ConfigService) params[0];
-	    	MinerService minerService = (MinerService) params[1];
-            Integer connectionTimeout;
-            try{
-            	connectionTimeout = Integer.valueOf(configService.getConfigValue("connection.timeout"));
-            } catch (NumberFormatException e){
-            	connectionTimeout = 3000;
-            }
-    		String result="";
-    		HttpParams httpParameters = new BasicHttpParams();
-    		HttpConnectionParams.setConnectionTimeout(httpParameters, connectionTimeout);
-    		HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT);
-    		
-    		HttpClient httpClient = new DefaultHttpClient(httpParameters);
-    		HttpGet request;
-    		ResponseHandler<String> handler = new BasicResponseHandler();
-
-
-    		trustAllHosts();
-    		
-    		if (Boolean.valueOf(configService.getConfigValue("show.mtgox"))){
-    			fetchHttpsData(MT_GOX_PUBLIC, SEKRET_MTGOX_KEY, 0);
-    		}
-    		
-    		if (Boolean.valueOf(configService.getConfigValue("show.tradehill"))){
-    			fetchHttpsData(TRADEHILL_PUBLIC, SEKRET_TRADEHILL_KEY, 0);
-    		}	    		
-    			
-    		Cursor poolCursor = minerService.getPools();
-    		while(poolCursor.moveToNext()){
-    			String pool = poolCursor.getString(0);
-
-    			
-    	        Cursor cursor = minerService.getMiners(poolCursor.getString(0));
-    			while(cursor.moveToNext()) {
-    				
-    				String apiKey = cursor.getString(0);
-    				List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
-    				for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
-	    				if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
-	    					try {
-			    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-			    				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-			                    https.setHostnameVerifier(DO_NOT_VERIFY);
-			                    https.setConnectTimeout(connectionTimeout);
-			                    int tries = 0;
-			    	            while (https.getResponseCode() < 0 && tries < 15){
-			    	            	https.connect();
-			    	            	tries++;
-			    	            }
-			    				InputStream is = https.getInputStream();
-			    				
-			    				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
-			    				StringBuilder httpsResponse = new StringBuilder();
-			    				String line;
-			    				while ((line = r.readLine()) != null) {
-			    					httpsResponse.append(line);
-			    				}
-			    				result = httpsResponse.toString();
-			    				is.close();
-			    				https.disconnect();
-	    					} catch (Exception e){
-	    						Log.d(tag, e.toString());
-	    					}
-	    				} else{
-		    				request = new HttpGet(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-		    	
-		    				try{
-		    					result = httpClient.execute(request, handler);
-		    					if(result.contains("invalid") && result.contains("etcpasswd")){
-		    						result = "";
-		    					}
-		    				} catch (Exception e){
-		    					e.printStackTrace();
-		    				}
-	    				}
-	    				minerService.addJsonData(apiKey, result, poolIndex);
-    				}
-    			}
-    			if (cursor != null && !cursor.isClosed()) {
-    				cursor.close();
-    			}		
-    		}
-    		if (poolCursor != null && !poolCursor.isClosed()) {
-    			poolCursor.close();
-    		}	
-    		httpClient.getConnectionManager().shutdown();	
-    		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
-    		return Boolean.TRUE;
-    	}
-
-	    private String fetchHttpsData(String urlString, String key, Integer poolIndex){
-	    	try{
-				URL url = new URL(urlString);
-	            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-	            https.setHostnameVerifier(DO_NOT_VERIFY);
-	            Integer connectionTimeout;
-	            try{
-	            	connectionTimeout = Integer.valueOf(configService.getConfigValue("connection.timeout"));
-	            } catch (NumberFormatException e){
-	            	connectionTimeout = CONNECTION_TIMEOUT;
-	            }
-	            https.setConnectTimeout(connectionTimeout);
-	            https.connect();
-	            
-				InputStream is = https.getInputStream();
-				
-				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
-				StringBuilder httpsResponse = new StringBuilder();
-				String line;
-				while ((line = r.readLine()) != null) {
-					httpsResponse.append(line);
+		} catch (final RuntimeException e){
+			AlertDialog.Builder alert = new AlertDialog.Builder(MainMinerActivity.this);
+			alert.setTitle("MinerStatus broke something!");
+			alert.setPositiveButton("Ignore & Continue", new DialogInterface.OnClickListener() {	
+				public void onClick(DialogInterface dialog, int whichButton) {
+					Toast.makeText(getApplicationContext(), "I ate the error for you (YUM).  If you would like to help debug MinerStatus, throw the Exception once and make sure you report it.  Thanks!",
+							Toast.LENGTH_LONG).show();
 				}
-				minerService.addJsonData(key, httpsResponse.toString(), poolIndex);
-				is.close();
-				https.disconnect();
-				return httpsResponse.toString();
-				
-			} catch (Exception e){  
-				Log.d(tag, e.getMessage());
-				return "";
-			}	
-	    }
-	    
-
-        protected void onPostExecute(Boolean result) {
-            getUserStatusUpdate();
-        }
+			});		
+			alert.setNegativeButton("Throw Exception", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					throw e;
+				}
+			});				
+			alert.show();  
+		}
 	}
-
+	
+	private class MyAsynchMinerUpdateTask extends AsynchMinerUpdateTask{
+		@Override
+		protected void onPostExecute(Boolean result) {
+			getUserStatusUpdate();
+		}
+	}
 }
