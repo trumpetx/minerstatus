@@ -18,6 +18,21 @@ public class BtcguildStatus implements Status, Serializable {
 	private String apiKey;
 	
 	@Override
+	public BigDecimal getTotalHashrate(){
+		BigDecimal hashRate = BigDecimal.ZERO;
+		if (workers != null){
+			Iterator it = workers.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry)it.next();
+				pairs.getKey();
+				BtcguildWorker worker = (BtcguildWorker) pairs.getValue();
+				hashRate = hashRate.add(worker.getHash_rate());
+			}
+		} 
+		return hashRate.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+	
+	@Override
 	public String getUsername() {
 		return "Worker(s)";
 	}
@@ -32,18 +47,10 @@ public class BtcguildStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol2() {
-		BigDecimal hashRate = BigDecimal.ZERO;
-		if (workers != null){
-			Iterator it = workers.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry pairs = (Map.Entry)it.next();
-				pairs.getKey();
-				BtcguildWorker worker = (BtcguildWorker) pairs.getValue();
-				hashRate = hashRate.add(worker.getHash_rate());
-			}
-			return hashRate.toString();
-		} else {
+		if (workers == null){
 			return "No Workers";
+		} else {
+			return getTotalHashrate().toString();
 		}
 	}
 

@@ -53,13 +53,46 @@
 			android:layout_height="wrap_content"
 		 />
 	    
+		<TextView  android:id="@+id/widgetSpinnerLabel"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content" 
+	        android:text="@+string/widgetSpinnerLabel"  
+	        android:layout_marginLeft="20px"
+	        android:layout_marginTop="30px"
+	        />  	
+		<Spinner
+		 android:id="@+id/widget_spinner"
+		 android:layout_width="fill_parent"
+		 android:layout_height="wrap_content"
+		 android:drawSelectorOnTop="false"/>	 
+
+		<TextView  android:id="@+id/lowHashrateNotificationLabel"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content" 
+	        android:text="Low Hashrate Notification\nSave a blank value to disable (Will display as -1)"  
+	        android:layout_marginLeft="20px"
+	        android:layout_marginTop="30px"
+	        />  	
+	<EditText android:id="@+id/lowHashrateInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="number"
+	        android:hint="Hashrate Notification"/>
+
+		<Button 
+		 android:id ="@+id/lowHashrateSaveButton"
+		 android:text="Save Hashrate Notification Level"
+		 android:layout_width="fill_parent"
+		 android:layout_height="fill_parent"
+		/>      
+
 		<TextView  android:id="@+id/deleteSpinnerLabel"
 	        android:layout_width="wrap_content" 
 	        android:layout_height="wrap_content" 
 	        android:text="@+string/deleteMinerLabelOptionsMenu"  
 	        android:layout_marginLeft="20px"
 	        android:layout_marginTop="30px"
-	        />  	    
+	        />  			 	            
 		<Spinner
 		 android:id="@+id/miner_delete_spinner"
 		 android:layout_width="fill_parent"

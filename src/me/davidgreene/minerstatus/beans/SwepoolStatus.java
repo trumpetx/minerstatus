@@ -17,6 +17,20 @@ public class SwepoolStatus implements Status, Serializable {
 	private SwepoolWorker[] workers;
 	private String apiKey;
 	
+	@Override
+	public BigDecimal getTotalHashrate(){
+		try{
+			BigDecimal totalHashRate = BigDecimal.ZERO;
+			if (workers != null){
+				for (SwepoolWorker worker : workers){
+					totalHashRate.add(new BigDecimal(worker.getHashspeed()));
+				}
+			}
+			return totalHashRate.setScale(2, BigDecimal.ROUND_HALF_UP);
+		} catch (Exception e){
+			return BigDecimal.ZERO;
+		}
+	}
 	
 	@Override
 	public String getUsername() {
@@ -30,14 +44,10 @@ public class SwepoolStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol2() {
-		Long totalHashRate = 0L;
-		if (workers != null){
-			for (SwepoolWorker worker : workers){
-				totalHashRate += Long.getLong(worker.getHashspeed(), 0L);
-			}
-			return totalHashRate.toString();
+		if (workers == null){
+			return "No workers";
 		} else {
-			return "No workers.";
+			return getTotalHashrate().toString();
 		}
 	}
 

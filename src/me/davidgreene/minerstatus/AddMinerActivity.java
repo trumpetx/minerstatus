@@ -1,16 +1,14 @@
 package me.davidgreene.minerstatus;
 
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_DIRECTIONS;
-
-import java.util.LinkedList;
-import java.util.List;
-
+import me.davidgreene.minerstatus.util.MinerStatusConstants;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,61 +29,47 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
     	minerNameLabel.setTextColor(color);
     	TextView minerDirections = (TextView) findViewById(R.id.minerDirections);
     	minerDirections.setTextColor(color);
-        
-    	List<RadioButton> radioList = new LinkedList<RadioButton>();
-    	radioList.add((RadioButton)findViewById(R.id.radio_bitcoinpool));
-    	radioList.add((RadioButton) findViewById(R.id.radio_slush));
-    	radioList.add((RadioButton) findViewById(R.id.radio_deepbit));
-    	radioList.add((RadioButton) findViewById(R.id.radio_btcmine));
-    	radioList.add((RadioButton) findViewById(R.id.radio_btcguild));
-    	radioList.add((RadioButton) findViewById(R.id.radio_bitclockers));
-    	radioList.add((RadioButton) findViewById(R.id.radio_swepool));
-    	radioList.add((RadioButton) findViewById(R.id.radio_mtred));
+    	RadioGroup rg = (RadioGroup) findViewById(R.id.addMinerRadioGroup);
 
-    	for(RadioButton radio : radioList){
-    		radio.setOnClickListener(radio_listener);
-    		radio.setTextColor(color);    		
-    	}
-    }
-	
+	    for( String key : MinerStatusConstants.POOL_LABELS.keySet() ){
+	    	String label = MinerStatusConstants.POOL_LABELS.get(key);
+	    	RadioButton rb = new RadioButton(this);
+	    	rb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	    	rb.setTextColor(color);
+	    	rb.setText(label);
+	    	rb.setOnClickListener(radio_listener);
+	    	rg.addView(rb);
+	    }
+	}
+	    
 	private OnClickListener radio_listener = new OnClickListener() {
 	    public void onClick(View v) {
 	        // Perform action on clicks
 	        RadioButton rb = (RadioButton) v;
+	        
+		    for( String key : MinerStatusConstants.POOL_LABELS.keySet() ){
+		    	String label = MinerStatusConstants.POOL_LABELS.get(key);
+		    	if (label.equals(rb.getText().toString())){
+		    		poolToAdd = key;
+		    		break;
+		    	}
+		    }
+	        
 	    	final TextView minerNameLabel = (TextView) findViewById(R.id.minerNameLabel);
 	    	final EditText minerName = (EditText) findViewById(R.id.minerName);	
 	    	final Button addMinerButton = (Button) findViewById(R.id.addMinerButton);	
 	    	final TextView minerDirections = (TextView) findViewById(R.id.minerDirections);	
-	        if(rb.getText().equals("Bitcoin Pool")){
-	        	poolToAdd = "bitcoinpool";
-	        	minerNameLabel.setText("Miner Name");
-	        } else if (rb.getText().equals("Slush's Pool")){
-	        	poolToAdd = "slush";
-	        	minerNameLabel.setText("API Key");
-	        } else if (rb.getText().equals("Deepbit.net")){
-	        	poolToAdd = "deepbit";
-	        	minerNameLabel.setText("API Key");
-	        } else if (rb.getText().equals("BtcMine")){
-	        	poolToAdd = "btcmine";
-	        	minerNameLabel.setText("API Key");
-	        } else if (rb.getText().equals("Btcguild")){
-	        	poolToAdd = "btcguild";
-	        	minerNameLabel.setText("API Key");
-	        } else if (rb.getText().equals("Bitclockers")){
-	        	poolToAdd = "bitclockers";
-	        	minerNameLabel.setText("API Key");
-	        } else if (rb.getText().equals("Swepool")){
-	        	poolToAdd = "swepool";
-	        	minerNameLabel.setText("API Key");
-	        } else if (rb.getText().equals("Mt. Red")){
-	        	poolToAdd = "mtred";
-	        	minerNameLabel.setText("API Key");
-	        }
+	        
 	        minerNameLabel.setVisibility(TextView.VISIBLE);
 	        minerName.setVisibility(EditText.VISIBLE);	 
 	        addMinerButton.setVisibility(Button.VISIBLE);
 	        minerDirections.setVisibility(TextView.VISIBLE);	
-	        minerDirections.setText(POOL_DIRECTIONS.get(poolToAdd));
+	        if (poolToAdd.equals("bitcoinpool")){
+	        	minerNameLabel.setText("Miner Name");
+	        } else {
+	        	minerNameLabel.setText("API Key");
+	        }
+	        minerDirections.setText(MinerStatusConstants.POOL_DIRECTIONS.get(poolToAdd));
 	    }
 	};
 	
@@ -122,7 +106,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 				}
 			}
 			return Boolean.TRUE;
-		} else if(pool.equals("bitclockers") || pool.equals("mtred") || pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool")){
+		} else if(pool.equals("bitclockers") || pool.equals("mtred") || pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool") || pool.equals("ozcoin")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c)){
 					return Boolean.FALSE;

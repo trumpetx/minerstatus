@@ -17,6 +17,10 @@ public class BitclockersStatus implements Serializable, Status {
 	private Map<String, BitclockersWorker> workers;
 	private String apiKey;
 	
+	@Override
+	public BigDecimal getTotalHashrate(){
+		return getHashrate().setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
 
 	@Override
 	public String getUsername() {

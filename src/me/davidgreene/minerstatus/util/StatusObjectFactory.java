@@ -2,10 +2,11 @@ package me.davidgreene.minerstatus.util;
 
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
-import me.davidgreene.minerstatus.beans.BtcMine;
+import me.davidgreene.minerstatus.beans.BtcMineStatus;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
 import me.davidgreene.minerstatus.beans.MtredStatus;
+import me.davidgreene.minerstatus.beans.OzcoinStatus;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
@@ -26,7 +27,7 @@ public class StatusObjectFactory {
 		} else if (identifier.equals("deepbit")){
 			return gson.fromJson(result, DeepbitStatus.class);
 		} else if (identifier.equals("btcmine")){
-			return gson.fromJson(result, BtcMine.class);
+			return gson.fromJson(result, BtcMineStatus.class);
 		} else if (identifier.equals("btcguild")){
 			return gson.fromJson(result, BtcguildStatus.class);
 		} else if (identifier.equals("bitclockers")){
@@ -35,6 +36,8 @@ public class StatusObjectFactory {
 			return gson.fromJson(result, SwepoolStatus.class);
 		} else if (identifier.equals("mtred")){
 			return gson.fromJson(result, MtredStatus.class);
+		} else if (identifier.equals("ozcoin")){
+			return gson.fromJson(result, OzcoinStatus.class);
 		}
 		return null;
 	}

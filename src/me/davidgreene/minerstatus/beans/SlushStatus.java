@@ -22,11 +22,7 @@ public class SlushStatus implements Status, Serializable{
 	private String apiKey;
 	
 	@Override
-	public String getDisplayCol1() {
-		return (confirmed_reward == null) ? "" : confirmed_reward;
-	}
-	@Override
-	public String getDisplayCol2() {
+	public BigDecimal getTotalHashrate(){
 		BigDecimal hashRate = BigDecimal.ZERO;
 		if (workers != null){
 			Iterator it = workers.entrySet().iterator();
@@ -36,9 +32,20 @@ public class SlushStatus implements Status, Serializable{
 				SlushWorker worker = (SlushWorker) pairs.getValue();
 				hashRate = hashRate.add(worker.getHashrate());
 			}
-			return hashRate.toString();
-		} else {
+		}
+		return hashRate.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+	
+	@Override
+	public String getDisplayCol1() {
+		return (confirmed_reward == null) ? "" : confirmed_reward;
+	}
+	@Override
+	public String getDisplayCol2() {
+		if (workers == null){
 			return "No Workers";
+		} else {
+			return getTotalHashrate().toString();
 		}
 	}
 	

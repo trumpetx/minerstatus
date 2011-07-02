@@ -163,34 +163,34 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		try {
 			TableLayout mainTableLayout = (TableLayout) findViewById(R.id.statusLayout);
 			mainTableLayout.removeAllViews();
-			TableLayout tickerLayout = (TableLayout) findViewById(R.id.tickerLayout);
-			Boolean showMtGox = Boolean.valueOf(configService.getConfigValue("show.mtgox"));
-			Boolean showTradehill = Boolean.valueOf(configService.getConfigValue("show.tradehill"));
-			if (showMtGox || showTradehill){
-				tickerLayout.removeAllViews();
-				tickerLayout.addView(createNewRow(new String[] {"Tickers:"}, Boolean.TRUE));
-				tickerLayout.addView(createNewRow(new String[] {"","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
-				
-			    for( String key : EXCHANGE_URLS.keySet() ){
-			    	if (Boolean.valueOf(configService.getConfigValue("show."+key))){
-			    		try{
-			    			List<Result> result = minerService.readJsonData(key);
-			    			Exchange exchange = ExchangeObjectFactory.getStatusObject(result.get(0).getData(), key);
-							tickerLayout.addView(createNewRow(new String[] {
-									EXCHANGE_LABELS.get(key),
-									exchange.getTicker().getLastString(), 
-									exchange.getTicker().getHighString(), 
-									exchange.getTicker().getLowString(),
-									exchange.getTicker().getBuyString(),
-									exchange.getTicker().getSellString()
-									}, Boolean.FALSE));	
-			    			
-			    		} catch (Exception e){
-			    			tickerLayout.addView(createNewRow(new String[] {EXCHANGE_LABELS.get(key)+":", "Unable", "to", "connect","..."}, Boolean.FALSE));
-			    		}
-			    	}
-			    }    	
-			} else {
+			TableLayout tickerLayout = (TableLayout) findViewById(R.id.tickerLayout);	
+			Boolean atLeastOneExchange = Boolean.FALSE;
+		    for( String key : EXCHANGE_URLS.keySet() ){
+		    	if (Boolean.valueOf(configService.getConfigValue("show."+key))){
+		    		try{
+		    			List<Result> result = minerService.readJsonData(key);
+		    			Exchange exchange = ExchangeObjectFactory.getStatusObject(result.get(0).getData(), key);
+						if (!atLeastOneExchange){
+							atLeastOneExchange = Boolean.TRUE;
+							tickerLayout.removeAllViews();
+							tickerLayout.addView(createNewRow(new String[] {"Tickers:"}, Boolean.TRUE));
+							tickerLayout.addView(createNewRow(new String[] {"","Last", "High","Low","Buy","Sell"}, Boolean.FALSE));
+		    			}		    			
+						tickerLayout.addView(createNewRow(new String[] {
+								EXCHANGE_LABELS.get(key),
+								exchange.getTicker().getLastString(), 
+								exchange.getTicker().getHighString(), 
+								exchange.getTicker().getLowString(),
+								exchange.getTicker().getBuyString(),
+								exchange.getTicker().getSellString()
+								}, Boolean.FALSE));	
+
+		    		} catch (Exception e){
+		    			tickerLayout.addView(createNewRow(new String[] {EXCHANGE_LABELS.get(key)+":", "Unable", "to", "connect","..."}, Boolean.FALSE));
+		    		}
+		    	}
+		    }    	
+			if (!atLeastOneExchange){
 				tickerLayout.removeAllViews();
 				tickerLayout.setVisibility(TableLayout.INVISIBLE);
 			}

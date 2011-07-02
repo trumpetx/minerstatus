@@ -19,4 +19,5 @@ public interface MinerService {
 	public Cursor getPools();
 	public Cursor getMiners(String pool);
 	public Cursor getMiners();
+	public String getPoolForMiner(String miner);
 }

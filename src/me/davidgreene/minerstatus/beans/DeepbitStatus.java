@@ -17,6 +17,11 @@ public class DeepbitStatus implements Status, Serializable {
 	private Map<String,WorkerStatus> workers;
 	private String apiKey;
 	
+	@Override
+	public BigDecimal getTotalHashrate(){
+		return getHashrate().setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+	
 	public BigDecimal getConfirmed_reward() {
 		return (confirmed_reward == null) ? BigDecimal.ZERO : confirmed_reward;
 	}
@@ -47,11 +52,11 @@ public class DeepbitStatus implements Status, Serializable {
 	}
 
 	@Override
-	public String getDisplayCol1() {
+	public String getDisplayCol2() {
 		return (hashrate == null) ? "0" : hashrate.toString();
 	}
 
-	public String getDisplayCol2() {
+	public String getDisplayCol1() {
 		return (confirmed_reward == null) ? "0" : confirmed_reward.toString();
 	}
 
@@ -69,12 +74,12 @@ public class DeepbitStatus implements Status, Serializable {
 	}
 
 	@Override
-	public String getDisplayCol1Label() {
+	public String getDisplayCol2Label() {
 		return "Hashrate";
 	}
 
 	@Override
-	public String getDisplayCol2Label() {
+	public String getDisplayCol1Label() {
 		return "Confirmed Reward";
 	}
 

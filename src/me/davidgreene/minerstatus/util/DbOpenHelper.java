@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     private static final String DATABASE_NAME = "minerstatus.db";
 
     public DbOpenHelper(Context context) {
@@ -24,7 +24,10 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.tradehill', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.exchange_bitcoins', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('connection.timeout', '4000')");
-		db.execSQL("INSERT INTO config (key, value) VALUES ('max.errors', '10')");
+    	db.execSQL("INSERT INTO config (key, value) VALUES ('max.errors', '10')");
+    	db.execSQL("INSERT INTO config (key, value) VALUES ('widget.apiKey', 'none')");
+    	db.execSQL("INSERT INTO config (key, value) VALUES ('low.hashrate.notification', '0')");
+    	
     	db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT, pool_index INTEGER DEFAULT 0)");
     }
 
@@ -71,7 +74,14 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 			db.execSQL("INSERT INTO config (key, value) VALUES ('show.exchange_bitcoins', 'true')");
 			oldVersion = 8;
 		}			
-		
+		if (oldVersion == 8){
+			db.execSQL("INSERT INTO config (key, value) VALUES ('widget.apiKey', 'none')");
+			oldVersion = 9;
+		}
+		if (oldVersion == 9){
+			db.execSQL("INSERT INTO config (key, value) VALUES ('low.hashrate.notification', '0')");
+			oldVersion = 10;
+		}
 		
 	}
 }

@@ -5,11 +5,13 @@ import java.math.BigDecimal;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
-import me.davidgreene.minerstatus.beans.BtcMine;
+import me.davidgreene.minerstatus.beans.BtcMineStatus;
 import me.davidgreene.minerstatus.beans.BtcMineWorker;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.BtcguildWorker;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
+import me.davidgreene.minerstatus.beans.OzcoinStatus;
+import me.davidgreene.minerstatus.beans.OzcoinWorker;
 import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.MtredWorker;
 import me.davidgreene.minerstatus.beans.SlushStatus;
@@ -97,8 +99,8 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((DeepbitStatus)minerStatus, tl);
 		} else if (minerStatus instanceof SlushStatus){
 			render((SlushStatus)minerStatus, tl);
-		} else if (minerStatus instanceof BtcMine){
-			render((BtcMine)minerStatus, tl);
+		} else if (minerStatus instanceof BtcMineStatus){
+			render((BtcMineStatus)minerStatus, tl);
 		} else if (minerStatus instanceof BtcguildStatus){
 			render((BtcguildStatus)minerStatus, tl);
 		} else if (minerStatus instanceof BitclockersStatus){
@@ -107,6 +109,8 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((SwepoolStatus)minerStatus, tl);
 		}  else if (minerStatus instanceof MtredStatus){
 			render((MtredStatus)minerStatus, tl);
+		}  else if (minerStatus instanceof OzcoinStatus){
+			render((OzcoinStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
@@ -173,6 +177,22 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		}
 	}
 	
+	private void render(OzcoinStatus status, TableLayout tl){
+		tl.addView(renderRow("Hashrate", status.getHashrate()));
+		tl.addView(renderRow("Confirmed Rewards", status.getConfirmed_rewards()));
+		tl.addView(renderRow("Payout History", status.getPayout_history()));
+		tl.addView(renderRow("Worker(s):",""));
+		if(status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	OzcoinWorker workerStatus = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Alive",workerStatus.getAlive()));
+		    	tl.addView(renderRow("Hashrate",workerStatus.getHashrate()));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
+	}
+	
 	private void render(BtcguildStatus status, TableLayout tl){
 		tl.addView(renderRow("Confirmed Rewards", status.getUser().getConfirmed_rewards().toString()));
 		tl.addView(renderRow("Unconfirmed Rewards", status.getUser().getUnconfirmed_rewards().toString()));
@@ -218,7 +238,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	}
 	
   
-	private void render(BtcMine status, TableLayout tl){
+	private void render(BtcMineStatus status, TableLayout tl){
 		tl.addView(renderRow("Hashrate", status.getHashrate()));
 		tl.addView(renderRow("Total Payout", status.getTotal_payout()));
 		tl.addView(renderRow("Total Bounty", status.getTotal_bounty()));

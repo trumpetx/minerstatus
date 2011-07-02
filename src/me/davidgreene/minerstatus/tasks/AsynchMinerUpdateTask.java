@@ -1,6 +1,9 @@
 package me.davidgreene.minerstatus.tasks;
 
-import static me.davidgreene.minerstatus.util.MinerStatusConstants.*;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.CONNECTION_TIMEOUT;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.EXCHANGE_URLS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.POOL_URLS;
+import static me.davidgreene.minerstatus.util.MinerStatusConstants.SOCKET_TIMEOUT;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -39,32 +42,45 @@ public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, B
 	private final String tag = "MinerUpdate_";
 	private MinerService minerService;
 	private ConfigService configService;
+	private String[] apiKeysToUpdate;
 	
+	private Integer connectionTimeout;
+	private HttpClient httpClient;
 	
     protected abstract void onPostExecute(Boolean result);
 	
     protected Boolean doInBackground(Object... params) {
     	configService = (ConfigService) params[0];
     	minerService = (MinerService) params[1];
-        Integer connectionTimeout;
+    	
+    	if (params.length > 2){
+    		apiKeysToUpdate = (String[]) params[2];
+    	}
+    	
         try{
         	connectionTimeout = Integer.valueOf(configService.getConfigValue("connection.timeout"));
         } catch (NumberFormatException e){
         	connectionTimeout = 3000;
         }
-		String result="";
+        
 		HttpParams httpParameters = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParameters, connectionTimeout);
 		HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT);
 		
-		HttpClient httpClient = new DefaultHttpClient(httpParameters);
-		HttpGet request;
-		ResponseHandler<String> handler = new BasicResponseHandler();
-
-
+		httpClient = new DefaultHttpClient(httpParameters);
+        
 		trustAllHosts();
+		
+		//If we've specified specific miners to update, just update those
+		if (apiKeysToUpdate != null){
+			for(String apiKey : apiKeysToUpdate){
+				saveMinerData(apiKey, minerService.getPoolForMiner(apiKey));
+			}
+			return Boolean.TRUE;
+		}
+		
 	    for( String key : EXCHANGE_URLS.keySet() ){
-	    	String value = EXCHANGE_URLS.get(key);
+	    	//String value = EXCHANGE_URLS.get(key);
 	    	if (Boolean.valueOf(configService.getConfigValue("show."+key))){
 	    		fetchHttpsData(EXCHANGE_URLS.get(key), key, 0);
 	    	}
@@ -79,47 +95,7 @@ public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, B
 			while(cursor.moveToNext()) {
 				
 				String apiKey = cursor.getString(0);
-				List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
-				for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
-    				if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
-    					try {
-		    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-		    				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-		                    https.setHostnameVerifier(DO_NOT_VERIFY);
-		                    https.setConnectTimeout(connectionTimeout);
-		                    int tries = 0;
-		    	            while (https.getResponseCode() < 0 && tries < 15){
-		    	            	https.connect();
-		    	            	tries++;
-		    	            }
-		    				InputStream is = https.getInputStream();
-		    				
-		    				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
-		    				StringBuilder httpsResponse = new StringBuilder();
-		    				String line;
-		    				while ((line = r.readLine()) != null) {
-		    					httpsResponse.append(line);
-		    				}
-		    				result = httpsResponse.toString();
-		    				is.close();
-		    				https.disconnect();
-    					} catch (Exception e){
-    						Log.d(tag, e.toString());
-    					}
-    				} else{
-	    				request = new HttpGet(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-	    	
-	    				try{
-	    					result = httpClient.execute(request, handler);
-	    					if(result.contains("invalid") && result.contains("etcpasswd")){
-	    						result = "";
-	    					}
-	    				} catch (Exception e){
-	    					e.printStackTrace();
-	    				}
-    				}
-    				minerService.addJsonData(apiKey, result, poolIndex);
-				}
+				saveMinerData(apiKey, pool);
 			}
 			if (cursor != null && !cursor.isClosed()) {
 				cursor.close();
@@ -132,6 +108,56 @@ public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, B
 		configService.setConfigValue("last.updated", Long.toString(System.currentTimeMillis()));
 		return Boolean.TRUE;
 	}
+    
+    private void saveMinerData(String apiKey, String pool){
+		String result="";
+		HttpGet request;
+		ResponseHandler<String> handler = new BasicResponseHandler();
+		
+		List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
+		for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
+			if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
+				try {
+    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
+    				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+                    https.setHostnameVerifier(DO_NOT_VERIFY);
+                    https.setConnectTimeout(connectionTimeout);
+                    int tries = 0;
+    	            //while (https.getResponseCode() < 0 && tries < 2){
+    	            	https.connect();
+    	            	//System.gc();
+    	            	//Thread.sleep(2000);
+    	            	//tries++;
+    	            //}
+    				InputStream is = https.getInputStream();
+    				
+    				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
+    				StringBuilder httpsResponse = new StringBuilder();
+    				String line;
+    				while ((line = r.readLine()) != null) {
+    					httpsResponse.append(line);
+    				}
+    				result = httpsResponse.toString();
+    				is.close();
+    				https.disconnect();
+				} catch (Exception e){
+					Log.d(tag, e.toString());
+				}
+			} else{
+				request = new HttpGet(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
+	
+				try{
+					result = httpClient.execute(request, handler);
+					if(result.contains("invalid") && result.contains("etcpasswd")){
+						result = "";
+					}
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+			minerService.addJsonData(apiKey, result, poolIndex);
+		}
+    }
 
     private String fetchHttpsData(String urlString, String key, Integer poolIndex){
     	try{

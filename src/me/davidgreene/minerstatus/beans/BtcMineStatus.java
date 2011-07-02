@@ -1,8 +1,9 @@
 package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
-public class BtcMine implements Serializable, Status, Mergable {
+public class BtcMineStatus implements Serializable, Status, Mergable {
 
 	/**
 	 * 
@@ -23,17 +24,26 @@ public class BtcMine implements Serializable, Status, Mergable {
 	private String total_24h;
 	
 	@Override
+	public BigDecimal getTotalHashrate(){
+		try{
+			return new BigDecimal((hashrate == null) ? "0" : hashrate).setScale(2, BigDecimal.ROUND_HALF_UP);
+		} catch (Exception e){
+			return BigDecimal.ZERO;
+		}
+	}
+	
+	@Override
 	public String getUsername() {
 		return "Worker(s)";
 	}
 
 	@Override
-	public String getDisplayCol1() {
-		return (hashrate == null) ? "" : hashrate;
+	public String getDisplayCol2() {
+		return getTotalHashrate().toString();
 	}
 
 	@Override
-	public String getDisplayCol2() {
+	public String getDisplayCol1() {
 		return (total_payout == null) ? "" : total_payout;
 	}
 
@@ -125,12 +135,12 @@ public class BtcMine implements Serializable, Status, Mergable {
 	}
 
 	@Override
-	public String getDisplayCol1Label() {
+	public String getDisplayCol2Label() {
 		return "Hashrate";
 	}
 
 	@Override
-	public String getDisplayCol2Label() {
+	public String getDisplayCol1Label() {
 		return "Total Payout";
 	}
 
@@ -143,9 +153,9 @@ public class BtcMine implements Serializable, Status, Mergable {
 	}
 
 	@Override
-	public BtcMine mergeWith(Mergable object) {
-		if (object instanceof BtcMine){
-			BtcMine btcMine = (BtcMine) object;
+	public BtcMineStatus mergeWith(Mergable object) {
+		if (object instanceof BtcMineStatus){
+			BtcMineStatus btcMine = (BtcMineStatus) object;
 			if (btcMine.total_bounty != null)
 				this.total_bounty =  btcMine.total_bounty;
 			if (btcMine.confirmed_bounty != null)

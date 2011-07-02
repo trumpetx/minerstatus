@@ -8,6 +8,7 @@ import java.util.Set;
 
 import me.davidgreene.minerstatus.MinerStatusApp;
 import me.davidgreene.minerstatus.beans.Result;
+import me.davidgreene.minerstatus.util.MinerStatusConstants;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +17,7 @@ import android.util.Log;
 
 public class MinerServiceImpl implements MinerService {
 	
-	private final String tag = "TX";
+	private final String tag = "MS_";
 	private MinerStatusApp app;
 	
     public MinerServiceImpl(Context context){
@@ -60,7 +61,7 @@ public class MinerServiceImpl implements MinerService {
 		ContentValues values = new ContentValues();
 		values.put("miner", miner);
 		values.put("pool", pool);
-		values.put("errors", 4); //This will be reset to 0 if it is successful		
+		values.put("errors", MinerStatusConstants.MAX_ERRORS - 1); //This will be reset to 0 if it is successful		
 		getDBw().insert("miners", null, values);
 	}
 
@@ -127,6 +128,23 @@ public class MinerServiceImpl implements MinerService {
 	
 	public Cursor getMiners() {
 		return getDBw().rawQuery(SELECT_MINERS, new String[]{});
+	}
+	
+	private final String SELECT_POOL = "SELECT DISTINCT pool FROM miners WHERE miner=?";
+	
+	public String getPoolForMiner(String miner){
+		Cursor cursor = null;
+		try{
+			cursor = getDBw().rawQuery(SELECT_POOL, new String[]{miner});
+			if (cursor.moveToNext()){
+				return cursor.getString(0);
+			}
+		}finally{
+				if (cursor != null && !cursor.isClosed()){
+					cursor.close();
+				}
+		}
+		return "";
 	}
 
 }

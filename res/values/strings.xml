@@ -13,5 +13,7 @@
     <string name="deleteMinerLabelOptionsMenu">Delete Individual Miner:</string>
     <string name="maxErrorsLabel">Number of errors before a Miner is removed:</string>
     <string name="connectionTimeout">Connection Timeout (seconds):</string>
-    <string name="statusWidget">Status</string>
+    <string name="statusWidget">Miner Status</string>
+    <string name="widgetSpinnerLabel">Configure Widget with Miner</string>
+    <string name="lowHashrateNotification">Low Hashrate Notification Level</string>
 </resources>

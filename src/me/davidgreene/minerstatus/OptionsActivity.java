@@ -12,8 +12,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
@@ -23,8 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-public class OptionsActivity extends AbstractMinerStatusActivity{
-		
+public class OptionsActivity extends AbstractMinerStatusActivity {
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,11 +127,62 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
     	lightTheme.setOnClickListener(radioListener);
     	lightTheme.setTextColor(color);
     	
+    	TextView widgetSpinnerLabel = (TextView) findViewById(R.id.widgetSpinnerLabel);
+    	widgetSpinnerLabel.setTextColor(color);
+    	
+    	
+    	final Spinner widgetSpinner = (Spinner) findViewById(R.id.widget_spinner);
+    	final int defaultSelection = populateWidgetSpinner(widgetSpinner, configService.getConfigValue("widget.apiKey"));
+    	widgetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+    		private boolean initialized = false;
+    		
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				if (!initialized){
+					widgetSpinner.setSelection(defaultSelection);
+					initialized = true;
+					return;
+				}
+				Spinner spinner = (Spinner) arg0;
+				ArrayAdapter arrayAdapter = (ArrayAdapter) spinner.getAdapter();
+				String apiKey = (String) arrayAdapter.getItem(position);
+				configService.setConfigValue("widget.apiKey", apiKey);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				configService.setConfigValue("widget.apiKey", "none");
+			}
+    		
+		});
+
+    	TextView lowHashrateLabel = (TextView) findViewById(R.id.lowHashrateNotificationLabel);
+    	lowHashrateLabel.setTextColor(color);
+    	EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
+    	lowHashrate.setText(configService.getConfigValue("low.hashrate.notification"));
+        Button lowHashrateButton = (Button) findViewById(R.id.lowHashrateSaveButton);
+        lowHashrateButton.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v) {
+				EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
+				int lowHashrateInt;
+				try{
+					lowHashrateInt = Integer.valueOf(lowHashrate.getText().toString());
+					if (lowHashrateInt < -1){
+						lowHashrateInt = -1;
+					}
+				} catch (Exception e){
+					lowHashrateInt = -1;
+				}
+				lowHashrate.setText(String.valueOf(lowHashrateInt));
+				configService.setConfigValue("low.hashrate.notification", String.valueOf(lowHashrateInt));
+        	}
+        });
     	TextView minerDeleteSpinnerLabel = (TextView) findViewById(R.id.deleteSpinnerLabel);
     	minerDeleteSpinnerLabel.setTextColor(color);
     	
     	final Spinner spinner = (Spinner) findViewById(R.id.miner_delete_spinner);
-    	populateSpinner(spinner);
+    	populateDeleteSpinner(spinner);
         Button deleteMinerButton = (Button) findViewById(R.id.deleteMinerButtonOptionsMenu);
         deleteMinerButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
@@ -145,7 +198,7 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
 							Toast.makeText(getApplicationContext(), (CharSequence)spinner.getSelectedItem() +" removed.",
 									Toast.LENGTH_LONG).show();
 							minerService.deleteMiner(((CharSequence)spinner.getSelectedItem()).toString());
-							populateSpinner(spinner);
+							populateDeleteSpinner(spinner);
 						}
 					});		
 					alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -157,9 +210,11 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
 				}
 			});
         
+        
+        
 	}	
 	
-	private void populateSpinner(Spinner spinner){
+	private void populateDeleteSpinner(Spinner spinner){
     	Cursor cur = minerService.getMiners();
     	ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item);
     	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -172,6 +227,28 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
 		cur.close();
 	}
 	
+	
+	private int populateWidgetSpinner(Spinner spinner, String defaultSelection){
+    	Cursor cur = minerService.getMiners();
+    	ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item);
+    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	adapter.add("none");
+    	int position = 0;
+    	int i = 1;
+		while(cur.moveToNext()){
+			String miner = cur.getString(0);     
+			CharSequence seq = miner;
+			adapter.add(miner);
+			if (miner.equals(defaultSelection)){
+				position = i; 
+			}
+			i++;
+		}
+		spinner.setAdapter(adapter);
+		cur.close();
+		return position;
+	}
+	
 	private OnClickListener radioListener = new OnClickListener() {
 	    public void onClick(View v) {
 	        RadioButton rb = (RadioButton) v;
@@ -182,5 +259,6 @@ public class OptionsActivity extends AbstractMinerStatusActivity{
 	        }
 	    }
 	};
+
 	
 }

@@ -23,7 +23,7 @@ public class MinerStatusConstants {
 		EXCHANGE_URLS.put("exchange_bitcoins", "https://www.exchangebitcoins.com/data/ticker");
 	}
 	
-	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(8);
+	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(9);
 	static{
 		POOL_URLS.put("bitcoinpool", new String[]{"http://www.bitcoinpool.com/user.php?json=1&u=%MINER%"});
 		POOL_URLS.put("slush", new String[]{"https://mining.bitcoin.cz/accounts/profile/json/%MINER%"});
@@ -33,8 +33,9 @@ public class MinerStatusConstants {
 		POOL_URLS.put("bitclockers", new String[]{"http://bitclockers.com/?action=api&cmd=%MINER%"});
 		POOL_URLS.put("swepool", new String[]{"https://swepool.net/json?key=%MINER%"});
 		POOL_URLS.put("mtred", new String[]{"https://mtred.com/api/user/key/%MINER%"});
+		POOL_URLS.put("ozcoin", new String[]{"https://ozco.in/api.php?api_key=%MINER%"});
 	}
-	public static final Map<String,String> POOL_LABELS = new HashMap<String,String>(8);
+	public static final Map<String,String> POOL_LABELS = new HashMap<String,String>(9);
 	static{
 		POOL_LABELS.put("bitcoinpool", "Bitcoin Pool");
 		POOL_LABELS.put("slush", "Slush's Pool");
@@ -44,8 +45,9 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("bitclockers", "Bitclockers");
 		POOL_LABELS.put("swepool", "Swepool");
 		POOL_LABELS.put("mtred", "Mt.Red");
+		POOL_LABELS.put("ozcoin", "Ozco.in");
 	}
-	public static final Map<String,String> POOL_DIRECTIONS = new HashMap<String,String>(8);
+	public static final Map<String,String> POOL_DIRECTIONS = new HashMap<String,String>(9);
 	static{
 		POOL_DIRECTIONS.put("bitcoinpool", "Your miner's name is the username you created when you opened an account with\nhttp://www.bitcoinpool.com");
 		POOL_DIRECTIONS.put("slush", "Slush's Pool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key (and generate new ones) in your account settings at\nhttp://mining.bitcoin.cz");
@@ -55,6 +57,7 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("bitclockers", "Bitclockers provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your dashboard page at\nhttp://bitclockers.com/?action=dashboard");
 		POOL_DIRECTIONS.put("swepool", "Swepool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your settings page at\nhttp://swepool.net/settings");
 		POOL_DIRECTIONS.put("mtred", "Mt. Red provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your profile page at\nhttps://mtred.com/user/profile.html");
+		POOL_DIRECTIONS.put("ozcoin", "Ozcoin provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://ozco.in/accountdetails.php");
 		
 	}	
 	public static final Map<String,String>THEME_LIST = new HashMap<String,String>(2);
