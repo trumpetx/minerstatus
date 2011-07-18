@@ -50,15 +50,22 @@ public class StatusWidget extends AppWidgetProvider {
         	if (configService == null)
         		configService = ((MinerStatusApp)this.getApplicationContext()).getConfigService();	
         	myAsynchMinerUpdateTask = new MyAsynchMinerUpdateTask();
-        	myAsynchMinerUpdateTask.execute(new Object[]{configService, minerService, new String[]{configService.getConfigValue("widget.apiKey")} });
-        	
+        	String apiKey = configService.getConfigValue("widget.apiKey");
+        	if (apiKey.equals("none") || apiKey.equals("")){
+        		RemoteViews updateView = new RemoteViews(this.getPackageName(), R.layout.status_message);
+        		updateView.setTextViewText(R.id.pool, "Configure in MinerStatus");
+				updateView.setTextViewText(R.id.col1label, "No API Key set");
+	        	updateView.setTextViewText(R.id.col1, "");
+				updateView.setTextViewText(R.id.col2label, "");
+				updateView.setTextViewText(R.id.col2, "");
+				updateView.setTextViewText(R.id.updated, "");        
+				AppWidgetManager.getInstance(this).updateAppWidget(new ComponentName(this, StatusWidget.class), updateView);
+        	} else {
+        		myAsynchMinerUpdateTask.execute(new Object[]{configService, minerService, new String[]{configService.getConfigValue("widget.apiKey")} });
+        	}
         	//TODO: Figure out how to have multiple widgets!
-
-        	
         }
         
-        
-
         public void buildUpdate(Context context) {
         	RemoteViews updateView = new RemoteViews(context.getPackageName(), R.layout.status_message);
         	
@@ -91,12 +98,8 @@ public class StatusWidget extends AppWidgetProvider {
 					
         	} catch (Exception e){
         		Log.d(tag, e.toString());
-        	}        
-        	
-            ComponentName thisWidget = new ComponentName(this, StatusWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(this);
-            manager.updateAppWidget(thisWidget, updateView);
-            
+        	}     
+        	AppWidgetManager.getInstance(this).updateAppWidget(new ComponentName(this, StatusWidget.class), updateView);
         }
         
         private static final int MINER_NOTIFICATION_ID = 309392;

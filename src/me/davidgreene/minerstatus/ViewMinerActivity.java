@@ -1,7 +1,11 @@
 package me.davidgreene.minerstatus;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.util.Date;
 
+import me.davidgreene.minerstatus.beans.ArsStatus;
+import me.davidgreene.minerstatus.beans.ArsWorker;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
@@ -10,16 +14,23 @@ import me.davidgreene.minerstatus.beans.BtcMineWorker;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.BtcguildWorker;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
-import me.davidgreene.minerstatus.beans.OzcoinStatus;
-import me.davidgreene.minerstatus.beans.OzcoinWorker;
+import me.davidgreene.minerstatus.beans.DeepbitWorker;
+import me.davidgreene.minerstatus.beans.EclipseMcStatus;
+import me.davidgreene.minerstatus.beans.EclipseMcWorker;
+import me.davidgreene.minerstatus.beans.EligiusStatus;
+import me.davidgreene.minerstatus.beans.MinecoinStatus;
+import me.davidgreene.minerstatus.beans.MinecoinWorker;
 import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.MtredWorker;
+import me.davidgreene.minerstatus.beans.OzcoinStatus;
+import me.davidgreene.minerstatus.beans.OzcoinWorker;
+import me.davidgreene.minerstatus.beans.RfcStatus;
+import me.davidgreene.minerstatus.beans.RfcWorker;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.SlushWorker;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
 import me.davidgreene.minerstatus.beans.SwepoolWorker;
-import me.davidgreene.minerstatus.beans.WorkerStatus;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -111,10 +122,59 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((MtredStatus)minerStatus, tl);
 		}  else if (minerStatus instanceof OzcoinStatus){
 			render((OzcoinStatus)minerStatus, tl);
+		} else if (minerStatus instanceof MinecoinStatus){
+			render((MinecoinStatus)minerStatus, tl);
+		} else if (minerStatus instanceof EligiusStatus){
+			render((EligiusStatus)minerStatus, tl);
+		} else if (minerStatus instanceof EclipseMcStatus){
+			render((EclipseMcStatus)minerStatus, tl);
+		} else if (minerStatus instanceof ArsStatus){
+			render((ArsStatus)minerStatus, tl);
+		}  else if (minerStatus instanceof RfcStatus){
+			render((RfcStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
 		
+	}
+	
+	private void render(RfcStatus status, TableLayout tl){
+		tl.addView(renderRow("Worker(s):",""));
+		if(status.getWorkers() != null){
+		    for( RfcWorker worker : status.getWorkers() ){
+		    	tl.addView(renderRow("",worker.getLogin()));
+		    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(renderRow("Shares this Round",worker.getShares().getThis_round().toString()));
+		    	tl.addView(renderRow("Shares all Time",worker.getShares().getAll_time().toString()));
+		    	Date lastShare = new Date(worker.getShares().getLast()*1000);
+		    	tl.addView(renderRow("Last Share Submitted",(worker.getShares().getLast().equals(0L)) ? "Never" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(lastShare)));
+		    	tl.addView(renderRow("Stales this Round",worker.getStales().getThis_round().toString()));
+		    	tl.addView(renderRow("Stales all Time",worker.getStales().getAll_time().toString()));
+		    	Date lastStale = new Date(worker.getStales().getLast()*1000);
+		    	tl.addView(renderRow("Last Stale Submitted",(worker.getStales().getLast().equals(0L)) ? "Never" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(lastStale)));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
+	}
+	
+	private void render(MinecoinStatus status, TableLayout tl){
+		tl.addView(renderRow("Username", status.getUser().getUsername()));
+		tl.addView(renderRow("Total Reward", status.getUser().getTotal_reward().toString()));
+		tl.addView(renderRow("Estimated Reward", status.getUser().getEstimated_reward_this_round()));
+		tl.addView(renderRow("Confirmed Reward", status.getUser().getConfirmed_reward().toString()));
+		tl.addView(renderRow("Unconfirmed Reward", status.getUser().getUnconfirmed_reward().toString()));
+		tl.addView(renderRow("Worker(s):",""));
+		if(status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	MinecoinWorker workerStatus = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Last Share At",workerStatus.getLast_share_at()));
+		    	tl.addView(renderRow("Hashrate",workerStatus.getStats().getHash_rate().setScale(2, BigDecimal.ROUND_HALF_UP).toString()));
+		    	tl.addView(renderRow("Share Count",workerStatus.getStats().getShare_count().toString()));
+		    	tl.addView(renderRow("Created At",workerStatus.getStats().getCreated_at()));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
 	}
 	
 	private TableRow renderRow(String left, String right){
@@ -160,6 +220,14 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Efficiency", status.getUser().getEfficiency()));
 		tl.addView(renderRow("",""));
 	}
+	
+	private void render(EligiusStatus status, TableLayout tl){
+		tl.addView(renderRow("Time Delta", status.getTimedelta().toString()));
+		tl.addView(renderRow("Shares", status.getShares().toString()));
+		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
+		tl.addView(renderRow("",""));
+	}
+	
 	private void render(DeepbitStatus status, TableLayout tl){
 		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
 		tl.addView(renderRow("Confirmed Reward", status.getConfirmed_reward().toString()));
@@ -167,7 +235,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		tl.addView(renderRow("Worker(s):",""));
 		if(status.getWorkers() != null){
 		    for( String key : status.getWorkers().keySet() ){
-		    	WorkerStatus workerStatus = status.getWorkers().get(key);
+		    	DeepbitWorker workerStatus = status.getWorkers().get(key);
 		    	tl.addView(renderRow("",key));
 		    	tl.addView(renderRow("Alive",workerStatus.getAlive().toString()));
 		    	tl.addView(renderRow("Shares",workerStatus.getShares().toString()));
@@ -283,8 +351,10 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		BigDecimal rsolved = new BigDecimal(status.getRsolved());
 		BigDecimal roundShares = new BigDecimal(status.getServer().getRoundshares());
 		BigDecimal blockValue = new BigDecimal(50);
-		BigDecimal estimatedReward = blockValue.multiply(rsolved).divide(roundShares, 4, BigDecimal.ROUND_HALF_UP).setScale(4, BigDecimal.ROUND_HALF_UP);		
-		
+		BigDecimal estimatedReward = BigDecimal.ZERO;
+		if (!roundShares.equals(BigDecimal.ZERO)){
+			estimatedReward = blockValue.multiply(rsolved).divide(roundShares, 4, BigDecimal.ROUND_HALF_UP).setScale(4, BigDecimal.ROUND_HALF_UP);		
+		}
 		tl.addView(renderRow("Estimated Payout", estimatedReward.toString()));
 		tl.addView(renderRow("Server Hashrate", status.getServer().getHashrate().toString()));
 		tl.addView(renderRow("Server Round Shares", status.getServer().getRoundshares().toString()));
@@ -296,6 +366,45 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		    	tl.addView(renderRow("",key));
 		    	tl.addView(renderRow("Round Solved",worker.getRsolved().toString()));
 		    	tl.addView(renderRow("Hashrate",worker.getMhash().toString()));
+		    	tl.addView(renderRow("",""));
+		    }		
+		}
+	}	
+	
+	private void render(ArsStatus status, TableLayout tl){
+		tl.addView(renderRow("Confirmed Rewards", status.getConfirmed_rewards()));
+		tl.addView(renderRow("Hashrate", status.getHashrate()));
+		tl.addView(renderRow("Payout History", status.getPayout_history()));
+		tl.addView(renderRow("Total PPS Work", status.getTotalPPSWork()));
+		tl.addView(renderRow("Paid PPS Work", status.getPaidPPSWork()));
+		tl.addView(renderRow("PPS Donated", status.getPPSDonated()));
+		tl.addView(renderRow("PPS Shares", status.getPPSShares()));		
+		if (status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	ArsWorker worker = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Alive", Boolean.valueOf(worker.getAlive().equals("1")).toString()));
+		    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(renderRow("",""));
+		    }		
+		}
+	}	
+	
+	private void render(EclipseMcStatus status, TableLayout tl){
+		tl.addView(renderRow("Confirmed Rewards", status.getUser().getConfirmed_rewards()));
+		tl.addView(renderRow("Unconfirmed Rewards", status.getUser().getUnconfirmed_rewards()));
+		tl.addView(renderRow("Estimated Rewards", status.getUser().getEstimated_rewards().toString()));
+		tl.addView(renderRow("Total Payout", status.getUser().getTotal_payout()));
+		tl.addView(renderRow("Blocks Found", status.getUser().getBlocks_found()));
+		if (status.getWorkers() != null){
+		    for( EclipseMcWorker worker : status.getWorkers() ){
+		    	tl.addView(renderRow("",worker.getWorker_name()));
+		    	tl.addView(renderRow("Hashrate",worker.getHash_rate()));
+		    	tl.addView(renderRow("Round Shares",worker.getRound_shares()));
+		    	tl.addView(renderRow("Reset Shares",worker.getReset_shares()));
+		    	tl.addView(renderRow("Total Shares",worker.getTotal_shares()));
+		    	tl.addView(renderRow("Last Activity",worker.getLast_activity()));
+
 		    	tl.addView(renderRow("",""));
 		    }		
 		}

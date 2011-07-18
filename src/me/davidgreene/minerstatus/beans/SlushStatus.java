@@ -28,7 +28,6 @@ public class SlushStatus implements Status, Serializable{
 			Iterator it = workers.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry pairs = (Map.Entry)it.next();
-				pairs.getKey();
 				SlushWorker worker = (SlushWorker) pairs.getValue();
 				hashRate = hashRate.add(worker.getHashrate());
 			}

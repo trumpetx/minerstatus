@@ -14,7 +14,7 @@ public class DeepbitStatus implements Status, Serializable {
 	private BigDecimal confirmed_reward;
 	private BigDecimal hashrate;
 	private Boolean ipa = Boolean.FALSE;
-	private Map<String,WorkerStatus> workers;
+	private Map<String,DeepbitWorker> workers;
 	private String apiKey;
 	
 	@Override
@@ -83,11 +83,11 @@ public class DeepbitStatus implements Status, Serializable {
 		return "Confirmed Reward";
 	}
 
-	public void setWorkers(Map<String,WorkerStatus> workers) {
+	public void setWorkers(Map<String,DeepbitWorker> workers) {
 		this.workers = workers;
 	}
 
-	public Map<String,WorkerStatus> getWorkers() {
+	public Map<String,DeepbitWorker> getWorkers() {
 		return workers;
 	}
 

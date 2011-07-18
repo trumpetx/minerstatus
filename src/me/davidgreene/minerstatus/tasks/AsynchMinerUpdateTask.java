@@ -39,13 +39,15 @@ import android.util.Log;
 
 public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, Boolean> {
 	
-	private final String tag = "MinerUpdate_";
+	private final static String tag = "MinerUpdate_";
 	private MinerService minerService;
 	private ConfigService configService;
 	private String[] apiKeysToUpdate;
 	
 	private Integer connectionTimeout;
 	private HttpClient httpClient;
+	
+	private Boolean haveITrustedHostsYet = Boolean.FALSE;
 	
     protected abstract void onPostExecute(Boolean result);
 	
@@ -69,7 +71,10 @@ public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, B
 		
 		httpClient = new DefaultHttpClient(httpParameters);
         
-		trustAllHosts();
+		if (!haveITrustedHostsYet){
+			trustAllHosts();
+			haveITrustedHostsYet = Boolean.TRUE;
+		}
 		
 		//If we've specified specific miners to update, just update those
 		if (apiKeysToUpdate != null){
@@ -113,23 +118,36 @@ public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, B
 		String result="";
 		HttpGet request;
 		ResponseHandler<String> handler = new BasicResponseHandler();
-		
+		if (pool.equals("")){
+			throw new RuntimeException("Can't find pool value from DB\nPool: "+pool+"\nApiKey: "+apiKey);
+		}
 		List<String> poolUrls = Arrays.asList(POOL_URLS.get(pool));
 		for(int poolIndex = 0; poolIndex< poolUrls.size(); poolIndex++){
 			if (poolUrls.get(poolIndex).substring(0, 5).equals("https")){
 				try {
-    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
-    				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-                    https.setHostnameVerifier(DO_NOT_VERIFY);
-                    https.setConnectTimeout(connectionTimeout);
-                    int tries = 0;
-    	            //while (https.getResponseCode() < 0 && tries < 2){
+					HttpsURLConnection https=null;
+					int tries = 0;
+					do {
+						if (https != null){
+							https.disconnect();
+							https = null;
+						}
+	    				URL url = new URL(poolUrls.get(poolIndex).replace("%MINER%", apiKey));
+	    				https = (HttpsURLConnection) url.openConnection();
+	                    https.setHostnameVerifier(DO_NOT_VERIFY);
+	                    https.setConnectTimeout(connectionTimeout);
+                    
     	            	https.connect();
-    	            	//System.gc();
-    	            	//Thread.sleep(2000);
-    	            	//tries++;
-    	            //}
-    				InputStream is = https.getInputStream();
+    	            	tries++;
+    	            	Log.d(tag, "Attmpt #"+tries+"\nStatus: "+https.getResponseCode());
+    	            } while (https.getResponseCode() < 0 && tries < 3);
+					
+					// We may have created a few https objects dealing with:
+					// http://code.google.com/p/android/issues/detail?id=7074
+					// lets ask Android to clean up.
+					System.gc();
+    				
+					InputStream is = https.getInputStream();
     				
     				BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
     				StringBuilder httpsResponse = new StringBuilder();
@@ -224,10 +242,9 @@ public abstract class AsynchMinerUpdateTask extends AsyncTask<Object, Integer, B
 	        try {
 	                SSLContext sc = SSLContext.getInstance("TLS");
 	                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-	                HttpsURLConnection
-	                                .setDefaultSSLSocketFactory(sc.getSocketFactory());
+	                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 	        } catch (Exception e) {
-	                e.printStackTrace();
+	                Log.d(tag, e.toString());
 	        }
 	}
     

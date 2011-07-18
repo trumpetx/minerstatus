@@ -1,12 +1,17 @@
 package me.davidgreene.minerstatus.util;
 
+import me.davidgreene.minerstatus.beans.ArsStatus;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMineStatus;
 import me.davidgreene.minerstatus.beans.BtcguildStatus;
 import me.davidgreene.minerstatus.beans.DeepbitStatus;
+import me.davidgreene.minerstatus.beans.EclipseMcStatus;
+import me.davidgreene.minerstatus.beans.EligiusStatus;
+import me.davidgreene.minerstatus.beans.MinecoinStatus;
 import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.OzcoinStatus;
+import me.davidgreene.minerstatus.beans.RfcStatus;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
@@ -38,6 +43,16 @@ public class StatusObjectFactory {
 			return gson.fromJson(result, MtredStatus.class);
 		} else if (identifier.equals("ozcoin")){
 			return gson.fromJson(result, OzcoinStatus.class);
+		} else if (identifier.equals("minecoin")){
+			return gson.fromJson(result, MinecoinStatus.class);
+		} else if (identifier.equals("eligius")){
+			return gson.fromJson(result, EligiusStatus.class);
+		} else if (identifier.equals("ars")){
+			return gson.fromJson(result, ArsStatus.class);
+		} else if (identifier.equals("eclipsemc")){
+			return gson.fromJson(result, EclipseMcStatus.class);
+		} else if (identifier.equals("rfc")){
+			return gson.fromJson(result, RfcStatus.class);
 		}
 		return null;
 	}

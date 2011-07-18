@@ -66,6 +66,8 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 	        minerDirections.setVisibility(TextView.VISIBLE);	
 	        if (poolToAdd.equals("bitcoinpool")){
 	        	minerNameLabel.setText("Miner Name");
+	        } else if (poolToAdd.equals("eligius")){
+	        	minerNameLabel.setText("BTC Address");
 	        } else {
 	        	minerNameLabel.setText("API Key");
 	        }
@@ -106,15 +108,21 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 				}
 			}
 			return Boolean.TRUE;
-		} else if(pool.equals("bitclockers") || pool.equals("mtred") || pool.equals("btcmine") || pool.equals("btcguild") || pool.equals("bitcoinpool") || pool.equals("ozcoin")){
+		}else if(pool.equals("minecoin")){
+			for(Character c : miner.toCharArray()){
+				if (!Character.isLetter(c)){
+					return Boolean.FALSE;
+				}
+			}
+			return Boolean.TRUE;
+		} else { //Most pools have just characters and digits
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c)){
 					return Boolean.FALSE;
 				}
 			}
 			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
+		} 
 	}
 	
 	private Boolean insertMiner(String miner, String pool){
