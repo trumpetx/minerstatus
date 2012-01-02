@@ -22,11 +22,11 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     	db.execSQL("INSERT INTO config (key, value) VALUES ('theme', 'dark')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.mtgox', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.tradehill', 'true')");
-    	db.execSQL("INSERT INTO config (key, value) VALUES ('show.exchange_bitcoins', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('connection.timeout', '4000')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('max.errors', '10')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('widget.apiKey', 'none')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('low.hashrate.notification', '0')");
+    	db.execSQL("INSERT INTO config (key, value) VALUES ('vibrate.on.notification', 'false')");
     	
     	db.execSQL("CREATE TABLE miner_data (miner TEXT, date_long INTEGER, json TEXT, pool_index INTEGER DEFAULT 0)");
     }
@@ -81,6 +81,14 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 		if (oldVersion == 9){
 			db.execSQL("INSERT INTO config (key, value) VALUES ('low.hashrate.notification', '0')");
 			oldVersion = 10;
+		}
+		if (oldVersion == 10){
+			db.execSQL("DELETE FROM config WHERE key='show.exchange_bitcoins'");
+			oldVersion = 11;
+		}
+		if (oldVersion == 11){
+	    	db.execSQL("INSERT INTO config (key, value) VALUES ('vibrate.on.notification', 'true')");
+			oldVersion = 12;
 		}
 		
 	}

@@ -108,13 +108,6 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 				}
 			}
 			return Boolean.TRUE;
-		}else if(pool.equals("minecoin")){
-			for(Character c : miner.toCharArray()){
-				if (!Character.isLetter(c)){
-					return Boolean.FALSE;
-				}
-			}
-			return Boolean.TRUE;
 		} else { //Most pools have just characters and digits
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c)){

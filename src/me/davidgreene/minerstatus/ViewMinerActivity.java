@@ -1,8 +1,6 @@
 package me.davidgreene.minerstatus;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.util.Date;
 
 import me.davidgreene.minerstatus.beans.ArsStatus;
 import me.davidgreene.minerstatus.beans.ArsWorker;
@@ -18,14 +16,10 @@ import me.davidgreene.minerstatus.beans.DeepbitWorker;
 import me.davidgreene.minerstatus.beans.EclipseMcStatus;
 import me.davidgreene.minerstatus.beans.EclipseMcWorker;
 import me.davidgreene.minerstatus.beans.EligiusStatus;
-import me.davidgreene.minerstatus.beans.MinecoinStatus;
-import me.davidgreene.minerstatus.beans.MinecoinWorker;
 import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.MtredWorker;
 import me.davidgreene.minerstatus.beans.OzcoinStatus;
 import me.davidgreene.minerstatus.beans.OzcoinWorker;
-import me.davidgreene.minerstatus.beans.RfcStatus;
-import me.davidgreene.minerstatus.beans.RfcWorker;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.SlushWorker;
 import me.davidgreene.minerstatus.beans.Status;
@@ -122,59 +116,16 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((MtredStatus)minerStatus, tl);
 		}  else if (minerStatus instanceof OzcoinStatus){
 			render((OzcoinStatus)minerStatus, tl);
-		} else if (minerStatus instanceof MinecoinStatus){
-			render((MinecoinStatus)minerStatus, tl);
-		} else if (minerStatus instanceof EligiusStatus){
+		}else if (minerStatus instanceof EligiusStatus){
 			render((EligiusStatus)minerStatus, tl);
 		} else if (minerStatus instanceof EclipseMcStatus){
 			render((EclipseMcStatus)minerStatus, tl);
 		} else if (minerStatus instanceof ArsStatus){
 			render((ArsStatus)minerStatus, tl);
-		}  else if (minerStatus instanceof RfcStatus){
-			render((RfcStatus)minerStatus, tl);
-		} else {
+		}else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
 		
-	}
-	
-	private void render(RfcStatus status, TableLayout tl){
-		tl.addView(renderRow("Worker(s):",""));
-		if(status.getWorkers() != null){
-		    for( RfcWorker worker : status.getWorkers() ){
-		    	tl.addView(renderRow("",worker.getLogin()));
-		    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
-		    	tl.addView(renderRow("Shares this Round",worker.getShares().getThis_round().toString()));
-		    	tl.addView(renderRow("Shares all Time",worker.getShares().getAll_time().toString()));
-		    	Date lastShare = new Date(worker.getShares().getLast()*1000);
-		    	tl.addView(renderRow("Last Share Submitted",(worker.getShares().getLast().equals(0L)) ? "Never" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(lastShare)));
-		    	tl.addView(renderRow("Stales this Round",worker.getStales().getThis_round().toString()));
-		    	tl.addView(renderRow("Stales all Time",worker.getStales().getAll_time().toString()));
-		    	Date lastStale = new Date(worker.getStales().getLast()*1000);
-		    	tl.addView(renderRow("Last Stale Submitted",(worker.getStales().getLast().equals(0L)) ? "Never" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(lastStale)));
-		    	tl.addView(renderRow("",""));
-		    }
-		}
-	}
-	
-	private void render(MinecoinStatus status, TableLayout tl){
-		tl.addView(renderRow("Username", status.getUser().getUsername()));
-		tl.addView(renderRow("Total Reward", status.getUser().getTotal_reward().toString()));
-		tl.addView(renderRow("Estimated Reward", status.getUser().getEstimated_reward_this_round()));
-		tl.addView(renderRow("Confirmed Reward", status.getUser().getConfirmed_reward().toString()));
-		tl.addView(renderRow("Unconfirmed Reward", status.getUser().getUnconfirmed_reward().toString()));
-		tl.addView(renderRow("Worker(s):",""));
-		if(status.getWorkers() != null){
-		    for( String key : status.getWorkers().keySet() ){
-		    	MinecoinWorker workerStatus = status.getWorkers().get(key);
-		    	tl.addView(renderRow("",key));
-		    	tl.addView(renderRow("Last Share At",workerStatus.getLast_share_at()));
-		    	tl.addView(renderRow("Hashrate",workerStatus.getStats().getHash_rate().setScale(2, BigDecimal.ROUND_HALF_UP).toString()));
-		    	tl.addView(renderRow("Share Count",workerStatus.getStats().getShare_count().toString()));
-		    	tl.addView(renderRow("Created At",workerStatus.getStats().getCreated_at()));
-		    	tl.addView(renderRow("",""));
-		    }
-		}
 	}
 	
 	private TableRow renderRow(String left, String right){

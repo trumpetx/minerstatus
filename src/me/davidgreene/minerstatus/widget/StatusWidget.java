@@ -128,9 +128,16 @@ public class StatusWidget extends AppWidgetProvider {
 					CharSequence contentText = "Your Hashrate has dropped to: "+status.getTotalHashrate().toString();
 					Intent notificationIntent = new Intent(this, MainMinerActivity.class);
 					PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-					notification.defaults |= Notification.DEFAULT_VIBRATE;
+					
+					notification.defaults |= Notification.DEFAULT_LIGHTS;
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+					
 					notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 					
+					String vibrate = configService.getConfigValue("vibrate.on.notification");
+					if (Boolean.parseBoolean(vibrate)){
+						notification.defaults |= Notification.DEFAULT_VIBRATE;
+					}
 					mNotificationManager.notify(MINER_NOTIFICATION_ID, notification);
 					
 				} else {

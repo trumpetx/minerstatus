@@ -13,14 +13,12 @@ public class MinerStatusConstants {
 	static{
 		EXCHANGE_LABELS.put("mtgox", "Mt. Gox");
 		EXCHANGE_LABELS.put("tradehill", "Tradehill");
-		EXCHANGE_LABELS.put("exchange_bitcoins", "Exg. Bitcoins");
 	}
 	
 	public static final Map<String, String> EXCHANGE_URLS = new HashMap<String,String>(4);
 	static{
 		EXCHANGE_URLS.put("mtgox", "https://mtgox.com/code/data/ticker.php");
 		EXCHANGE_URLS.put("tradehill", "https://api.tradehill.com/APIv1/USD/Ticker");
-		EXCHANGE_URLS.put("exchange_bitcoins", "https://www.exchangebitcoins.com/data/ticker");
 	}
 	
 	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(20);
@@ -34,11 +32,9 @@ public class MinerStatusConstants {
 		POOL_URLS.put("swepool", new String[]{"https://swepool.net/json?key=%MINER%"});
 		POOL_URLS.put("mtred", new String[]{"https://mtred.com/api/user/key/%MINER%"});
 		POOL_URLS.put("ozcoin", new String[]{"https://ozco.in/api.php?api_key=%MINER%"});
-		POOL_URLS.put("minecoin", new String[]{"https://mineco.in/users/%MINER%.json"});
 		POOL_URLS.put("eligius", new String[]{"http://eligius.st/~luke-jr/hashrate.php?addr=%MINER%"});
 		POOL_URLS.put("eclipsemc", new String[]{"https://eclipsemc.com/api.php?key=%MINER%&action=userstats"});
 		POOL_URLS.put("ars", new String[] {"https://arsbitcoin.com/api.php?api_key=%MINER%"});
-		POOL_URLS.put("rfc", new String[] {"https://www.rfcpool.com/api/user/workers?key=%MINER%"});
 	}
 	public static final Map<String,String> POOL_LABELS = new HashMap<String,String>(20);
 	static{
@@ -51,11 +47,9 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("swepool", "Swepool");
 		POOL_LABELS.put("mtred", "Mt.Red");
 		POOL_LABELS.put("ozcoin", "Ozco.in");
-		POOL_LABELS.put("minecoin", "Mineco.in");
 		POOL_LABELS.put("eligius", "Eligius");
 		POOL_LABELS.put("eclipsemc", "EclipseMC");
 		POOL_LABELS.put("ars","Ars Bitcoin");
-		POOL_LABELS.put("rfc","RFC Pool");
 	}
 	public static final Map<String,String> POOL_DIRECTIONS = new HashMap<String,String>(20);
 	static{
@@ -68,11 +62,9 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("swepool", "Swepool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your settings page at\nhttp://swepool.net/settings");
 		POOL_DIRECTIONS.put("mtred", "Mt. Red provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your profile page at\nhttps://mtred.com/user/profile.html");
 		POOL_DIRECTIONS.put("ozcoin", "Ozco.in provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://ozco.in/accountdetails.php");
-		POOL_DIRECTIONS.put("minecoin", "Mineco.in provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://mineco.in/workers");
 		POOL_DIRECTIONS.put("eligius", "Simply enter the BTC address you use to connect to the Eligius pool.");
 		POOL_DIRECTIONS.put("eclipsemc", "EclipseMC provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://eclipsemc.com/my_account.php");
 		POOL_DIRECTIONS.put("ars", "Ars provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://arsbitcoin.com/accountdetails.php");
-		POOL_DIRECTIONS.put("rfc", "RFC Pool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account page at\nhttps://www.rfcpool.com/account");
 	}	
 	public static final Map<String,String>THEME_LIST = new HashMap<String,String>(2);
 	static{
