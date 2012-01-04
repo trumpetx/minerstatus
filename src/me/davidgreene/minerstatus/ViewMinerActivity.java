@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import me.davidgreene.minerstatus.beans.ArsStatus;
 import me.davidgreene.minerstatus.beans.ArsWorker;
+import me.davidgreene.minerstatus.beans.ABCStatus;
+import me.davidgreene.minerstatus.beans.ABCWorker;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
@@ -110,19 +112,21 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((BtcguildStatus)minerStatus, tl);
 		} else if (minerStatus instanceof BitclockersStatus){
 			render((BitclockersStatus)minerStatus, tl);
-		}  else if (minerStatus instanceof SwepoolStatus){
+		} else if (minerStatus instanceof SwepoolStatus){
 			render((SwepoolStatus)minerStatus, tl);
-		}  else if (minerStatus instanceof MtredStatus){
+		} else if (minerStatus instanceof MtredStatus){
 			render((MtredStatus)minerStatus, tl);
-		}  else if (minerStatus instanceof OzcoinStatus){
+		} else if (minerStatus instanceof OzcoinStatus){
 			render((OzcoinStatus)minerStatus, tl);
-		}else if (minerStatus instanceof EligiusStatus){
+		} else if (minerStatus instanceof EligiusStatus){
 			render((EligiusStatus)minerStatus, tl);
 		} else if (minerStatus instanceof EclipseMcStatus){
 			render((EclipseMcStatus)minerStatus, tl);
 		} else if (minerStatus instanceof ArsStatus){
 			render((ArsStatus)minerStatus, tl);
-		}else {
+		} else if (minerStatus instanceof ABCStatus){
+			render((ABCStatus)minerStatus, tl);
+		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
 		
@@ -340,6 +344,21 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		    }		
 		}
 	}	
+
+	private void render(ABCStatus status, TableLayout tl){
+		tl.addView(renderRow("Confirmed Rewards", status.getConfirmed_rewards()));
+		tl.addView(renderRow("Hashrate", status.getHashrate()));
+		tl.addView(renderRow("Payout History", status.getPayout_history()));
+		if (status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	ABCWorker worker = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Alive", Boolean.valueOf(worker.getAlive().equals("true")).toString()));
+		    	tl.addView(renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(renderRow("",""));
+		    }		
+		}
+	}
 	
 	private void render(EclipseMcStatus status, TableLayout tl){
 		tl.addView(renderRow("Confirmed Rewards", status.getUser().getConfirmed_rewards()));
