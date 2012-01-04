@@ -1,6 +1,7 @@
 package me.davidgreene.minerstatus.util;
 
 import me.davidgreene.minerstatus.beans.ArsStatus;
+import me.davidgreene.minerstatus.beans.ABCStatus;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMineStatus;
@@ -47,6 +48,8 @@ public class StatusObjectFactory {
 			return gson.fromJson(result, ArsStatus.class);
 		} else if (identifier.equals("eclipsemc")){
 			return gson.fromJson(result, EclipseMcStatus.class);
+		} else if (identifier.equals("abc")){
+			return gson.fromJson(result, ABCStatus.class);
 		}
 		return null;
 	}
