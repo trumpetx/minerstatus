@@ -45,10 +45,9 @@ public class StatusWidget extends AppWidgetProvider {
     	
         @Override
         public void onStart(Intent intent, int startId) {
-        	if (minerService == null)
-        		minerService = ((MinerStatusApp)this.getApplicationContext()).getMinerService();
-        	if (configService == null)
-        		configService = ((MinerStatusApp)this.getApplicationContext()).getConfigService();	
+        	minerService = ((MinerStatusApp)this.getApplicationContext()).getMinerService();
+        	configService = ((MinerStatusApp)this.getApplicationContext()).getConfigService();	
+        	
         	myAsynchMinerUpdateTask = new MyAsynchMinerUpdateTask();
         	String apiKey = configService.getConfigValue("widget.apiKey");
         	if (apiKey.equals("none") || apiKey.equals("")){
@@ -106,11 +105,11 @@ public class StatusWidget extends AppWidgetProvider {
         
         private void sendNotification(Status status){
 			String lowHashrateNotificationConfig = configService.getConfigValue("low.hashrate.notification");
-			if (!lowHashrateNotificationConfig.toLowerCase().equals("-1")){
+			if (!lowHashrateNotificationConfig.toLowerCase().equals("off")){
 				BigDecimal lowHashrateNotification = BigDecimal.ZERO;
 				try{
 					lowHashrateNotification = new BigDecimal(lowHashrateNotificationConfig);
-				} catch (Exception e){
+				} catch (NumberFormatException e){
 					//Leave value at 0
 				}
 				if (status.getTotalHashrate().compareTo(lowHashrateNotification) != 1){

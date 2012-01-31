@@ -39,7 +39,8 @@
                 <category android:name="android.intent.category.OPENABLE" />
             </intent-filter>
         </activity>
-        
+	      <activity android:name="com.google.ads.AdActivity" 
+	          android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
         <!-- Broadcast Receiver that will process AppWidget updates -->
 	<receiver android:name=".widget.StatusWidget" android:label="@string/statusWidget">
 	    <intent-filter>

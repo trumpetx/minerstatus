@@ -37,6 +37,8 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.ads.AdView;
+
 public class MainMinerActivity extends AbstractMinerStatusActivity {
 
     private static final String tag = "TX";
@@ -59,8 +61,16 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
         return HaveConnectedWifi || HaveConnectedMobile;
 	}
 
-
     @Override
+	protected void onResume() {
+		super.onResume();
+		AdView adView = (AdView) findViewById(R.id.ad);
+		if (adView != null){
+			adView.setVisibility(Boolean.valueOf(configService.getConfigValue("show.ads")) ? AdView.VISIBLE : AdView.INVISIBLE);
+		}
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -75,6 +85,9 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 	        AsynchMinerUpdateTask updateTask = new MyAsynchMinerUpdateTask();
 	        updateTask.execute(new Object[]{configService, minerService});
         }
+        
+        
+        
     }	
     
 	@Override

@@ -94,28 +94,28 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 		if (pool == null || pool.length() == 0){
 			return Boolean.FALSE;
 		}
-		if(pool.equals("slush") || pool.equals("swepool")){
+		
+		if(pool.equals("slush") || pool.equals("swepool") || pool.equals("bitcoinpool")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c) && !c.equals('-')){
 					return Boolean.FALSE;
 				}
 			}
-			return Boolean.TRUE;
 		} else if(pool.equals("deepbit")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c) && !c.equals('_')){
 					return Boolean.FALSE;
 				}
 			}
-			return Boolean.TRUE;
 		} else { //Most pools have just characters and digits
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c)){
 					return Boolean.FALSE;
 				}
 			}
-			return Boolean.TRUE;
 		} 
+		
+		return Boolean.TRUE;
 	}
 	
 	private Boolean insertMiner(String miner, String pool){

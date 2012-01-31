@@ -27,12 +27,50 @@ import android.widget.ToggleButton;
 
 public class OptionsActivity extends AbstractMinerStatusActivity {
 	
+	private static final LayoutParams TOGGLE_PARAMS;
+	static {
+		TOGGLE_PARAMS = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		TOGGLE_PARAMS.setMargins(20, 0, 0, 15);
+	}
+	
+	private ToggleButton generateToggleButton(final String key, final String textOn, final String textOff){
+    	final ToggleButton toggle = new ToggleButton(OptionsActivity.this);
+    	toggle.setLayoutParams(TOGGLE_PARAMS);
+    	toggle.setTextOn("Visible");
+    	toggle.setTextOff("Hidden");
+    	toggle.setChecked(Boolean.valueOf(configService.getConfigValue("show."+key)));
+    	toggle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+		        if (toggle.isChecked()) {
+		        	configService.setConfigValue("show."+key, "true");
+		        } else {
+		        	configService.setConfigValue("show."+key, "false");
+		        }
+		        Toast.makeText(OptionsActivity.this, (toggle.isChecked()) ? textOn : textOff, Toast.LENGTH_SHORT).show();
+			}
+		});
+		return toggle;
+	}
+	
+	private TextView generateTextViewForToggleButton(String label){
+		TextView tv = new TextView(OptionsActivity.this);
+    	tv.setText(label);
+    	tv.setLayoutParams(TOGGLE_PARAMS);
+    	tv.setTextColor(color);
+    	
+    	return tv;
+	}
+	
+	private int color;
+	private int bgColor;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.options);
-        int bgColor = themeService.getTheme().getBackgroundColor();
-        int color = themeService.getTheme().getTextColor();
+        bgColor = themeService.getTheme().getBackgroundColor();
+        color = themeService.getTheme().getTextColor();
         LinearLayout layout = (LinearLayout) findViewById(R.id.optionsLayout);
         ScrollView scrollView = (ScrollView) findViewById(R.id.optionsScrollView);
         scrollView.setBackgroundColor(bgColor);
@@ -45,33 +83,13 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
         }
         
 	    for( final String key : EXCHANGE_URLS.keySet() ){
-	    	final ToggleButton toggle = new ToggleButton(OptionsActivity.this);
-	    	LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	    	params.setMargins(20, 0, 0, 15);
-	    	toggle.setLayoutParams(params);
-	    	toggle.setTextOn("Visible");
-	    	toggle.setTextOff("Hidden");
-	    	toggle.setChecked(Boolean.valueOf(configService.getConfigValue("show."+key)));
-	    	toggle.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-			        if (toggle.isChecked()) {
-			        	configService.setConfigValue("show."+key, "true");
-			        } else {
-			        	configService.setConfigValue("show."+key, "false");
-			        }
-			        Toast.makeText(OptionsActivity.this, (toggle.isChecked()) ? EXCHANGE_LABELS.get(key)+" Visible" : EXCHANGE_LABELS.get(key)+" Hidden", Toast.LENGTH_SHORT).show();
-				}
-			});
-	    	TextView tv = new TextView(OptionsActivity.this);
-	    	tv.setText("Toggle "+ EXCHANGE_LABELS.get(key)+" Visibility:");
-	    	tv.setLayoutParams(params);
-	    	tv.setTextColor(color);
-	    	layout.addView(toggle, 0);
-	    	layout.addView(tv, 0);
-	    	
+	    	layout.addView(generateToggleButton(key, EXCHANGE_LABELS.get(key)+" Visible", EXCHANGE_LABELS.get(key)+" Hidden"), 0);
+	    	layout.addView(generateTextViewForToggleButton("Toggle "+ EXCHANGE_LABELS.get(key)+" Visibility:"), 0);
 	    }   
-        
+	    
+	    layout.addView(generateTextViewForToggleButton("Toggle Ad Visibility:"));
+	    layout.addView(generateToggleButton("ads", "Thanks for supporting MinerStatus!", "No ads for you!"));
+    	    	
         final NumberPicker connectionTimeoutPicker = (NumberPicker) findViewById(R.id.connectionTimeoutPicker);
         Integer currentVal;
         try {
@@ -160,24 +178,31 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
     	TextView lowHashrateLabel = (TextView) findViewById(R.id.lowHashrateNotificationLabel);
     	lowHashrateLabel.setTextColor(color);
     	EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
-    	lowHashrate.setText(configService.getConfigValue("low.hashrate.notification"));
-        Button lowHashrateButton = (Button) findViewById(R.id.lowHashrateSaveButton);
-        lowHashrateButton.setOnClickListener(new OnClickListener() {
-        	public void onClick(View v) {
-				EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
-				int lowHashrateInt;
-				try{
-					lowHashrateInt = Integer.valueOf(lowHashrate.getText().toString());
-					if (lowHashrateInt < -1){
-						lowHashrateInt = -1;
-					}
-				} catch (Exception e){
-					lowHashrateInt = -1;
+    	String lowHashrateValue = configService.getConfigValue("low.hashrate.notification");
+    	lowHashrate.setText(lowHashrateValue);
+    	lowHashrate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				EditText view = (EditText) v;
+				if(hasFocus && "off".equals(configService.getConfigValue("low.hashrate.notification"))){
+					view.setText("");
+				} else if (!hasFocus){
+					EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
+					int lowHashrateInt = 0;
+					String configValue = "off";
+					try{
+						lowHashrateInt = Integer.parseInt(lowHashrate.getText().toString());
+						if (lowHashrateInt >= 0){
+							configValue = String.valueOf(lowHashrateInt);
+						}
+					} catch (NumberFormatException e){ /* Leave value "off" */ }
+					
+					lowHashrate.setText(configValue);
+					configService.setConfigValue("low.hashrate.notification", configValue);
 				}
-				lowHashrate.setText(String.valueOf(lowHashrateInt));
-				configService.setConfigValue("low.hashrate.notification", String.valueOf(lowHashrateInt));
-        	}
-        });
+			}
+		});
+
     	TextView minerDeleteSpinnerLabel = (TextView) findViewById(R.id.deleteSpinnerLabel);
     	minerDeleteSpinnerLabel.setTextColor(color);
     	

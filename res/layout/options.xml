@@ -69,22 +69,15 @@
 		<TextView  android:id="@+id/lowHashrateNotificationLabel"
 	        android:layout_width="wrap_content" 
 	        android:layout_height="wrap_content" 
-	        android:text="Low Hashrate Notification\nSave a blank value to disable (Will display as -1)"  
+	        android:text="@+string/lowHashrateNotificationLabel"
 	        android:layout_marginLeft="20px"
 	        android:layout_marginTop="30px"
 	        />  	
-	<EditText android:id="@+id/lowHashrateInput"
+		<EditText android:id="@+id/lowHashrateInput"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:inputType="number"
-	        android:hint="Hashrate Notification"/>
-
-		<Button 
-		 android:id ="@+id/lowHashrateSaveButton"
-		 android:text="Save Hashrate Notification Level"
-		 android:layout_width="fill_parent"
-		 android:layout_height="fill_parent"
-		/>      
+	        android:hint="Hashrate Notification"/>   
 
 		<TextView  android:id="@+id/deleteSpinnerLabel"
 	        android:layout_width="wrap_content" 
