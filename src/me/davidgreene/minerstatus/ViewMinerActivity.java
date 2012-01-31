@@ -2,10 +2,10 @@ package me.davidgreene.minerstatus;
 
 import java.math.BigDecimal;
 
-import me.davidgreene.minerstatus.beans.ArsStatus;
-import me.davidgreene.minerstatus.beans.ArsWorker;
 import me.davidgreene.minerstatus.beans.ABCStatus;
 import me.davidgreene.minerstatus.beans.ABCWorker;
+import me.davidgreene.minerstatus.beans.ArsStatus;
+import me.davidgreene.minerstatus.beans.ArsWorker;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitclockersWorker;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
@@ -22,6 +22,9 @@ import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.MtredWorker;
 import me.davidgreene.minerstatus.beans.OzcoinStatus;
 import me.davidgreene.minerstatus.beans.OzcoinWorker;
+import me.davidgreene.minerstatus.beans.SimplecoinCurrency;
+import me.davidgreene.minerstatus.beans.SimplecoinStatus;
+import me.davidgreene.minerstatus.beans.SimplecoinWorker;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.SlushWorker;
 import me.davidgreene.minerstatus.beans.Status;
@@ -91,7 +94,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							dialog.cancel();
 						}
-					});				
+					});	
 					alert.show();  
 				}
 			});
@@ -126,12 +129,15 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((ArsStatus)minerStatus, tl);
 		} else if (minerStatus instanceof ABCStatus){
 			render((ABCStatus)minerStatus, tl);
+		} else if (minerStatus instanceof SimplecoinStatus){
+			render((SimplecoinStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
 		
 	}
 	
+
 	private TableRow renderRow(String left, String right){
 		TableRow tr = new TableRow(this);
 		TextView leftCol = new TextView(getApplicationContext());
@@ -145,7 +151,31 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		rightCol.setText(right);
 		tr.addView(rightCol);
 		return tr;
+	}	
+	
+	private void render(SimplecoinStatus status, TableLayout tl) {
+		tl.addView(renderRow("Hashrate", status.getTotalHashrate().toString()));
+		tl.addView(renderRow("Currencies", ""));
+		
+		for(String key : status.getCurrencies().keySet()){
+			SimplecoinCurrency currency = status.getCurrencies().get(key);
+			tl.addView(renderRow("", key));
+			tl.addView(renderRow("Confirmed Rewards", currency.getConfirmed_rewards().toString()));
+			tl.addView(renderRow("Estimated Rewards", currency.getEstimated_rewards().toString()));
+			tl.addView(renderRow("Payout History", currency.getPayout_history().toString()));
+		}
+		tl.addView(renderRow("Worker(s):",""));
+		for(String key : status.getWorkers().keySet()){
+			SimplecoinWorker worker = status.getWorkers().get(key);
+			tl.addView(renderRow("", key));
+			tl.addView(renderRow("Alive", worker.getAlive().toString()));
+			tl.addView(renderRow("Hashrate", worker.getHashrate().toString()));
+			tl.addView(renderRow("Pool", worker.getPool()));
+		}
+		
+		tl.addView(renderRow("",""));
 	}
+
 	
 	private void render(BitpoolStatus status, TableLayout tl){
 		tl.addView(renderRow("Username", status.getUsername()));

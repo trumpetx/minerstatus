@@ -1,7 +1,7 @@
 package me.davidgreene.minerstatus.util;
 
-import me.davidgreene.minerstatus.beans.ArsStatus;
 import me.davidgreene.minerstatus.beans.ABCStatus;
+import me.davidgreene.minerstatus.beans.ArsStatus;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMineStatus;
@@ -11,6 +11,7 @@ import me.davidgreene.minerstatus.beans.EclipseMcStatus;
 import me.davidgreene.minerstatus.beans.EligiusStatus;
 import me.davidgreene.minerstatus.beans.MtredStatus;
 import me.davidgreene.minerstatus.beans.OzcoinStatus;
+import me.davidgreene.minerstatus.beans.SimplecoinStatus;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
@@ -50,6 +51,8 @@ public class StatusObjectFactory {
 			return gson.fromJson(result, EclipseMcStatus.class);
 		} else if (identifier.equals("abc")){
 			return gson.fromJson(result, ABCStatus.class);
+		} else if (identifier.equals("simplecoin")){
+			return gson.fromJson(result, SimplecoinStatus.class);
 		}
 		return null;
 	}

@@ -113,7 +113,6 @@ public class StatusWidget extends AppWidgetProvider {
 					//Leave value at 0
 				}
 				if (status.getTotalHashrate().compareTo(lowHashrateNotification) != 1){
-					//send notification
 					NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 					
 					int icon = R.drawable.icon;

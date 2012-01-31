@@ -2,6 +2,7 @@ package me.davidgreene.minerstatus.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class MinerStatusConstants {
 	
@@ -36,8 +37,10 @@ public class MinerStatusConstants {
 		POOL_URLS.put("eclipsemc", new String[]{"https://eclipsemc.com/api.php?key=%MINER%&action=userstats"});
 		POOL_URLS.put("ars", new String[] {"https://arsbitcoin.com/api.php?api_key=%MINER%"});
 		POOL_URLS.put("abc", new String[] {"https://www.abcpool.co/api.php?api_key=%MINER%"});
+		POOL_URLS.put("simplecoin", new String[] {"https://simplecoin.us/api.php?api_key=%MINER%"});
+		
 	}
-	public static final Map<String,String> POOL_LABELS = new HashMap<String,String>(20);
+	public static final Map<String,String> POOL_LABELS = new TreeMap<String,String>();
 	static{
 		POOL_LABELS.put("bitcoinpool", "Bitcoin Pool");
 		POOL_LABELS.put("slush", "Slush's Pool");
@@ -52,22 +55,27 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("eclipsemc", "EclipseMC");
 		POOL_LABELS.put("ars","Ars Bitcoin");
 		POOL_LABELS.put("abc","ABCPool");
+		POOL_LABELS.put("simplecoin","Simplecoin");
 	}
+	
+	private static final String COMMON_DIRECTIONS = " provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key ";
+	
 	public static final Map<String,String> POOL_DIRECTIONS = new HashMap<String,String>(20);
 	static{
 		POOL_DIRECTIONS.put("bitcoinpool", "Your miner's name is the username you created when you opened an account with\nhttp://www.bitcoinpool.com");
-		POOL_DIRECTIONS.put("slush", "Slush's Pool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key (and generate new ones) in your account settings at\nhttp://mining.bitcoin.cz");
-		POOL_DIRECTIONS.put("deepbit", "Deepbit.net provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key (and generate new ones) on the JSON settings page at\nhttp://deepbit.net/settings");
-		POOL_DIRECTIONS.put("btcmine", "BtcMine provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key (and generate new ones) on your profile page at\nhttp://btcmine.com/user/profile/");
-		POOL_DIRECTIONS.put("btcguild", "BTC Guild provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your profile page at\nhttp://www.btcguild.com/my_api.php");
-		POOL_DIRECTIONS.put("bitclockers", "Bitclockers provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your dashboard page at\nhttp://bitclockers.com/?action=dashboard");
-		POOL_DIRECTIONS.put("swepool", "Swepool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your settings page at\nhttp://swepool.net/settings");
-		POOL_DIRECTIONS.put("mtred", "Mt. Red provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your profile page at\nhttps://mtred.com/user/profile.html");
-		POOL_DIRECTIONS.put("ozcoin", "Ozco.in provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://ozco.in/accountdetails.php");
+		POOL_DIRECTIONS.put("slush", "Slush's Pool"+COMMON_DIRECTIONS+"(and generate new ones) in your account settings at\nhttp://mining.bitcoin.cz");
+		POOL_DIRECTIONS.put("deepbit", "Deepbit.net"+COMMON_DIRECTIONS+"(and generate new ones) on the JSON settings page at\nhttp://deepbit.net/settings");
+		POOL_DIRECTIONS.put("btcmine", "BtcMine"+COMMON_DIRECTIONS+"(and generate new ones) on your profile page at\nhttp://btcmine.com/user/profile/");
+		POOL_DIRECTIONS.put("btcguild", "BTC Guild"+COMMON_DIRECTIONS+"on your profile page at\nhttp://www.btcguild.com/my_api.php");
+		POOL_DIRECTIONS.put("bitclockers", "Bitclockers"+COMMON_DIRECTIONS+"on your dashboard page at\nhttp://bitclockers.com/?action=dashboard");
+		POOL_DIRECTIONS.put("swepool", "Swepool"+COMMON_DIRECTIONS+"on your settings page at\nhttp://swepool.net/settings");
+		POOL_DIRECTIONS.put("mtred", "Mt. Red"+COMMON_DIRECTIONS+"on your profile page at\nhttps://mtred.com/user/profile.html");
+		POOL_DIRECTIONS.put("ozcoin", "Ozco.in"+COMMON_DIRECTIONS+"on your account details page at\nhttps://ozco.in/accountdetails.php");
 		POOL_DIRECTIONS.put("eligius", "Simply enter the BTC address you use to connect to the Eligius pool.");
-		POOL_DIRECTIONS.put("eclipsemc", "EclipseMC provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://eclipsemc.com/my_account.php");
-		POOL_DIRECTIONS.put("ars", "Ars provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://arsbitcoin.com/accountdetails.php");
-		POOL_DIRECTIONS.put("abc", "ABCPool provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key on your account details page at\nhttps://www.abcpool.co/accountdetails.php");
+		POOL_DIRECTIONS.put("eclipsemc", "EclipseMC"+COMMON_DIRECTIONS+"on your account details page at\nhttps://eclipsemc.com/my_account.php");
+		POOL_DIRECTIONS.put("ars", "Ars"+COMMON_DIRECTIONS+"on your account details page at\nhttps://arsbitcoin.com/accountdetails.php");
+		POOL_DIRECTIONS.put("abc", "ABCPool"+COMMON_DIRECTIONS+"on your account details page at\nhttps://www.abcpool.co/accountdetails.php");
+		POOL_DIRECTIONS.put("simplecoin", "Simplecoin"+COMMON_DIRECTIONS+"on your account details page at\nhttps://simplecoin.us/accountdetails.php");
 	}	
 	public static final Map<String,String>THEME_LIST = new HashMap<String,String>(2);
 	static{

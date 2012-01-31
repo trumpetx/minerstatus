@@ -88,12 +88,14 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 			oldVersion = 11;
 		}
 		if (oldVersion == 11){
-	    	db.execSQL("INSERT INTO config (key, value) VALUES ('vibrate.on.notification', 'true')");
+			db.execSQL("DELETE FROM config WHERE key='vibrate.on.notification'");
+			db.execSQL("INSERT INTO config (key, value) VALUES ('vibrate.on.notification', 'true')");
 			oldVersion = 12;
 		}
 		if (oldVersion == 12){
+			db.execSQL("DELETE FROM config WHERE key='show.ads'");
 			db.execSQL("INSERT INTO config (key, value) VALUES ('show.ads', 'true')");
-			db.execSQL("UPDATE config SET value='off' WHERE key='low.hashrate.notification' AND value='-1')");
+			db.execSQL("UPDATE config SET value='off' WHERE key='low.hashrate.notification' AND value='-1'");
 			oldVersion = 13;
 		}
 		
