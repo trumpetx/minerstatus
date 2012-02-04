@@ -159,6 +159,9 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		
 		for(String key : status.getCurrencies().keySet()){
 			SimplecoinCurrency currency = status.getCurrencies().get(key);
+			if("ltc".equals(key.toLowerCase())){
+				currency.setScale(3);
+			}
 			tl.addView(renderRow("", key));
 			tl.addView(renderRow("Confirmed Rewards", currency.getConfirmed_rewards().toString()));
 			tl.addView(renderRow("Estimated Rewards", currency.getEstimated_rewards().toString()));

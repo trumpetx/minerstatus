@@ -14,4 +14,5 @@
     <string name="statusWidget">Miner Status</string>
     <string name="widgetSpinnerLabel">Configure Widget with Miner</string>
     <string name="lowHashrateNotificationLabel">Low Hashrate Notification\n(Enter a blank value to disable)</string>
+    <string name="saveHashrate">Save Hashrate Notification Level</string>
 </resources>

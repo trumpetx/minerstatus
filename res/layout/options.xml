@@ -78,7 +78,14 @@
 	        android:layout_height="wrap_content"
 	        android:inputType="number"
 	        android:hint="Hashrate Notification"/>   
-
+	        
+		<Button 
+		 android:id ="@+id/lowHashrateSaveButton"
+		 android:text="@+string/saveHashrate"
+		 android:layout_width="fill_parent"
+		 android:layout_height="fill_parent"
+		/> 
+		
 		<TextView  android:id="@+id/deleteSpinnerLabel"
 	        android:layout_width="wrap_content" 
 	        android:layout_height="wrap_content" 

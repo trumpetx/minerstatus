@@ -72,7 +72,9 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
         bgColor = themeService.getTheme().getBackgroundColor();
         color = themeService.getTheme().getTextColor();
         LinearLayout layout = (LinearLayout) findViewById(R.id.optionsLayout);
+        layout.setFocusable(true);
         ScrollView scrollView = (ScrollView) findViewById(R.id.optionsScrollView);
+        scrollView.setFocusable(true);
         scrollView.setBackgroundColor(bgColor);
         
         TextView[] textViews = {(TextView) findViewById(R.id.themeSpinnerLabel),
@@ -82,21 +84,19 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
         	tv.setTextColor(color);
         }
         
+        layout.addView(generateToggleButton("ads", "Thanks for supporting MinerStatus!", "No ads for you!"), 0);
+        layout.addView(generateTextViewForToggleButton("Toggle Ad Visibility:"), 0);
+	    
 	    for( final String key : EXCHANGE_URLS.keySet() ){
 	    	layout.addView(generateToggleButton(key, EXCHANGE_LABELS.get(key)+" Visible", EXCHANGE_LABELS.get(key)+" Hidden"), 0);
 	    	layout.addView(generateTextViewForToggleButton("Toggle "+ EXCHANGE_LABELS.get(key)+" Visibility:"), 0);
-	    }   
-	    
-	    layout.addView(generateTextViewForToggleButton("Toggle Ad Visibility:"));
-	    layout.addView(generateToggleButton("ads", "Thanks for supporting MinerStatus!", "No ads for you!"));
-    	    	
+	    }  
+	        	
         final NumberPicker connectionTimeoutPicker = (NumberPicker) findViewById(R.id.connectionTimeoutPicker);
-        Integer currentVal;
+        int currentVal = CONNECTION_TIMEOUT / 1000;
         try {
-        	currentVal = Integer.valueOf(configService.getConfigValue("connection.timeout")) / 1000;
-        } catch (NumberFormatException e) {
-        	currentVal = CONNECTION_TIMEOUT / 1000;
-		}
+        	currentVal = Integer.parseInt(configService.getConfigValue("connection.timeout")) / 1000;
+        } catch (NumberFormatException e) { /* leave default */ }
         connectionTimeoutPicker.setCurrent(currentVal);
         connectionTimeoutPicker.setOnChangeListener(new OnChangedListener() {
 			@Override
@@ -110,12 +110,11 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
 		});
         
         final NumberPicker maxErrorsPicker = (NumberPicker) findViewById(R.id.maxErrorsPicker);
-        Integer currentErrorVal;
+        int currentErrorVal = MAX_ERRORS;
         try {
-        	currentErrorVal = Integer.valueOf(configService.getConfigValue("max.errors"));
-        } catch (NumberFormatException e) {
-        	currentErrorVal = MAX_ERRORS;
-		}
+        	currentErrorVal = Integer.parseInt(configService.getConfigValue("max.errors"));
+        } catch (NumberFormatException e) { /* leave default */ }
+        
         maxErrorsPicker.setCurrent(currentErrorVal);
         maxErrorsPicker.setOnChangeListener(new OnChangedListener() {
 			@Override
@@ -186,20 +185,27 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
 				EditText view = (EditText) v;
 				if(hasFocus && "off".equals(configService.getConfigValue("low.hashrate.notification"))){
 					view.setText("");
-				} else if (!hasFocus){
-					EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
-					int lowHashrateInt = 0;
-					String configValue = "off";
-					try{
-						lowHashrateInt = Integer.parseInt(lowHashrate.getText().toString());
-						if (lowHashrateInt >= 0){
-							configValue = String.valueOf(lowHashrateInt);
-						}
-					} catch (NumberFormatException e){ /* Leave value "off" */ }
-					
-					lowHashrate.setText(configValue);
-					configService.setConfigValue("low.hashrate.notification", configValue);
 				}
+			}
+		});
+    	
+    	Button lowHashrateButton = (Button) findViewById(R.id.lowHashrateSaveButton);
+    	lowHashrateButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EditText lowHashrate = (EditText) findViewById(R.id.lowHashrateInput);
+				int lowHashrateInt = 0;
+				String configValue = "off";
+				try{
+					lowHashrateInt = Integer.parseInt(lowHashrate.getText().toString());
+					if (lowHashrateInt >= 0){
+						configValue = String.valueOf(lowHashrateInt);
+					}
+				} catch (NumberFormatException e){ /* Leave value "off" */ }
+				
+				lowHashrate.setText(configValue);
+				configService.setConfigValue("low.hashrate.notification", configValue);
+				Toast.makeText(getApplicationContext(), "Low Hashrate set to: "+configValue, Toast.LENGTH_LONG).show();
 			}
 		});
 
