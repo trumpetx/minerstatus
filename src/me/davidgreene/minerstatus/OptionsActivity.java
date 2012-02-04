@@ -77,10 +77,9 @@ public class OptionsActivity extends AbstractMinerStatusActivity {
         scrollView.setFocusable(true);
         scrollView.setBackgroundColor(bgColor);
         
-        TextView[] textViews = {(TextView) findViewById(R.id.themeSpinnerLabel),
-        						(TextView) findViewById(R.id.connectionTimeoutLabel),
-        						(TextView) findViewById(R.id.maxErrorsLabel)};
-        for (TextView tv : textViews){
+        for (TextView tv : new TextView[] { (TextView) findViewById(R.id.themeSpinnerLabel),
+											(TextView) findViewById(R.id.connectionTimeoutLabel),
+											(TextView) findViewById(R.id.maxErrorsLabel) }){
         	tv.setTextColor(color);
         }
         
