@@ -138,7 +138,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	}
 	
 
-	private TableRow renderRow(String left, String right){
+	private TableRow renderRow(String left, Object right){
 		TableRow tr = new TableRow(this);
 		TextView leftCol = new TextView(getApplicationContext());
 		leftCol.setPadding(getDip(5F), getDip(5F), getDip(5F), getDip(5F));
@@ -148,7 +148,7 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		TextView rightCol = new TextView(getApplicationContext());
 		rightCol.setPadding(getDip(10F), getDip(5F), getDip(5F), getDip(5F));
 		rightCol.setTextColor(themeService.getTheme().getTextColor());
-		rightCol.setText(right);
+		rightCol.setText(right.toString());
 		tr.addView(rightCol);
 		return tr;
 	}	
@@ -250,22 +250,25 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 	}
 	
 	private void render(BtcguildStatus status, TableLayout tl){
-		tl.addView(renderRow("Confirmed Rewards", status.getUser().getConfirmed_rewards().toString()));
-		tl.addView(renderRow("Unconfirmed Rewards", status.getUser().getUnconfirmed_rewards().toString()));
-		tl.addView(renderRow("Estimated Rewards", status.getUser().getEstimated_rewards().toString()));
-		tl.addView(renderRow("Payouts", status.getUser().getPayouts().toString()));
+		tl.addView(renderRow("Paid Rewards", status.getUser().getPaid_rewards()));
+		tl.addView(renderRow("24h Rewards", status.getUser().getPast_24h_rewards()));
+		tl.addView(renderRow("Unpaid Rewards", status.getUser().getUnpaid_rewards()));
+		tl.addView(renderRow("NMC Paid Rewards", status.getUser().getPaid_rewards_nmc()));
+		tl.addView(renderRow("NMC 24h rewards", status.getUser().getPast_24h_rewards_nmc()));
+		tl.addView(renderRow("NMC Unpaid Rewards", status.getUser().getUnpaid_rewards_nmc()));
+
 		tl.addView(renderRow("Worker(s):",""));
 		if (status.getWorkers() != null){
 		    for( String key : status.getWorkers().keySet() ){
 		    	BtcguildWorker worker = status.getWorkers().get(key);
 		    	tl.addView(renderRow("",worker.getWorker_name()));
-		    	tl.addView(renderRow("Hashrate",worker.getHash_rate().toString()));
-		    	tl.addView(renderRow("Last Share",worker.getLast_share()));
-		    	tl.addView(renderRow("Round Shares",worker.getRound_shares().toString()));
-		    	tl.addView(renderRow("Round Stales",worker.getRound_stales().toString()));
-		    	tl.addView(renderRow("Total Shares",worker.getTotal_shares().toString()));
-		    	tl.addView(renderRow("Total Stales",worker.getTotal_stales().toString()));
-		    	tl.addView(renderRow("Blocks Found",worker.getBlocks_found().toString()));
+		    	tl.addView(renderRow("Hashrate",worker.getHash_rate()));
+		    	tl.addView(renderRow("Valid Shares",worker.getValid_shares()));
+		    	tl.addView(renderRow("Dupe Shares",worker.getDupe_shares()));
+		    	tl.addView(renderRow("Stale Shares",worker.getStale_shares()));
+		    	tl.addView(renderRow("Valid NMC Shares",worker.getValid_shares_nmc()));
+		    	tl.addView(renderRow("Dupe NMC Shares",worker.getDupe_shares_nmc()));
+		    	tl.addView(renderRow("Stale NMC Shares",worker.getStale_shares_nmc()));
 		    	tl.addView(renderRow("",""));
 		    }
 		}

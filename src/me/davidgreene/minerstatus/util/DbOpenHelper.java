@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 14;
     private static final String DATABASE_NAME = "minerstatus.db";
 
     public DbOpenHelper(Context context) {
@@ -21,7 +21,6 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     	db.execSQL("CREATE TABLE config (key TEXT PRIMARY KEY, value TEXT)");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('theme', 'dark')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('show.mtgox', 'true')");
-    	db.execSQL("INSERT INTO config (key, value) VALUES ('show.tradehill', 'true')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('connection.timeout', '4000')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('max.errors', '10')");
     	db.execSQL("INSERT INTO config (key, value) VALUES ('widget.apiKey', 'none')");
@@ -98,6 +97,13 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 			db.execSQL("UPDATE config SET value='off' WHERE key='low.hashrate.notification' AND value='-1'");
 			oldVersion = 13;
 		}
+		if (oldVersion == 13){
+			db.execSQL("DELETE FROM config WHERE key='show.tradehill'");
+			oldVersion = 14;
+		}
+		
+		
+		
 		
     	
 		

@@ -2,7 +2,6 @@ package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Iterator;
 import java.util.Map;
 
 public class BtcguildStatus implements Status, Serializable {
@@ -21,11 +20,8 @@ public class BtcguildStatus implements Status, Serializable {
 	public BigDecimal getTotalHashrate(){
 		BigDecimal hashRate = BigDecimal.ZERO;
 		if (workers != null){
-			Iterator it = workers.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry pairs = (Map.Entry)it.next();
-				pairs.getKey();
-				BtcguildWorker worker = (BtcguildWorker) pairs.getValue();
+			for(String key : workers.keySet()) {
+				BtcguildWorker worker = (BtcguildWorker) workers.get(key);
 				hashRate = hashRate.add(worker.getHash_rate());
 			}
 		} 
@@ -39,10 +35,10 @@ public class BtcguildStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol1() {
-		if (user == null || user.getConfirmed_rewards() == null){
+		if (user == null){
 			return "";
 		}
-		return user.getConfirmed_rewards().toString();
+		return user.getPast_24h_rewards().toString();
 	}
 
 	@Override
@@ -61,7 +57,7 @@ public class BtcguildStatus implements Status, Serializable {
 
 	@Override
 	public String getDisplayCol1Label() {
-		return "Confirmed Rewards";
+		return "Past 24 Hrs Rewards";
 	}
 
 	@Override

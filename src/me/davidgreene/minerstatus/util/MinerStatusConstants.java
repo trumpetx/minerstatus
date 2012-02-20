@@ -10,16 +10,16 @@ public class MinerStatusConstants {
 	public static int CONNECTION_TIMEOUT = 4000;
 	public static int SOCKET_TIMEOUT = 0;
 	
-	public static final Map<String, String> EXCHANGE_LABELS = new HashMap<String,String>(4);
+	public static final Map<String, String> EXCHANGE_LABELS = new HashMap<String,String>(1);
 	static{
 		EXCHANGE_LABELS.put("mtgox", "Mt. Gox");
-		EXCHANGE_LABELS.put("tradehill", "Tradehill");
+		//EXCHANGE_LABELS.put("tradehill", "Tradehill");
 	}
 	
-	public static final Map<String, String> EXCHANGE_URLS = new HashMap<String,String>(4);
+	public static final Map<String, String> EXCHANGE_URLS = new HashMap<String,String>(1);
 	static{
 		EXCHANGE_URLS.put("mtgox", "https://mtgox.com/code/data/ticker.php");
-		EXCHANGE_URLS.put("tradehill", "https://api.tradehill.com/APIv1/USD/Ticker");
+		//EXCHANGE_URLS.put("tradehill", "https://api.tradehill.com/APIv1/USD/Ticker");
 	}
 	
 	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(20);
