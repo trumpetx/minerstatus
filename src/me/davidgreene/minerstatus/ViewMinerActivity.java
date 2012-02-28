@@ -30,6 +30,8 @@ import me.davidgreene.minerstatus.beans.SlushWorker;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
 import me.davidgreene.minerstatus.beans.SwepoolWorker;
+import me.davidgreene.minerstatus.beans.TripleMiningWorker;
+import me.davidgreene.minerstatus.beans.TripleminingStatus;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -131,6 +133,8 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 			render((ABCStatus)minerStatus, tl);
 		} else if (minerStatus instanceof SimplecoinStatus){
 			render((SimplecoinStatus)minerStatus, tl);
+		} else if (minerStatus instanceof TripleminingStatus){
+			render((TripleminingStatus)minerStatus, tl);
 		} else {
 			tl.setVisibility(TableLayout.INVISIBLE);
 		}
@@ -153,6 +157,24 @@ public class ViewMinerActivity extends AbstractMinerStatusActivity {
 		return tr;
 	}	
 	
+	private void render(TripleminingStatus status, TableLayout tl) {
+		tl.addView(renderRow("Hashrate", status.getHashrate().toString()));
+		tl.addView(renderRow("Confirmed Reward", status.getConfirmed_reward().toString()));
+		tl.addView(renderRow("Estimated Payout", status.getEstimated_payout().toString()));
+		tl.addView(renderRow("Total Shares", status.getTotal_shares().toString()));
+		tl.addView(renderRow("Worker(s):",""));
+		if(status.getWorkers() != null){
+		    for( String key : status.getWorkers().keySet() ){
+		    	TripleMiningWorker workerStatus = status.getWorkers().get(key);
+		    	tl.addView(renderRow("",key));
+		    	tl.addView(renderRow("Alive",workerStatus.getAlive().toString()));
+		    	tl.addView(renderRow("Shares",workerStatus.getShares().toString()));
+		    	tl.addView(renderRow("Stales",workerStatus.getStales().toString()));
+		    	tl.addView(renderRow("",""));
+		    }
+		}
+	}
+
 	private void render(SimplecoinStatus status, TableLayout tl) {
 		tl.addView(renderRow("Hashrate", status.getTotalHashrate().toString()));
 		tl.addView(renderRow("Currencies", ""));

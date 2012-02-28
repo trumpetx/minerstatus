@@ -15,6 +15,7 @@ import me.davidgreene.minerstatus.beans.SimplecoinStatus;
 import me.davidgreene.minerstatus.beans.SlushStatus;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.beans.SwepoolStatus;
+import me.davidgreene.minerstatus.beans.TripleminingStatus;
 
 import com.google.gson.Gson;
 
@@ -53,6 +54,8 @@ public class StatusObjectFactory {
 			return gson.fromJson(result, ABCStatus.class);
 		} else if (identifier.equals("simplecoin")){
 			return gson.fromJson(result, SimplecoinStatus.class);
+		} else if (identifier.equals("triple")){
+			return gson.fromJson(result, TripleminingStatus.class);
 		}
 		return null;
 	}

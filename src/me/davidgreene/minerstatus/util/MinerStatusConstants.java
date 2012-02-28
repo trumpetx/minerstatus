@@ -38,6 +38,7 @@ public class MinerStatusConstants {
 		POOL_URLS.put("ars", new String[] {"https://arsbitcoin.com/api.php?api_key=%MINER%"});
 		POOL_URLS.put("abc", new String[] {"https://www.abcpool.co/api.php?api_key=%MINER%"});
 		POOL_URLS.put("simplecoin", new String[] {"https://simplecoin.us/api.php?api_key=%MINER%"});
+		POOL_URLS.put("triple", new String[] {"https://api.triplemining.com/json/%MINER%"});
 		
 	}
 	public static final Map<String,String> POOL_LABELS = new TreeMap<String,String>();
@@ -56,6 +57,7 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("ars","Ars Bitcoin");
 		POOL_LABELS.put("abc","ABCPool");
 		POOL_LABELS.put("simplecoin","Simplecoin");
+		POOL_LABELS.put("triple","Triple Mining");
 	}
 	
 	private static final String COMMON_DIRECTIONS = " provides an API key which you can use to access your data semi-privately (security through obscurity.)  You can get your API key ";
@@ -76,6 +78,7 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("ars", "Ars"+COMMON_DIRECTIONS+"on your account details page at\nhttps://arsbitcoin.com/accountdetails.php");
 		POOL_DIRECTIONS.put("abc", "ABCPool"+COMMON_DIRECTIONS+"on your account details page at\nhttps://www.abcpool.co/accountdetails.php");
 		POOL_DIRECTIONS.put("simplecoin", "Simplecoin"+COMMON_DIRECTIONS+"on your account details page at\nhttps://simplecoin.us/accountdetails.php");
+		POOL_DIRECTIONS.put("triple", "Triple Mining"+COMMON_DIRECTIONS+"on your workers page at\nhttps://www.triplemining.com/workers");
 	}	
 	public static final Map<String,String>THEME_LIST = new HashMap<String,String>(2);
 	static{
