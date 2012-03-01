@@ -3,7 +3,12 @@ package me.davidgreene.minerstatus.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class EligiusStatus implements Status, Serializable {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class EligiusStatus implements Status, Serializable, Renderable  {
 
 	/**
 	 * 
@@ -83,5 +88,12 @@ public class EligiusStatus implements Status, Serializable {
 	}
 	
 	
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Time Delta", getTimedelta().toString()));
+		tl.addView(activity.renderRow("Shares", getShares().toString()));
+		tl.addView(activity.renderRow("Hashrate", getHashrate().toString()));
+		tl.addView(activity.renderRow("",""));
+	}
 
 }

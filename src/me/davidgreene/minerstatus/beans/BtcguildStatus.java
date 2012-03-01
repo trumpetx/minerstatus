@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class BtcguildStatus implements Status, Serializable {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class BtcguildStatus implements Status, Serializable, Renderable  {
 
 	/**
 	 * 
@@ -97,4 +102,31 @@ public class BtcguildStatus implements Status, Serializable {
 		this.apiKey = apiKey;
 	}
 
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Paid Rewards", getUser().getPaid_rewards()));
+		tl.addView(activity.renderRow("24h Rewards", getUser().getPast_24h_rewards()));
+		tl.addView(activity.renderRow("Unpaid Rewards", getUser().getUnpaid_rewards()));
+		tl.addView(activity.renderRow("NMC Paid Rewards", getUser().getPaid_rewards_nmc()));
+		tl.addView(activity.renderRow("NMC 24h rewards", getUser().getPast_24h_rewards_nmc()));
+		tl.addView(activity.renderRow("NMC Unpaid Rewards", getUser().getUnpaid_rewards_nmc()));
+
+		tl.addView(activity.renderRow("Worker(s):",""));
+		if (getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	BtcguildWorker worker = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",worker.getWorker_name()));
+		    	tl.addView(activity.renderRow("Hashrate",worker.getHash_rate()));
+		    	tl.addView(activity.renderRow("Valid Shares",worker.getValid_shares()));
+		    	tl.addView(activity.renderRow("Dupe Shares",worker.getDupe_shares()));
+		    	tl.addView(activity.renderRow("Stale Shares",worker.getStale_shares()));
+		    	tl.addView(activity.renderRow("Valid NMC Shares",worker.getValid_shares_nmc()));
+		    	tl.addView(activity.renderRow("Dupe NMC Shares",worker.getDupe_shares_nmc()));
+		    	tl.addView(activity.renderRow("Stale NMC Shares",worker.getStale_shares_nmc()));
+		    	tl.addView(activity.renderRow("",""));
+		    }
+		}
+		tl.addView(activity.renderRow("",""));
+	}	
+	
 }

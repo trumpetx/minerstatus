@@ -3,7 +3,12 @@ package me.davidgreene.minerstatus.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class BitpoolStatus implements Status, Serializable{
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class BitpoolStatus implements Status, Serializable, Renderable {
 	
 	/**
 	 * 
@@ -73,5 +78,33 @@ public class BitpoolStatus implements Status, Serializable{
 		return "Historical Payout";
 	}
 
-
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Username", getUsername()));
+		tl.addView(activity.renderRow("Status", getUser().getStatus()));
+		tl.addView(activity.renderRow("Current Speed", getUser().getCurrSpeed()));
+		tl.addView(activity.renderRow("Curr. Pool Speed", getPool().getCurrentSpeed()));
+		tl.addView(activity.renderRow("Currrent Round", getPool().getCurrentRound()));
+		tl.addView(activity.renderRow("Join Date", getUser().getJoinDt()));
+		tl.addView(activity.renderRow("Last Seen", getUser().getLastSeen()));
+		tl.addView(activity.renderRow("Active", getUser().getActive()));
+		tl.addView(activity.renderRow("Estimated Earnings", getUser().getEstimated()));
+		tl.addView(activity.renderRow("Unconfirmed", getUser().getUnconfirmed()));
+		tl.addView(activity.renderRow("Historical", getUser().getHistorical()));
+		tl.addView(activity.renderRow("Unpaid", getUser().getUnpaid()));
+		StringBuffer sb = new StringBuffer();
+		if (getUser().getSolvedBlocks() != null){
+			for(int i=0;i<getUser().getSolvedBlocks().length; i++){
+				sb.append(getUser().getSolvedBlocks()[i]);
+				if(i < getUser().getSolvedBlocks().length-1){
+					sb.append(',');
+				}
+			}
+		}
+		tl.addView(activity.renderRow("Solved Blocks", sb.toString()));
+		tl.addView(activity.renderRow("Requested", getUser().getRequested().toString()));
+		tl.addView(activity.renderRow("Submitted", getUser().getSubmitted().toString()));
+		tl.addView(activity.renderRow("Efficiency", getUser().getEfficiency()));
+		tl.addView(activity.renderRow("",""));
+	}
 }

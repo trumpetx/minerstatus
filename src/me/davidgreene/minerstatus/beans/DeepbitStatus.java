@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class DeepbitStatus implements Status, Serializable {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class DeepbitStatus implements Status, Serializable, Renderable  {
 
 	
 	/**
@@ -89,6 +94,25 @@ public class DeepbitStatus implements Status, Serializable {
 
 	public Map<String,DeepbitWorker> getWorkers() {
 		return workers;
+	}
+	
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Hashrate", getHashrate().toString()));
+		tl.addView(activity.renderRow("Confirmed Reward", getConfirmed_reward().toString()));
+		tl.addView(activity.renderRow("Ipa", getIpa().toString()));
+		tl.addView(activity.renderRow("Worker(s):",""));
+		if(getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	DeepbitWorker workerStatus = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Alive",workerStatus.getAlive().toString()));
+		    	tl.addView(activity.renderRow("Shares",workerStatus.getShares().toString()));
+		    	tl.addView(activity.renderRow("Stales",workerStatus.getStales().toString()));
+		    	tl.addView(activity.renderRow("",""));
+		    }
+		}
+		tl.addView(activity.renderRow("",""));
 	}
 
 }

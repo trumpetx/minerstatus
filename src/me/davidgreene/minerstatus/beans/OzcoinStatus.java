@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class OzcoinStatus implements Serializable, Status {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class OzcoinStatus implements Serializable, Status, Renderable  {
 
 	/**
 	 * 
@@ -103,4 +108,22 @@ public class OzcoinStatus implements Serializable, Status {
 		this.workers = workers;
 	}
 
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Hashrate", getHashrate()));
+		tl.addView(activity.renderRow("Confirmed Rewards", getConfirmed_rewards()));
+		tl.addView(activity.renderRow("Payout History", getPayout_history()));
+		tl.addView(activity.renderRow("Worker(s):",""));
+		if(getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	OzcoinWorker workerStatus = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Alive",workerStatus.getAlive()));
+		    	tl.addView(activity.renderRow("Hashrate",workerStatus.getHashrate()));
+		    	tl.addView(activity.renderRow("",""));
+		    }
+		}
+		tl.addView(activity.renderRow("",""));
+	}
+	
 }

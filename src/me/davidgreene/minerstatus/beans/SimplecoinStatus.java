@@ -4,7 +4,12 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimplecoinStatus implements Status {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class SimplecoinStatus implements Status, Renderable {
 
 	/**
 		{ "currencies" : { "BTC" : { "confirmed_rewards" : "0",
@@ -110,6 +115,33 @@ public class SimplecoinStatus implements Status {
 
 	public void setWorkers(Map<String, SimplecoinWorker> workers) {
 		this.workers = workers;
+	}
+	
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Hashrate", getTotalHashrate().toString()));
+		tl.addView(activity.renderRow("Currencies", ""));
+		
+		for(String key : getCurrencies().keySet()){
+			SimplecoinCurrency currency = getCurrencies().get(key);
+			if("ltc".equals(key.toLowerCase())){
+				currency.setScale(3);
+			}
+			tl.addView(activity.renderRow("", key));
+			tl.addView(activity.renderRow("Confirmed Rewards", currency.getConfirmed_rewards().toString()));
+			tl.addView(activity.renderRow("Estimated Rewards", currency.getEstimated_rewards().toString()));
+			tl.addView(activity.renderRow("Payout History", currency.getPayout_history().toString()));
+		}
+		tl.addView(activity.renderRow("Worker(s):",""));
+		for(String key : getWorkers().keySet()){
+			SimplecoinWorker worker = getWorkers().get(key);
+			tl.addView(activity.renderRow("", key));
+			tl.addView(activity.renderRow("Alive", worker.getAlive().toString()));
+			tl.addView(activity.renderRow("Hashrate", worker.getHashrate().toString()));
+			tl.addView(activity.renderRow("Pool", worker.getPool()));
+		}
+		
+		tl.addView(activity.renderRow("",""));
 	}
 
 }

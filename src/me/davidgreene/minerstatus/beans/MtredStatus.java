@@ -5,7 +5,12 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MtredStatus implements Status, Serializable {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class MtredStatus implements Status, Serializable, Renderable  {
 
 	/**
 	 * 
@@ -102,5 +107,34 @@ public class MtredStatus implements Status, Serializable {
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
+	
+	public void render(ViewMinerActivity activity){
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Balance", getBalance()));
+		tl.addView(activity.renderRow("User Round Solved", getRsolved()));
+		
+		BigDecimal rsolved = new BigDecimal(getRsolved());
+		BigDecimal roundShares = new BigDecimal(getServer().getRoundshares());
+		BigDecimal blockValue = new BigDecimal(50);
+		BigDecimal estimatedReward = BigDecimal.ZERO;
+		if (!roundShares.equals(BigDecimal.ZERO)){
+			estimatedReward = blockValue.multiply(rsolved).divide(roundShares, 4, BigDecimal.ROUND_HALF_UP).setScale(4, BigDecimal.ROUND_HALF_UP);		
+		}
+		tl.addView(activity.renderRow("Estimated Payout", estimatedReward.toString()));
+		tl.addView(activity.renderRow("Server Hashrate", getServer().getHashrate().toString()));
+		tl.addView(activity.renderRow("Server Round Shares", getServer().getRoundshares().toString()));
+		tl.addView(activity.renderRow("Server Found Block", getServer().getFoundblock().toString()));
+		tl.addView(activity.renderRow("Server Workers", getServer().getWorkers().toString()));
+		if (getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	MtredWorker worker = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Round Solved",worker.getRsolved().toString()));
+		    	tl.addView(activity.renderRow("Hashrate",worker.getMhash().toString()));
+		    	tl.addView(activity.renderRow("",""));
+		    }		
+		}
+		tl.addView(activity.renderRow("",""));
+	}	
 
 }

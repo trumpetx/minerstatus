@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class ArsStatus implements Serializable, Status {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class ArsStatus implements Serializable, Status, Renderable  {
 
 	/**
 	 * {"confirmed_rewards":"0.74339679320343","hashrate":"3278","payout_history":"18.0843209912012",
@@ -141,4 +146,25 @@ public class ArsStatus implements Serializable, Status {
 		this.workers = workers;
 	}
 
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Confirmed Rewards", getConfirmed_rewards()));
+		tl.addView(activity.renderRow("Hashrate", getHashrate()));
+		tl.addView(activity.renderRow("Payout History", getPayout_history()));
+		tl.addView(activity.renderRow("Total PPS Work", getTotalPPSWork()));
+		tl.addView(activity.renderRow("Paid PPS Work", getPaidPPSWork()));
+		tl.addView(activity.renderRow("PPS Donated", getPPSDonated()));
+		tl.addView(activity.renderRow("PPS Shares", getPPSShares()));		
+		if (getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	ArsWorker worker = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Alive", Boolean.valueOf(worker.getAlive().equals("1")).toString()));
+		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(activity.renderRow("",""));
+		    }		
+		}
+		tl.addView(activity.renderRow("",""));
+	}
+	
 }

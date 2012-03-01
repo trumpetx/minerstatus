@@ -4,6 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import me.davidgreene.minerstatus.beans.ABCStatus;
+import me.davidgreene.minerstatus.beans.ArsStatus;
+import me.davidgreene.minerstatus.beans.BitclockersStatus;
+import me.davidgreene.minerstatus.beans.BitpoolStatus;
+import me.davidgreene.minerstatus.beans.BtcMineStatus;
+import me.davidgreene.minerstatus.beans.BtcguildStatus;
+import me.davidgreene.minerstatus.beans.DeepbitStatus;
+import me.davidgreene.minerstatus.beans.EclipseMcStatus;
+import me.davidgreene.minerstatus.beans.EligiusStatus;
+import me.davidgreene.minerstatus.beans.MtGox;
+import me.davidgreene.minerstatus.beans.MtredStatus;
+import me.davidgreene.minerstatus.beans.OzcoinStatus;
+import me.davidgreene.minerstatus.beans.SimplecoinStatus;
+import me.davidgreene.minerstatus.beans.SlushStatus;
+import me.davidgreene.minerstatus.beans.TripleminingStatus;
+
 public class MinerStatusConstants {
 	
 	public static int MAX_ERRORS = 10;
@@ -13,13 +29,11 @@ public class MinerStatusConstants {
 	public static final Map<String, String> EXCHANGE_LABELS = new HashMap<String,String>(1);
 	static{
 		EXCHANGE_LABELS.put("mtgox", "Mt. Gox");
-		//EXCHANGE_LABELS.put("tradehill", "Tradehill");
 	}
 	
 	public static final Map<String, String> EXCHANGE_URLS = new HashMap<String,String>(1);
 	static{
 		EXCHANGE_URLS.put("mtgox", "https://mtgox.com/code/data/ticker.php");
-		//EXCHANGE_URLS.put("tradehill", "https://api.tradehill.com/APIv1/USD/Ticker");
 	}
 	
 	public static final Map<String,String[]> POOL_URLS = new HashMap<String,String[]>(20);
@@ -30,7 +44,6 @@ public class MinerStatusConstants {
 		POOL_URLS.put("btcmine", new String[]{"http://btcmine.com/api/getstats/%MINER%/", "http://btcmine.com/api/getminerstats/%MINER%/"});
 		POOL_URLS.put("btcguild", new String[]{"https://www.btcguild.com/api.php?api_key=%MINER%"});
 		POOL_URLS.put("bitclockers", new String[]{"http://bitclockers.com/?action=api&cmd=%MINER%"});
-		POOL_URLS.put("swepool", new String[]{"https://swepool.net/json?key=%MINER%"});
 		POOL_URLS.put("mtred", new String[]{"https://mtred.com/api/user/key/%MINER%"});
 		POOL_URLS.put("ozcoin", new String[]{"https://ozco.in/api.php?api_key=%MINER%"});
 		POOL_URLS.put("eligius", new String[]{"http://eligius.st/~luke-jr/hashrate.php?addr=%MINER%"});
@@ -49,7 +62,6 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("btcmine", "BtcMine");
 		POOL_LABELS.put("btcguild", "BTC Guild");
 		POOL_LABELS.put("bitclockers", "Bitclockers");
-		POOL_LABELS.put("swepool", "Swepool");
 		POOL_LABELS.put("mtred", "Mt.Red");
 		POOL_LABELS.put("ozcoin", "Ozco.in");
 		POOL_LABELS.put("eligius", "Eligius");
@@ -70,7 +82,6 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("btcmine", "BtcMine"+COMMON_DIRECTIONS+"(and generate new ones) on your profile page at\nhttp://btcmine.com/user/profile/");
 		POOL_DIRECTIONS.put("btcguild", "BTC Guild"+COMMON_DIRECTIONS+"on your profile page at\nhttp://www.btcguild.com/my_api.php");
 		POOL_DIRECTIONS.put("bitclockers", "Bitclockers"+COMMON_DIRECTIONS+"on your dashboard page at\nhttp://bitclockers.com/?action=dashboard");
-		POOL_DIRECTIONS.put("swepool", "Swepool"+COMMON_DIRECTIONS+"on your settings page at\nhttp://swepool.net/settings");
 		POOL_DIRECTIONS.put("mtred", "Mt. Red"+COMMON_DIRECTIONS+"on your profile page at\nhttps://mtred.com/user/profile.html");
 		POOL_DIRECTIONS.put("ozcoin", "Ozco.in"+COMMON_DIRECTIONS+"on your account details page at\nhttps://ozco.in/accountdetails.php");
 		POOL_DIRECTIONS.put("eligius", "Simply enter the BTC address you use to connect to the Eligius pool.");
@@ -79,6 +90,25 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("abc", "ABCPool"+COMMON_DIRECTIONS+"on your account details page at\nhttps://www.abcpool.co/accountdetails.php");
 		POOL_DIRECTIONS.put("simplecoin", "Simplecoin"+COMMON_DIRECTIONS+"on your account details page at\nhttps://simplecoin.us/accountdetails.php");
 		POOL_DIRECTIONS.put("triple", "Triple Mining"+COMMON_DIRECTIONS+"on your workers page at\nhttps://www.triplemining.com/workers");
+	}	
+	
+	public static final Map<String,Class<?>> GSON_FACTORY_OBJECTS = new HashMap<String,Class<?>>(20);
+	static{
+		GSON_FACTORY_OBJECTS.put("mtgox", MtGox.class);
+		GSON_FACTORY_OBJECTS.put("bitcoinpool", BitpoolStatus.class);
+		GSON_FACTORY_OBJECTS.put("slush", SlushStatus.class);
+		GSON_FACTORY_OBJECTS.put("deepbit", DeepbitStatus.class);
+		GSON_FACTORY_OBJECTS.put("btcmine", BtcMineStatus.class);
+		GSON_FACTORY_OBJECTS.put("btcguild", BtcguildStatus.class);
+		GSON_FACTORY_OBJECTS.put("bitclockers", BitclockersStatus.class);
+		GSON_FACTORY_OBJECTS.put("mtred", MtredStatus.class);
+		GSON_FACTORY_OBJECTS.put("ozcoin", OzcoinStatus.class);
+		GSON_FACTORY_OBJECTS.put("eligius", EligiusStatus.class);
+		GSON_FACTORY_OBJECTS.put("eclipsemc", EclipseMcStatus.class);
+		GSON_FACTORY_OBJECTS.put("ars", ArsStatus.class);
+		GSON_FACTORY_OBJECTS.put("abc", ABCStatus.class);
+		GSON_FACTORY_OBJECTS.put("simplecoin", SimplecoinStatus.class);
+		GSON_FACTORY_OBJECTS.put("triple", TripleminingStatus.class);
 	}	
 	public static final Map<String,String>THEME_LIST = new HashMap<String,String>(2);
 	static{

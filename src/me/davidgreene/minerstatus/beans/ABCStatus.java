@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class ABCStatus implements Serializable, Status {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class ABCStatus implements Serializable, Status, Renderable {
 
 	/**
 	 * {"confirmed_rewards":0.05043161686,"hashrate":628,"payout_history":0,
@@ -99,6 +104,23 @@ public class ABCStatus implements Serializable, Status {
 
 	public void setWorkers(Map<String, ABCWorker> workers) {
 		this.workers = workers;
+	}
+	
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Confirmed Rewards", getConfirmed_rewards()));
+		tl.addView(activity.renderRow("Hashrate", getHashrate()));
+		tl.addView(activity.renderRow("Payout History", getPayout_history()));
+		if (getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	ABCWorker worker = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Alive", Boolean.valueOf(worker.getAlive().equals("true")).toString()));
+		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(activity.renderRow("",""));
+		    }		
+		}
+		tl.addView(activity.renderRow("",""));
 	}
 
 }

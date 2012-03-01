@@ -5,7 +5,12 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 
-public class SlushStatus implements Status, Serializable{
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class SlushStatus implements Status, Serializable, Renderable {
 
 
 	/**
@@ -109,4 +114,27 @@ public class SlushStatus implements Status, Serializable{
 		this.workers = workers;
 	}
 
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Username", getUsername()));
+		tl.addView(activity.renderRow("Send Threshold", getSend_threshold()));
+		tl.addView(activity.renderRow("Estimated", getEstimated_reward()));
+		tl.addView(activity.renderRow("Unconfirmed", getUnconfirmed_reward()));
+		tl.addView(activity.renderRow("Confirmed", getConfirmed_reward()));
+		tl.addView(activity.renderRow("Wallet", getWallet()));
+		if (getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	SlushWorker worker = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate().toString()));
+		    	tl.addView(activity.renderRow("Last Share",worker.getLast_share().toString()));
+		    	tl.addView(activity.renderRow("Shares",worker.getShares().toString()));
+		    	tl.addView(activity.renderRow("Score",worker.getScore()));
+		    	tl.addView(activity.renderRow("Alive",worker.getAlive().toString()));
+		    	tl.addView(activity.renderRow("",""));
+		    }		
+		}		
+		tl.addView(activity.renderRow("",""));
+	}
+	
 }

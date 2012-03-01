@@ -3,7 +3,12 @@ package me.davidgreene.minerstatus.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class BtcMineStatus implements Serializable, Status, Mergable {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class BtcMineStatus implements Serializable, Status, Mergable, Renderable  {
 
 	/**
 	 * 
@@ -202,4 +207,28 @@ public class BtcMineStatus implements Serializable, Status, Mergable {
 		this.total_24h = total_24h;
 	}
 
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Hashrate", getHashrate()));
+		tl.addView(activity.renderRow("Total Payout", getTotal_payout()));
+		tl.addView(activity.renderRow("Total Bounty", getTotal_bounty()));
+		tl.addView(activity.renderRow("Confirmed Bounty", getConfirmed_bounty()));
+		tl.addView(activity.renderRow("Estimated Bounty", getEstimated_bounty()));
+		tl.addView(activity.renderRow("Unconfirmed Bounty", getUnconfirmed_bounty()));
+		tl.addView(activity.renderRow("Round Shares", getRound_shares().toString()));
+		tl.addView(activity.renderRow("Solved Shares", getSolved_shares().toString()));
+		tl.addView(activity.renderRow("Solved Blocks", getSolved_blocks().toString()));
+		tl.addView(activity.renderRow("",""));
+		if (getMiners() != null){
+		    for( BtcMineWorker worker :  getMiners()){
+		    	tl.addView(activity.renderRow("",worker.getName()));
+		    	tl.addView(activity.renderRow("Online Status",worker.getOnline_status().toString()));
+		    	tl.addView(activity.renderRow("Date Connected",worker.getDate_connected()));
+		    	tl.addView(activity.renderRow("Solved Shares",worker.getSolved_shares().toString()));
+		    	tl.addView(activity.renderRow("Solved Blocks",worker.getSolved_blocks().toString()));
+		    }
+		}
+		tl.addView(activity.renderRow("",""));
+	}
+	
 }

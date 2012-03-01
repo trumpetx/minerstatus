@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-public class BitclockersStatus implements Serializable, Status {
+import me.davidgreene.minerstatus.R;
+import me.davidgreene.minerstatus.ViewMinerActivity;
+import me.davidgreene.minerstatus.util.Renderable;
+import android.widget.TableLayout;
+
+public class BitclockersStatus implements Serializable, Status, Renderable  {
 
 	/**
 	 * 
@@ -92,5 +97,21 @@ public class BitclockersStatus implements Serializable, Status {
 		this.apiKey = apiKey;
 	}
 
-
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("Balance", getBalance().toString()));
+		tl.addView(activity.renderRow("Total Withdrawn", getPayout()));
+		tl.addView(activity.renderRow("Hashrate", getHashrate().toString()));
+		if (getWorkers() != null){
+		    for( String key : getWorkers().keySet() ){
+		    	BitclockersWorker worker = getWorkers().get(key);
+		    	tl.addView(activity.renderRow("",key));
+		    	tl.addView(activity.renderRow("Shares",worker.getShares().toString()));
+		    	tl.addView(activity.renderRow("Stale",worker.getStale().toString()));
+		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(activity.renderRow("",""));
+		    }
+		}
+		tl.addView(activity.renderRow("",""));
+	}
 }

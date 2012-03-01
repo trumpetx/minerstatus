@@ -14,8 +14,7 @@ import me.davidgreene.minerstatus.beans.Mergable;
 import me.davidgreene.minerstatus.beans.Result;
 import me.davidgreene.minerstatus.beans.Status;
 import me.davidgreene.minerstatus.tasks.AsynchMinerUpdateTask;
-import me.davidgreene.minerstatus.util.ExchangeObjectFactory;
-import me.davidgreene.minerstatus.util.StatusObjectFactory;
+import me.davidgreene.minerstatus.util.GsonObjectFactory;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -182,7 +181,7 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 		    	if (Boolean.valueOf(configService.getConfigValue("show."+key))){
 		    		try{
 		    			List<Result> result = minerService.readJsonData(key);
-		    			Exchange exchange = ExchangeObjectFactory.getStatusObject(result.get(0).getData(), key);
+		    			Exchange exchange = GsonObjectFactory.getExchangeObject(result.get(0).getData(), key);
 						if (!atLeastOneExchange){
 							atLeastOneExchange = Boolean.TRUE;
 							tickerLayout.removeAllViews();
@@ -226,9 +225,9 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
 						}
 						for(Result minerResult : minerResultList){
 							if (status == null){
-								status = StatusObjectFactory.getStatusObject(minerResult.getData(), pool);
+								status = GsonObjectFactory.getStatusObject(minerResult.getData(), pool);
 							} else {
-								((Mergable) status).mergeWith((Mergable) StatusObjectFactory.getStatusObject(minerResult.getData(), pool));
+								((Mergable) status).mergeWith((Mergable) GsonObjectFactory.getStatusObject(minerResult.getData(), pool));
 							}
 							status.setApiKey(apiKey);
 						}

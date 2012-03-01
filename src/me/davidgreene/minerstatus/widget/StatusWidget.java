@@ -14,7 +14,7 @@ import me.davidgreene.minerstatus.service.ConfigService;
 import me.davidgreene.minerstatus.service.MinerService;
 import me.davidgreene.minerstatus.tasks.AsynchMinerUpdateTask;
 import me.davidgreene.minerstatus.util.MinerStatusConstants;
-import me.davidgreene.minerstatus.util.StatusObjectFactory;
+import me.davidgreene.minerstatus.util.GsonObjectFactory;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -81,9 +81,9 @@ public class StatusWidget extends AppWidgetProvider {
 	        	Status status = null;
 				for(Result minerResult : minerResultList){
 					if (status == null){
-						status = StatusObjectFactory.getStatusObject(minerResult.getData(), pool);
+						status = GsonObjectFactory.getStatusObject(minerResult.getData(), pool);
 					} else {
-						((Mergable) status).mergeWith((Mergable) StatusObjectFactory.getStatusObject(minerResult.getData(), pool));
+						((Mergable) status).mergeWith((Mergable) GsonObjectFactory.getStatusObject(minerResult.getData(), pool));
 					}
 					status.setApiKey(apiKey);
 					updateView.setTextViewText(R.id.pool, MinerStatusConstants.POOL_LABELS.get(pool));
