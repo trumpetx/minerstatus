@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import me.davidgreene.minerstatus.beans.ABCStatus;
-import me.davidgreene.minerstatus.beans.ArsStatus;
 import me.davidgreene.minerstatus.beans.BitclockersStatus;
 import me.davidgreene.minerstatus.beans.BitpoolStatus;
 import me.davidgreene.minerstatus.beans.BtcMineStatus;
@@ -48,7 +47,6 @@ public class MinerStatusConstants {
 		POOL_URLS.put("ozcoin", new String[]{"https://ozco.in/api.php?api_key=%MINER%"});
 		POOL_URLS.put("eligius", new String[]{"http://eligius.st/~luke-jr/hashrate.php?addr=%MINER%"});
 		POOL_URLS.put("eclipsemc", new String[]{"https://eclipsemc.com/api.php?key=%MINER%&action=userstats"});
-		POOL_URLS.put("ars", new String[] {"https://arsbitcoin.com/api.php?api_key=%MINER%"});
 		POOL_URLS.put("abc", new String[] {"https://www.abcpool.co/api.php?api_key=%MINER%"});
 		POOL_URLS.put("simplecoin", new String[] {"https://simplecoin.us/api.php?api_key=%MINER%"});
 		POOL_URLS.put("triple", new String[] {"https://api.triplemining.com/json/%MINER%"});
@@ -66,7 +64,6 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("ozcoin", "Ozco.in");
 		POOL_LABELS.put("eligius", "Eligius");
 		POOL_LABELS.put("eclipsemc", "EclipseMC");
-		POOL_LABELS.put("ars","Ars Bitcoin");
 		POOL_LABELS.put("abc","ABCPool");
 		POOL_LABELS.put("simplecoin","Simplecoin");
 		POOL_LABELS.put("triple","Triple Mining");
@@ -86,7 +83,6 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("ozcoin", "Ozco.in"+COMMON_DIRECTIONS+"on your account details page at\nhttps://ozco.in/accountdetails.php");
 		POOL_DIRECTIONS.put("eligius", "Simply enter the BTC address you use to connect to the Eligius pool.");
 		POOL_DIRECTIONS.put("eclipsemc", "EclipseMC"+COMMON_DIRECTIONS+"on your account details page at\nhttps://eclipsemc.com/my_account.php");
-		POOL_DIRECTIONS.put("ars", "Ars"+COMMON_DIRECTIONS+"on your account details page at\nhttps://arsbitcoin.com/accountdetails.php");
 		POOL_DIRECTIONS.put("abc", "ABCPool"+COMMON_DIRECTIONS+"on your account details page at\nhttps://www.abcpool.co/accountdetails.php");
 		POOL_DIRECTIONS.put("simplecoin", "Simplecoin"+COMMON_DIRECTIONS+"on your account details page at\nhttps://simplecoin.us/accountdetails.php");
 		POOL_DIRECTIONS.put("triple", "Triple Mining"+COMMON_DIRECTIONS+"on your workers page at\nhttps://www.triplemining.com/workers");
@@ -105,7 +101,6 @@ public class MinerStatusConstants {
 		GSON_FACTORY_OBJECTS.put("ozcoin", OzcoinStatus.class);
 		GSON_FACTORY_OBJECTS.put("eligius", EligiusStatus.class);
 		GSON_FACTORY_OBJECTS.put("eclipsemc", EclipseMcStatus.class);
-		GSON_FACTORY_OBJECTS.put("ars", ArsStatus.class);
 		GSON_FACTORY_OBJECTS.put("abc", ABCStatus.class);
 		GSON_FACTORY_OBJECTS.put("simplecoin", SimplecoinStatus.class);
 		GSON_FACTORY_OBJECTS.put("triple", TripleminingStatus.class);

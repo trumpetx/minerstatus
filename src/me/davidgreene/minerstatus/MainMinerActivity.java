@@ -43,21 +43,15 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
     private static final String tag = "TX";
 
 	private boolean hasNetworkConnection() {
-        boolean HaveConnectedWifi = false;
-        boolean HaveConnectedMobile = false;
-
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo[] netInfo = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo)
-        {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
-                if (ni.isConnected())
-                    HaveConnectedWifi = true;
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (ni.isConnected())
-                    HaveConnectedMobile = true;
+        for (NetworkInfo ni : netInfo) {
+            if ((ni.getTypeName().equalsIgnoreCase("WIFI") || ni.getTypeName().equalsIgnoreCase("MOBILE") || ni.getTypeName().equalsIgnoreCase("WiMax")) 
+            		&& ni.isConnected()){
+                    return true;
+            }
         }
-        return HaveConnectedWifi || HaveConnectedMobile;
+        return false;
 	}
 
     @Override
