@@ -1,4 +1,4 @@
-package me.davidgreene.minerstatus.util;
+package me.davidgreene.minerstatus.beans;
 
 import me.davidgreene.minerstatus.ViewMinerActivity;
 

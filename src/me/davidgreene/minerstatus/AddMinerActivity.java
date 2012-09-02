@@ -101,7 +101,7 @@ public class AddMinerActivity extends AbstractMinerStatusActivity {
 					return Boolean.FALSE;
 				}
 			}
-		} else if(pool.equals("deepbit")){
+		} else if(pool.equals("deepbit") || pool.equals("ozcoin")){
 			for(Character c : miner.toCharArray()){
 				if (!Character.isLetterOrDigit(c) && !c.equals('_')){
 					return Boolean.FALSE;

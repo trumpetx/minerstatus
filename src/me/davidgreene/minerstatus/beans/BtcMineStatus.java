@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class BtcMineStatus implements Serializable, Status, Mergable, Renderable  {
@@ -39,7 +38,7 @@ public class BtcMineStatus implements Serializable, Status, Mergable, Renderable
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -141,7 +140,7 @@ public class BtcMineStatus implements Serializable, Status, Mergable, Renderable
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	@Override
@@ -209,7 +208,7 @@ public class BtcMineStatus implements Serializable, Status, Mergable, Renderable
 
 	public void render(ViewMinerActivity activity) {
 		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
-		tl.addView(activity.renderRow("Hashrate", getHashrate()));
+		tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, getHashrate()));
 		tl.addView(activity.renderRow("Total Payout", getTotal_payout()));
 		tl.addView(activity.renderRow("Total Bounty", getTotal_bounty()));
 		tl.addView(activity.renderRow("Confirmed Bounty", getConfirmed_bounty()));

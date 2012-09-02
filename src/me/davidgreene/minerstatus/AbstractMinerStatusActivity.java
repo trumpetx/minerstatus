@@ -4,9 +4,7 @@ import me.davidgreene.minerstatus.service.ConfigService;
 import me.davidgreene.minerstatus.service.MinerService;
 import me.davidgreene.minerstatus.service.ThemeService;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 

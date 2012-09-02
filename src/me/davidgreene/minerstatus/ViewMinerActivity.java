@@ -1,7 +1,7 @@
 package me.davidgreene.minerstatus;
 
+import me.davidgreene.minerstatus.beans.Renderable;
 import me.davidgreene.minerstatus.beans.Status;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;

@@ -6,14 +6,13 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class ABCStatus implements Serializable, Status, Renderable {
 
 	/**
-	 * {"confirmed_rewards":0.05043161686,"hashrate":628,"payout_history":0,
-     * "workers":{"example.test":{"alive":true,"hashrate":628}}}
+	 * {"confirmed_rewards":0.05043161686,HASHRATE_DISPLAY_COL_2_LABEL:628,"payout_history":0,
+     * "workers":{"example.test":{"alive":true,HASHRATE_DISPLAY_COL_2_LABEL:628}}}
 	 */
 	private static final long serialVersionUID = 5089947276893311846L;
 	private String apiKey;
@@ -24,7 +23,7 @@ public class ABCStatus implements Serializable, Status, Renderable {
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class ABCStatus implements Serializable, Status, Renderable {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	@Override
@@ -109,14 +108,14 @@ public class ABCStatus implements Serializable, Status, Renderable {
 	public void render(ViewMinerActivity activity) {
 		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
 		tl.addView(activity.renderRow("Confirmed Rewards", getConfirmed_rewards()));
-		tl.addView(activity.renderRow("Hashrate", getHashrate()));
+		tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, getHashrate()));
 		tl.addView(activity.renderRow("Payout History", getPayout_history()));
 		if (getWorkers() != null){
 		    for( String key : getWorkers().keySet() ){
 		    	ABCWorker worker = getWorkers().get(key);
 		    	tl.addView(activity.renderRow("",key));
 		    	tl.addView(activity.renderRow("Alive", Boolean.valueOf(worker.getAlive().equals("true")).toString()));
-		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL,worker.getHashrate()));
 		    	tl.addView(activity.renderRow("",""));
 		    }		
 		}

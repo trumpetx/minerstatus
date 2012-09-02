@@ -6,7 +6,6 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class SimplecoinStatus implements Status, Renderable {
@@ -33,9 +32,9 @@ public class SimplecoinStatus implements Status, Renderable {
 		          "payout_history" : "0"
 		        }
 		    },
-		  "hashrate" : 0,
+		  HASHRATE_DISPLAY_COL_2_LABEL : 0,
 		  "workers" : { "trumpetx.1" : { "alive" : false,
-		          "hashrate" : 0,
+		          HASHRATE_DISPLAY_COL_2_LABEL : 0,
 		          "pool" : "BTC/NMC PPLNS"
 		        } }
 		}
@@ -49,7 +48,7 @@ public class SimplecoinStatus implements Status, Renderable {
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -75,7 +74,7 @@ public class SimplecoinStatus implements Status, Renderable {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	@Override
@@ -119,7 +118,7 @@ public class SimplecoinStatus implements Status, Renderable {
 	
 	public void render(ViewMinerActivity activity) {
 		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
-		tl.addView(activity.renderRow("Hashrate", getTotalHashrate().toString()));
+		tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, getTotalHashrate().toString()));
 		tl.addView(activity.renderRow("Currencies", ""));
 		
 		for(String key : getCurrencies().keySet()){
@@ -132,12 +131,12 @@ public class SimplecoinStatus implements Status, Renderable {
 			tl.addView(activity.renderRow("Estimated Rewards", currency.getEstimated_rewards().toString()));
 			tl.addView(activity.renderRow("Payout History", currency.getPayout_history().toString()));
 		}
-		tl.addView(activity.renderRow("Worker(s):",""));
+		tl.addView(activity.renderRow(DEFAULT_USERNAME + ":",""));
 		for(String key : getWorkers().keySet()){
 			SimplecoinWorker worker = getWorkers().get(key);
 			tl.addView(activity.renderRow("", key));
 			tl.addView(activity.renderRow("Alive", worker.getAlive().toString()));
-			tl.addView(activity.renderRow("Hashrate", worker.getHashrate().toString()));
+			tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, worker.getHashrate().toString()));
 			tl.addView(activity.renderRow("Pool", worker.getPool()));
 		}
 		

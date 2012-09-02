@@ -6,7 +6,6 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class DeepbitStatus implements Status, Serializable, Renderable  {
@@ -53,7 +52,7 @@ public class DeepbitStatus implements Status, Serializable, Renderable  {
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -80,12 +79,12 @@ public class DeepbitStatus implements Status, Serializable, Renderable  {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	@Override
 	public String getDisplayCol1Label() {
-		return "Confirmed Reward";
+		return CONFIRMED_REWARD_COL_1_LABEL;
 	}
 
 	public void setWorkers(Map<String,DeepbitWorker> workers) {
@@ -98,10 +97,10 @@ public class DeepbitStatus implements Status, Serializable, Renderable  {
 	
 	public void render(ViewMinerActivity activity) {
 		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
-		tl.addView(activity.renderRow("Hashrate", getHashrate().toString()));
-		tl.addView(activity.renderRow("Confirmed Reward", getConfirmed_reward().toString()));
+		tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, getHashrate().toString()));
+		tl.addView(activity.renderRow(CONFIRMED_REWARD_COL_1_LABEL, getConfirmed_reward().toString()));
 		tl.addView(activity.renderRow("Ipa", getIpa().toString()));
-		tl.addView(activity.renderRow("Worker(s):",""));
+		tl.addView(activity.renderRow(DEFAULT_USERNAME + ":",""));
 		if(getWorkers() != null){
 		    for( String key : getWorkers().keySet() ){
 		    	DeepbitWorker workerStatus = getWorkers().get(key);

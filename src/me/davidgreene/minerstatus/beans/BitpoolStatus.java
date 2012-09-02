@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class BitpoolStatus implements Status, Serializable, Renderable {

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class MtredStatus implements Status, Serializable, Renderable  {
@@ -40,7 +39,7 @@ public class MtredStatus implements Status, Serializable, Renderable  {
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class MtredStatus implements Status, Serializable, Renderable  {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	public String getBalance() {
@@ -130,7 +129,7 @@ public class MtredStatus implements Status, Serializable, Renderable  {
 		    	MtredWorker worker = getWorkers().get(key);
 		    	tl.addView(activity.renderRow("",key));
 		    	tl.addView(activity.renderRow("Round Solved",worker.getRsolved().toString()));
-		    	tl.addView(activity.renderRow("Hashrate",worker.getMhash().toString()));
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL,worker.getMhash().toString()));
 		    	tl.addView(activity.renderRow("",""));
 		    }		
 		}

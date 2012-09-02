@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class EclipseMcStatus implements Status, Serializable, Renderable  {
@@ -23,7 +22,7 @@ public class EclipseMcStatus implements Status, Serializable, Renderable  {
 
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -48,7 +47,7 @@ public class EclipseMcStatus implements Status, Serializable, Renderable  {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class EclipseMcStatus implements Status, Serializable, Renderable  {
 		if (getWorkers() != null){
 		    for( EclipseMcWorker worker : getWorkers() ){
 		    	tl.addView(activity.renderRow("",worker.getWorker_name()));
-		    	tl.addView(activity.renderRow("Hashrate",worker.getHash_rate()));
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL,worker.getHash_rate()));
 		    	tl.addView(activity.renderRow("Round Shares",worker.getRound_shares()));
 		    	tl.addView(activity.renderRow("Reset Shares",worker.getReset_shares()));
 		    	tl.addView(activity.renderRow("Total Shares",worker.getTotal_shares()));

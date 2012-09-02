@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class EligiusStatus implements Status, Serializable, Renderable  {
@@ -22,7 +21,7 @@ public class EligiusStatus implements Status, Serializable, Renderable  {
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class EligiusStatus implements Status, Serializable, Renderable  {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	@Override
@@ -92,7 +91,7 @@ public class EligiusStatus implements Status, Serializable, Renderable  {
 		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
 		tl.addView(activity.renderRow("Time Delta", getTimedelta().toString()));
 		tl.addView(activity.renderRow("Shares", getShares().toString()));
-		tl.addView(activity.renderRow("Hashrate", getHashrate().toString()));
+		tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, getHashrate().toString()));
 		tl.addView(activity.renderRow("",""));
 	}
 

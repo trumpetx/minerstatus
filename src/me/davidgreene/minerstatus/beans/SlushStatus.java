@@ -7,7 +7,6 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class SlushStatus implements Status, Serializable, Renderable {
@@ -101,11 +100,11 @@ public class SlushStatus implements Status, Serializable, Renderable {
 	}
 	@Override
 	public String getDisplayCol1Label() {
-		return "Confirmed Reward";
+		return CONFIRMED_REWARD_COL_1_LABEL;
 	}
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 	public Map<String, SlushWorker> getWorkers() {
 		return workers;
@@ -126,7 +125,7 @@ public class SlushStatus implements Status, Serializable, Renderable {
 		    for( String key : getWorkers().keySet() ){
 		    	SlushWorker worker = getWorkers().get(key);
 		    	tl.addView(activity.renderRow("",key));
-		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate().toString()));
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL,worker.getHashrate().toString()));
 		    	tl.addView(activity.renderRow("Last Share",worker.getLast_share().toString()));
 		    	tl.addView(activity.renderRow("Shares",worker.getShares().toString()));
 		    	tl.addView(activity.renderRow("Score",worker.getScore()));

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class BitclockersStatus implements Serializable, Status, Renderable  {
@@ -29,7 +28,7 @@ public class BitclockersStatus implements Serializable, Status, Renderable  {
 
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class BitclockersStatus implements Serializable, Status, Renderable  {
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return HASHRATE_DISPLAY_COL_2_LABEL;
 	}
 
 	public BigDecimal getBalance() {
@@ -101,14 +100,14 @@ public class BitclockersStatus implements Serializable, Status, Renderable  {
 		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
 		tl.addView(activity.renderRow("Balance", getBalance().toString()));
 		tl.addView(activity.renderRow("Total Withdrawn", getPayout()));
-		tl.addView(activity.renderRow("Hashrate", getHashrate().toString()));
+		tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL, getHashrate().toString()));
 		if (getWorkers() != null){
 		    for( String key : getWorkers().keySet() ){
 		    	BitclockersWorker worker = getWorkers().get(key);
 		    	tl.addView(activity.renderRow("",key));
 		    	tl.addView(activity.renderRow("Shares",worker.getShares().toString()));
 		    	tl.addView(activity.renderRow("Stale",worker.getStale().toString()));
-		    	tl.addView(activity.renderRow("Hashrate",worker.getHashrate()));
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL,worker.getHashrate()));
 		    	tl.addView(activity.renderRow("",""));
 		    }
 		}

@@ -44,7 +44,7 @@ public class MinerStatusConstants {
 		POOL_URLS.put("btcguild", new String[]{"https://www.btcguild.com/api.php?api_key=%MINER%"});
 		POOL_URLS.put("bitclockers", new String[]{"http://bitclockers.com/?action=api&cmd=%MINER%"});
 		POOL_URLS.put("mtred", new String[]{"https://mtred.com/api/user/key/%MINER%"});
-		POOL_URLS.put("ozcoin", new String[]{"https://ozco.in/api.php?api_key=%MINER%"});
+		POOL_URLS.put("ozcoin", new String[]{"http://ozco.in/api.php?api_key=%MINER%"});
 		POOL_URLS.put("eligius", new String[]{"http://eligius.st/~luke-jr/hashrate.php?addr=%MINER%"});
 		POOL_URLS.put("eclipsemc", new String[]{"https://eclipsemc.com/api.php?key=%MINER%&action=userstats"});
 		POOL_URLS.put("abc", new String[] {"https://www.abcpool.co/api.php?api_key=%MINER%"});
@@ -61,7 +61,7 @@ public class MinerStatusConstants {
 		POOL_LABELS.put("btcguild", "BTC Guild");
 		POOL_LABELS.put("bitclockers", "Bitclockers");
 		POOL_LABELS.put("mtred", "Mt.Red");
-		POOL_LABELS.put("ozcoin", "Ozco.in");
+		POOL_LABELS.put("ozcoin", "Ozcoin");
 		POOL_LABELS.put("eligius", "Eligius");
 		POOL_LABELS.put("eclipsemc", "EclipseMC");
 		POOL_LABELS.put("abc","ABCPool");
@@ -80,7 +80,7 @@ public class MinerStatusConstants {
 		POOL_DIRECTIONS.put("btcguild", "BTC Guild"+COMMON_DIRECTIONS+"on your profile page at\nhttp://www.btcguild.com/my_api.php");
 		POOL_DIRECTIONS.put("bitclockers", "Bitclockers"+COMMON_DIRECTIONS+"on your dashboard page at\nhttp://bitclockers.com/?action=dashboard");
 		POOL_DIRECTIONS.put("mtred", "Mt. Red"+COMMON_DIRECTIONS+"on your profile page at\nhttps://mtred.com/user/profile.html");
-		POOL_DIRECTIONS.put("ozcoin", "Ozco.in"+COMMON_DIRECTIONS+"on your account details page at\nhttps://ozco.in/accountdetails.php");
+		POOL_DIRECTIONS.put("ozcoin", "Ozco.in"+COMMON_DIRECTIONS+"on your account details page at\nhttp://ozcoin.net/content/api-key");
 		POOL_DIRECTIONS.put("eligius", "Simply enter the BTC address you use to connect to the Eligius pool.");
 		POOL_DIRECTIONS.put("eclipsemc", "EclipseMC"+COMMON_DIRECTIONS+"on your account details page at\nhttps://eclipsemc.com/my_account.php");
 		POOL_DIRECTIONS.put("abc", "ABCPool"+COMMON_DIRECTIONS+"on your account details page at\nhttps://www.abcpool.co/accountdetails.php");

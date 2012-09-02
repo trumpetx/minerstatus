@@ -2,11 +2,12 @@ package me.davidgreene.minerstatus.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class OzcoinStatus implements Serializable, Status, Renderable  {
@@ -16,39 +17,71 @@ public class OzcoinStatus implements Serializable, Status, Renderable  {
 	 */
 	private static final long serialVersionUID = -6915687432225003232L;
 
-	//{"confirmed_rewards":"0","hashrate":"0","payout_history":"0","workers":{"trumpetx.1":{"alive":"0","hashrate":"0"}}}
-	
-	private String confirmed_rewards;
-	private String hashrate;
-	private String payout_history;
-	private Map<String, OzcoinWorker> workers;
+
+	private OzcoinUser user;
+	private Map<String, OzcoinWorker> worker = new HashMap<String, OzcoinWorker>();
 	private String apiKey;
 	
-	@Override
-	public BigDecimal getTotalHashrate(){
-		try{
-			return new BigDecimal(getHashrate()).setScale(2, BigDecimal.ROUND_HALF_UP);
-		} catch (Exception e){
-			return BigDecimal.ZERO;
+	public void render(ViewMinerActivity activity) {
+		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
+		tl.addView(activity.renderRow("GHashrate:", getTotalHashrate()));
+		tl.addView(activity.renderRow("Completed Payout (BTC):", getUser().getCompleted_payout()));
+		tl.addView(activity.renderRow("Estimated Payout (BTC):", getUser().getEstimated_payout()));
+		tl.addView(activity.renderRow("Completed Payout (NMC):", getUser().getCompleted_payout_namecoin()));
+		tl.addView(activity.renderRow("Estimated Payout (NMC):", getUser().getEstimated_payout_namecoin()));
+		tl.addView(activity.renderRow("PPS Fee:", getUser().getPps_fee()));
+		tl.addView(activity.renderRow("PPS Value:", getUser().getPps_value()));
+		tl.addView(activity.renderRow(DEFAULT_USERNAME + ":",""));
+		if(getWorker() != null){
+		    for( Map.Entry<String, OzcoinWorker> entry : getWorker().entrySet() ){
+		    	OzcoinWorker workerStatus = entry.getValue();
+		    	tl.addView(activity.renderRow("",workerStatus.getUsername()));
+		    	if(workerStatus.getIdle_since() != ""){
+		    		tl.addView(activity.renderRow("Idle Since:",workerStatus.getIdle_since()));	
+		    	}
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL + ":",workerStatus.getCurrent_speed()));
+		    	if(!workerStatus.getValid_shares().equals(BigDecimal.ZERO) || !workerStatus.getInvalid_shares().equals(BigInteger.ZERO)){
+		    		tl.addView(activity.renderRow("Efficiency: ",workerStatus.getEfficiency() + " %"));
+		    	}
+		    	tl.addView(activity.renderRow("Valid Shares:",workerStatus.getValid_shares()));
+		    	tl.addView(activity.renderRow("Invalid Shares:",workerStatus.getInvalid_shares()));
+		    	tl.addView(activity.renderRow("Total Valid Shares:",workerStatus.getValid_shares_lifetime()));
+		    	tl.addView(activity.renderRow("Total Invalid Shares",workerStatus.getInvalid_shares_lifetime()));
+		    	tl.addView(activity.renderRow("",""));	
+		    }
 		}
+		tl.addView(activity.renderRow("",""));
 	}
-	
+
+	public OzcoinUser getUser() {
+		return user;
+	}
+
+	public void setUser(OzcoinUser user) {
+		this.user = user;
+	}
+
+	public Map<String, OzcoinWorker> getWorker() {
+		return worker;
+	}
+
+	public void setWorker(Map<String, OzcoinWorker> worker) {
+		this.worker = worker;
+	}
+
 	@Override
 	public String getUsername() {
-		if (workers == null || workers.isEmpty()){
-			return "No workers";
-		}
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
 	public String getDisplayCol1() {
-		return getConfirmed_rewards();
+		return getUser() == null ? "" : getUser().getCompleted_payout().setScale(2, BigDecimal.ROUND_HALF_UP).toString();
 	}
 
 	@Override
 	public String getDisplayCol2() {
-		return getHashrate();
+		return getTotalHashrate().toString();
 	}
 
 	@Override
@@ -58,12 +91,19 @@ public class OzcoinStatus implements Serializable, Status, Renderable  {
 
 	@Override
 	public String getDisplayCol1Label() {
-		return "Confirmed Rewards";
+		return "Est. Payout";
 	}
 
 	@Override
 	public String getDisplayCol2Label() {
-		return "Hashrate";
+		return "G/Hash";
+	}
+
+	private static final BigDecimal ONE_THOUSAND = new BigDecimal("1000");
+	
+	@Override
+	public BigDecimal getTotalHashrate() {
+		return getUser() == null ? BigDecimal.ZERO : getUser().getHashrate_raw().divide(ONE_THOUSAND).setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	@Override
@@ -71,59 +111,8 @@ public class OzcoinStatus implements Serializable, Status, Renderable  {
 		this.apiKey = apiKey;
 	}
 
-	@Override
 	public String getApiKey() {
 		return apiKey;
-	}
-
-	public String getConfirmed_rewards() {
-		return confirmed_rewards == null ? "" : confirmed_rewards;
-	}
-
-	public void setConfirmed_rewards(String confirmed_rewards) {
-		this.confirmed_rewards = confirmed_rewards;
-	}
-
-	public String getHashrate() {
-		return hashrate;
-	}
-
-	public void setHashrate(String hashrate) {
-		this.hashrate = hashrate;
-	}
-
-	public String getPayout_history() {
-		return payout_history == null ? "" : payout_history;
-	}
-
-	public void setPayout_history(String payout_history) {
-		this.payout_history = payout_history;
-	}
-
-	public Map<String, OzcoinWorker> getWorkers() {
-		return workers;
-	}
-
-	public void setWorkers(Map<String, OzcoinWorker> workers) {
-		this.workers = workers;
-	}
-
-	public void render(ViewMinerActivity activity) {
-		TableLayout tl = (TableLayout) activity.findViewById(R.id.detailedView);
-		tl.addView(activity.renderRow("Hashrate", getHashrate()));
-		tl.addView(activity.renderRow("Confirmed Rewards", getConfirmed_rewards()));
-		tl.addView(activity.renderRow("Payout History", getPayout_history()));
-		tl.addView(activity.renderRow("Worker(s):",""));
-		if(getWorkers() != null){
-		    for( String key : getWorkers().keySet() ){
-		    	OzcoinWorker workerStatus = getWorkers().get(key);
-		    	tl.addView(activity.renderRow("",key));
-		    	tl.addView(activity.renderRow("Alive",workerStatus.getAlive()));
-		    	tl.addView(activity.renderRow("Hashrate",workerStatus.getHashrate()));
-		    	tl.addView(activity.renderRow("",""));
-		    }
-		}
-		tl.addView(activity.renderRow("",""));
 	}
 	
 }

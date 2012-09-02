@@ -6,7 +6,6 @@ import java.util.Map;
 
 import me.davidgreene.minerstatus.R;
 import me.davidgreene.minerstatus.ViewMinerActivity;
-import me.davidgreene.minerstatus.util.Renderable;
 import android.widget.TableLayout;
 
 public class BtcguildStatus implements Status, Serializable, Renderable  {
@@ -35,7 +34,7 @@ public class BtcguildStatus implements Status, Serializable, Renderable  {
 	
 	@Override
 	public String getUsername() {
-		return "Worker(s)";
+		return DEFAULT_USERNAME;
 	}
 
 	@Override
@@ -111,12 +110,12 @@ public class BtcguildStatus implements Status, Serializable, Renderable  {
 		tl.addView(activity.renderRow("NMC 24h rewards", getUser().getPast_24h_rewards_nmc()));
 		tl.addView(activity.renderRow("NMC Unpaid Rewards", getUser().getUnpaid_rewards_nmc()));
 
-		tl.addView(activity.renderRow("Worker(s):",""));
+		tl.addView(activity.renderRow(DEFAULT_USERNAME + ":",""));
 		if (getWorkers() != null){
 		    for( String key : getWorkers().keySet() ){
 		    	BtcguildWorker worker = getWorkers().get(key);
 		    	tl.addView(activity.renderRow("",worker.getWorker_name()));
-		    	tl.addView(activity.renderRow("Hashrate",worker.getHash_rate()));
+		    	tl.addView(activity.renderRow(HASHRATE_DISPLAY_COL_2_LABEL,worker.getHash_rate()));
 		    	tl.addView(activity.renderRow("Valid Shares",worker.getValid_shares()));
 		    	tl.addView(activity.renderRow("Dupe Shares",worker.getDupe_shares()));
 		    	tl.addView(activity.renderRow("Stale Shares",worker.getStale_shares()));
