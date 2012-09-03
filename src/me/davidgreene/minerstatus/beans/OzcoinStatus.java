@@ -91,7 +91,7 @@ public class OzcoinStatus implements Serializable, Status, Renderable  {
 
 	@Override
 	public String getDisplayCol1Label() {
-		return "Est. Payout";
+		return "Payout";
 	}
 
 	@Override
