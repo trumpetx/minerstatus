@@ -43,16 +43,13 @@ public class MainMinerActivity extends AbstractMinerStatusActivity {
     private static final String tag = "TX";
 
 	private boolean hasNetworkConnection() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo) {
-            if ((ni.getTypeName().equalsIgnoreCase("WIFI") || ni.getTypeName().equalsIgnoreCase("MOBILE") || ni.getTypeName().equalsIgnoreCase("WiMax")) 
-            		&& ni.isConnected()){
-                    return true;
-            }
-        }
-        return false;
-	}
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		    if (netInfo != null && netInfo.isConnected()) {
+		        return true;
+		    }
+		    return false;
+		}
 
     @Override
 	protected void onResume() {
